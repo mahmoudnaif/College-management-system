@@ -7,13 +7,15 @@ public partial class Semester
 {
     public int SemesterId { get; set; }
 
-    public string? SemesterName { get; set; }
+    public string SemesterName { get; set; } = null!;
 
-    public int? SemesterYear { get; set; }
+    public int SemesterYear { get; set; }
 
-    public DateTime? StartDate { get; set; }
+    public DateTime StartDate { get; set; }
 
-    public DateTime? EndDate { get; set; }
+    public DateTime EndDate { get; set; }
+
+    public bool IsActive { get; set; }
 
     public virtual ICollection<Coursesemester> Coursesemesters { get; set; } = new List<Coursesemester>();
 

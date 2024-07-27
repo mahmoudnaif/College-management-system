@@ -258,7 +258,6 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.DepartmentId)
                 .HasDefaultValue(0)
                 .HasColumnName("DepartmentID");
-            entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.FirstName).HasMaxLength(255);
             entity.Property(e => e.HiringDate).HasPrecision(0);
             entity.Property(e => e.LastName).HasMaxLength(255);
@@ -342,8 +341,8 @@ public partial class CollegeDBContext : DbContext
 
             entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.EndDate).HasPrecision(0);
+            entity.Property(e => e.IsActive).HasColumnName("isActive");
             entity.Property(e => e.SemesterName).HasMaxLength(255);
-            entity.Property(e => e.SemesterYear).HasDefaultValue(0);
             entity.Property(e => e.StartDate).HasPrecision(0);
         });
 
@@ -372,8 +371,6 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.StudentId).HasName("Students$PrimaryKey");
 
-            entity.HasIndex(e => e.Email, "Students$Email").IsUnique();
-
             entity.HasIndex(e => e.StudentId, "Students$StudentID");
 
             entity.HasIndex(e => e.AccountId, "UQ__Students__F267253F253690E5").IsUnique();
@@ -383,7 +380,6 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.Cgpa)
                 .HasDefaultValue(0)
                 .HasColumnName("CGPA");
-            entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.EnrollmentDate).HasPrecision(0);
             entity.Property(e => e.FirstName).HasMaxLength(255);
             entity.Property(e => e.LastName).HasMaxLength(255);
@@ -471,7 +467,6 @@ public partial class CollegeDBContext : DbContext
 
             entity.Property(e => e.AssistantId).HasColumnName("AssistantID");
             entity.Property(e => e.AccountId).HasColumnName("accountID");
-            entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.FirstName).HasMaxLength(255);
             entity.Property(e => e.HiringDate).HasPrecision(0);
             entity.Property(e => e.LastName).HasMaxLength(255);

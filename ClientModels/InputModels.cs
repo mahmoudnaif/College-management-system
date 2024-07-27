@@ -61,7 +61,11 @@
 
         }
 
-
+        public class EditDepartmentNameModel
+        {
+             public int departmentId { get; set; }
+            public string newName { get; set; }
+     }
 
       
 
