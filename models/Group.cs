@@ -7,15 +7,15 @@ public partial class Group
 {
     public int GroupId { get; set; }
 
-    public string? GroupName { get; set; }
+    public string GroupName { get; set; } = null!;
 
-    public int? StudentsYear { get; set; }
+    public int StudentsYear { get; set; }
 
-    public int? SemesterId { get; set; }
+    public int SemesterId { get; set; }
 
     public virtual ICollection<SchedulesJoinsgroup> SchedulesJoinsgroups { get; set; } = new List<SchedulesJoinsgroup>();
 
-    public virtual Semester? Semester { get; set; }
+    public virtual Semester Semester { get; set; } = null!;
 
     public virtual ICollection<StudentsJoinsgroup> StudentsJoinsgroups { get; set; } = new List<StudentsJoinsgroup>();
 }

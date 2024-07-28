@@ -6,15 +6,15 @@ namespace College_managemnt_system.Interfaces
 {
     public interface ISemstersRepo
     {
-        public Task<CustomResponse<IEnumerable<SemestersDTO>>> GetSemesters(TakeSkipModel takeSkipModel);
-        public Task<CustomResponse<SemestersDTO>> GetSingleSemester(int semesterID);
+        public Task<CustomResponse<IEnumerable<SemesterDTO>>> GetSemesters(TakeSkipModel takeSkipModel);
+        public Task<CustomResponse<SemesterDTO>> GetSingleSemester(int semesterID);
 
-        public Task<CustomResponse<SemestersDTO>> GetSemesterByNameYear(GetSemesterModel getSemesterModel);
-        public Task<CustomResponse<SemestersDTO>> AddSemester(SemesterInputModel semesterInputModel);
-        public Task<CustomResponse<SemestersDTO>>  EditEndDateSemester(EditDateModel editDateModel);
-        public Task<CustomResponse<SemestersDTO>> EditStartDateSemester(EditDateModel editDateModel);
+        public Task<CustomResponse<SemesterDTO>> GetSemesterByNameYear(GetSemesterModel getSemesterModel);
+        public Task<CustomResponse<SemesterDTO>> AddSemester(SemesterInputModel semesterInputModel);
+        public Task<CustomResponse<SemesterDTO>>  EditEndDateSemester(EditDateModel editDateModel);
+        public Task<CustomResponse<SemesterDTO>> EditStartDateSemester(EditDateModel editDateModel);
 
-        public Task<CustomResponse<SemestersDTO>> EditActiveStatus(EditIsActiveModel editIsActiveModel);
+        public Task<CustomResponse<SemesterDTO>> EditActiveStatus(EditIsActiveModel editIsActiveModel);
 
         public Task<CustomResponse<bool>> DeleteSemester(int semesterID); //Critical DO NOT USE UNLESS NECESSARY
 

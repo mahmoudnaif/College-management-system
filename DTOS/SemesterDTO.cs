@@ -1,6 +1,6 @@
 ﻿namespace College_managemnt_system.DTOS
 {
-    public class SemestersDTO
+    public class SemesterDTO
     {
         public int SemesterId { get; set; }
         public string SemesterName { get; set; }

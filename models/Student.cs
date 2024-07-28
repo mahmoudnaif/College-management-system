@@ -7,17 +7,19 @@ public partial class Student
 {
     public int StudentId { get; set; }
 
-    public string? FirstName { get; set; }
+    public string FirstName { get; set; } = null!;
 
-    public string? LastName { get; set; }
+    public string LastName { get; set; } = null!;
 
-    public string? Phone { get; set; }
+    public string Phone { get; set; } = null!;
 
-    public int? Cgpa { get; set; }
+    public int Cgpa { get; set; }
 
-    public DateTime? EnrollmentDate { get; set; }
+    public DateTime EnrollmentDate { get; set; }
 
     public long AccountId { get; set; }
+
+    public int TotalHours { get; set; }
 
     public virtual Account Account { get; set; } = null!;
 

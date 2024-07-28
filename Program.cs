@@ -98,6 +98,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddScoped<ICoursesRepo, CoursesRepo>();
 builder.Services.AddScoped<IDepartmentsRepo, DepartmentsRepo>();
 builder.Services.AddScoped<ISemstersRepo, SemstersRepo>();
 builder.Services.AddScoped<IAuthRepo, AuthRepo>();

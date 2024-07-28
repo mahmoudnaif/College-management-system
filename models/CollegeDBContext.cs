@@ -109,7 +109,6 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.Building)
                 .HasMaxLength(255)
                 .HasColumnName("building");
-            entity.Property(e => e.Capacity).HasDefaultValue(0);
             entity.Property(e => e.RoomNumber).HasMaxLength(255);
         });
 
@@ -126,13 +125,11 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.CourseCode).HasMaxLength(255);
             entity.Property(e => e.CourseName).HasMaxLength(255);
-            entity.Property(e => e.Credits).HasDefaultValue(0);
-            entity.Property(e => e.DepartmentId)
-                .HasDefaultValue(0)
-                .HasColumnName("DepartmentID");
+            entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
 
             entity.HasOne(d => d.Department).WithMany(p => p.Courses)
                 .HasForeignKey(d => d.DepartmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Courses$DepartmentsCourses");
 
             entity.HasMany(d => d.Courses).WithMany(p => p.PrereqCourses)
@@ -185,18 +182,10 @@ public partial class CollegeDBContext : DbContext
             entity.HasIndex(e => e.ProfessorId, "Coursesemesters$ProfessorID");
 
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
-            entity.Property(e => e.CourseId)
-                .HasDefaultValue(0)
-                .HasColumnName("CourseID");
-            entity.Property(e => e.Isactive)
-                .HasDefaultValue(false)
-                .HasColumnName("ISActive");
-            entity.Property(e => e.ProfessorId)
-                .HasDefaultValue(0)
-                .HasColumnName("ProfessorID");
-            entity.Property(e => e.SemesterId)
-                .HasDefaultValue(0)
-                .HasColumnName("SemesterID");
+            entity.Property(e => e.CourseId).HasColumnName("CourseID");
+            entity.Property(e => e.Isactive).HasColumnName("ISActive");
+            entity.Property(e => e.ProfessorId).HasColumnName("ProfessorID");
+            entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.SsmaTimeStamp)
                 .IsRowVersion()
                 .IsConcurrencyToken()
@@ -204,20 +193,27 @@ public partial class CollegeDBContext : DbContext
 
             entity.HasOne(d => d.Course).WithMany(p => p.Coursesemesters)
                 .HasForeignKey(d => d.CourseId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Coursesemesters$CoursesCoursesemesters");
 
             entity.HasOne(d => d.Professor).WithMany(p => p.Coursesemesters)
                 .HasForeignKey(d => d.ProfessorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Coursesemesters$ProfessorsCoursesemesters");
 
             entity.HasOne(d => d.Semester).WithMany(p => p.Coursesemesters)
                 .HasForeignKey(d => d.SemesterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Coursesemesters$SemestersCoursesemesters");
         });
 
         modelBuilder.Entity<Department>(entity =>
         {
             entity.HasKey(e => e.DepartmentId).HasName("Departments$PrimaryKey");
+
+            entity.HasIndex(e => e.DepartmentName, "IX_Department_Name").IsUnique();
+
+            entity.HasIndex(e => e.DepartmentName, "UQ__Departme__D949CC34BD0F849F").IsUnique();
 
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.DepartmentName).HasMaxLength(255);
@@ -233,13 +229,11 @@ public partial class CollegeDBContext : DbContext
 
             entity.Property(e => e.GroupId).HasColumnName("GroupID");
             entity.Property(e => e.GroupName).HasMaxLength(255);
-            entity.Property(e => e.SemesterId)
-                .HasDefaultValue(0)
-                .HasColumnName("SemesterID");
-            entity.Property(e => e.StudentsYear).HasDefaultValue(0);
+            entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
 
             entity.HasOne(d => d.Semester).WithMany(p => p.Groups)
                 .HasForeignKey(d => d.SemesterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Groups$SemestersGroups");
         });
 
@@ -255,9 +249,7 @@ public partial class CollegeDBContext : DbContext
 
             entity.Property(e => e.ProfessorId).HasColumnName("ProfessorID");
             entity.Property(e => e.AccountId).HasColumnName("accountID");
-            entity.Property(e => e.DepartmentId)
-                .HasDefaultValue(0)
-                .HasColumnName("DepartmentID");
+            entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.FirstName).HasMaxLength(255);
             entity.Property(e => e.HiringDate).HasPrecision(0);
             entity.Property(e => e.LastName).HasMaxLength(255);
@@ -270,6 +262,7 @@ public partial class CollegeDBContext : DbContext
 
             entity.HasOne(d => d.Department).WithMany(p => p.Professors)
                 .HasForeignKey(d => d.DepartmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Professors$DepartmentsProfessors");
         });
 
@@ -284,15 +277,10 @@ public partial class CollegeDBContext : DbContext
             entity.HasIndex(e => e.ScheduleId, "Schedules$ScheduleID");
 
             entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
-            entity.Property(e => e.ClassroomId)
-                .HasDefaultValue(0)
-                .HasColumnName("ClassroomID");
-            entity.Property(e => e.CourseSemesterId)
-                .HasDefaultValue(0)
-                .HasColumnName("CourseSemesterID");
+            entity.Property(e => e.ClassroomId).HasColumnName("ClassroomID");
+            entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
             entity.Property(e => e.DayOfWeek).HasMaxLength(255);
             entity.Property(e => e.EndTime).HasPrecision(0);
-            entity.Property(e => e.PeriodNumber).HasDefaultValue(0);
             entity.Property(e => e.StartTime).HasPrecision(0);
             entity.Property(e => e.Type)
                 .HasMaxLength(255)
@@ -300,11 +288,11 @@ public partial class CollegeDBContext : DbContext
 
             entity.HasOne(d => d.Classroom).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.ClassroomId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("Schedules$ClassroomsSchedules");
 
             entity.HasOne(d => d.CourseSemester).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.CourseSemesterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Schedules$CoursesemestersSchedules");
         });
 
@@ -377,13 +365,12 @@ public partial class CollegeDBContext : DbContext
 
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.AccountId).HasColumnName("accountID");
-            entity.Property(e => e.Cgpa)
-                .HasDefaultValue(0)
-                .HasColumnName("CGPA");
+            entity.Property(e => e.Cgpa).HasColumnName("CGPA");
             entity.Property(e => e.EnrollmentDate).HasPrecision(0);
             entity.Property(e => e.FirstName).HasMaxLength(255);
             entity.Property(e => e.LastName).HasMaxLength(255);
             entity.Property(e => e.Phone).HasMaxLength(255);
+            entity.Property(e => e.TotalHours).HasColumnName("totalHours");
 
             entity.HasOne(d => d.Account).WithOne(p => p.Student)
                 .HasForeignKey<Student>(d => d.AccountId)
@@ -402,13 +389,10 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.StudentCourseId).HasColumnName("StudentCourseID");
             entity.Property(e => e.Grade).HasMaxLength(255);
             entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.StudentId)
-                .HasDefaultValue(0)
-                .HasColumnName("StudentID");
+            entity.Property(e => e.StudentId).HasColumnName("StudentID");
 
             entity.HasOne(d => d.Student).WithMany(p => p.StudentCourses)
                 .HasForeignKey(d => d.StudentId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("StudentCourses$StudentsStudentCourses");
         });
 

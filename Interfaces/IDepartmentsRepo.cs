@@ -7,12 +7,12 @@ namespace College_managemnt_system.Interfaces
 {
     public interface IDepartmentsRepo
     {
-        public Task<CustomResponse<IEnumerable<DepartmentsDTO>>> GetDepartments();
+        public Task<CustomResponse<IEnumerable<DepartmentDTO>>> GetDepartments();
 
         //public Task<CustomResponse<Department>> GetDepartmentById(int departmentId); 
-        public Task<CustomResponse<DepartmentsDTO>> AddDepartment(string departmnetName);
+        public Task<CustomResponse<DepartmentDTO>> AddDepartment(string departmnetName);
 
-        public Task<CustomResponse<DepartmentsDTO>> EditDepartmentName(EditDepartmentNameModel editDepartmentNameModel);
+        public Task<CustomResponse<DepartmentDTO>> EditDepartmentName(EditDepartmentNameModel editDepartmentNameModel);
 
         public Task<CustomResponse<bool>> DeleteDepartment(int departmentId);
     }
