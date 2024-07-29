@@ -29,6 +29,8 @@ public partial class CollegeDBContext : DbContext
 
     public virtual DbSet<Group> Groups { get; set; }
 
+    public virtual DbSet<Prereq> Prereqs { get; set; }
+
     public virtual DbSet<Professor> Professors { get; set; }
 
     public virtual DbSet<Schedule> Schedules { get; set; }
@@ -131,44 +133,6 @@ public partial class CollegeDBContext : DbContext
                 .HasForeignKey(d => d.DepartmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Courses$DepartmentsCourses");
-
-            entity.HasMany(d => d.Courses).WithMany(p => p.PrereqCourses)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Prereq",
-                    r => r.HasOne<Course>().WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("Prereqs$CoursesPrereqs1"),
-                    l => l.HasOne<Course>().WithMany()
-                        .HasForeignKey("PrereqCourseId")
-                        .HasConstraintName("Prereqs$CoursesPrereqs"),
-                    j =>
-                    {
-                        j.HasKey("CourseId", "PrereqCourseId").HasName("Prereqs$PrimaryKey");
-                        j.ToTable("Prereqs");
-                        j.HasIndex(new[] { "CourseId" }, "Prereqs$CourseID");
-                        j.IndexerProperty<int>("CourseId").HasColumnName("CourseID");
-                        j.IndexerProperty<int>("PrereqCourseId").HasColumnName("PrereqCourseID");
-                    });
-
-            entity.HasMany(d => d.PrereqCourses).WithMany(p => p.Courses)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Prereq",
-                    r => r.HasOne<Course>().WithMany()
-                        .HasForeignKey("PrereqCourseId")
-                        .HasConstraintName("Prereqs$CoursesPrereqs"),
-                    l => l.HasOne<Course>().WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("Prereqs$CoursesPrereqs1"),
-                    j =>
-                    {
-                        j.HasKey("CourseId", "PrereqCourseId").HasName("Prereqs$PrimaryKey");
-                        j.ToTable("Prereqs");
-                        j.HasIndex(new[] { "CourseId" }, "Prereqs$CourseID");
-                        j.IndexerProperty<int>("CourseId").HasColumnName("CourseID");
-                        j.IndexerProperty<int>("PrereqCourseId").HasColumnName("PrereqCourseID");
-                    });
         });
 
         modelBuilder.Entity<Coursesemester>(entity =>
@@ -235,6 +199,26 @@ public partial class CollegeDBContext : DbContext
                 .HasForeignKey(d => d.SemesterId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Groups$SemestersGroups");
+        });
+
+        modelBuilder.Entity<Prereq>(entity =>
+        {
+            entity.HasKey(e => new { e.CourseId, e.PrereqCourseId }).HasName("Prereqs$PrimaryKey");
+
+            entity.HasIndex(e => e.CourseId, "Prereqs$CourseID");
+
+            entity.Property(e => e.CourseId).HasColumnName("CourseID");
+            entity.Property(e => e.PrereqCourseId).HasColumnName("PrereqCourseID");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+
+            entity.HasOne(d => d.Course).WithMany(p => p.PrereqCourses)
+                .HasForeignKey(d => d.CourseId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Prereqs$CoursesPrereqs1");
+
+            entity.HasOne(d => d.PrereqCourse).WithMany(p => p.PrereqPrereqCourses)
+                .HasForeignKey(d => d.PrereqCourseId)
+                .HasConstraintName("Prereqs$CoursesPrereqs");
         });
 
         modelBuilder.Entity<Professor>(entity =>

@@ -19,7 +19,7 @@ public partial class Course
 
     public virtual Department Department { get; set; } = null!;
 
-    public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
+    public virtual ICollection<Prereq> PrereqCourses { get; set; } = new List<Prereq>();
 
-    public virtual ICollection<Course> PrereqCourses { get; set; } = new List<Course>();
+    public virtual ICollection<Prereq> PrereqPrereqCourses { get; set; } = new List<Prereq>();
 }

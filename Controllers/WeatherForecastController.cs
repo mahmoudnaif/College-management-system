@@ -1,3 +1,4 @@
+using College_managemnt_system.models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace College_managemnt_system.Controllers
@@ -6,28 +7,20 @@ namespace College_managemnt_system.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly CollegeDBContext _context;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(CollegeDBContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        public IActionResult Get(int courseId)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            IEnumerable<Course> prereqsCoursesDTO = _context.Prereqs.Where(P => P.CourseId == courseId).Select(P => _context.Courses.SingleOrDefault(C => C.CourseId == P.PrereqCourseId));
+
+
+            return Ok(prereqsCoursesDTO);
         }
     }
 }
