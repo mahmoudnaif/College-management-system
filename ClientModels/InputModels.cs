@@ -4,9 +4,7 @@
         public class SearchModel
         {
             public string searchQuery { get; set; }
-            public int take { get; set; } = 20;
-            public int skip { get; set; } = 0;
-
+            public TakeSkipModel takeSkip { get; set; } = new TakeSkipModel();
         }
 
         public class Siqninmodel

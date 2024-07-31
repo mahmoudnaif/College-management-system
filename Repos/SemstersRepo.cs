@@ -159,6 +159,9 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<IEnumerable<SemesterDTO>>> GetSemesters(TakeSkipModel takeSkipModel)
         {
+            if (takeSkipModel.take < 0 || takeSkipModel.skip < 0)
+                return new CustomResponse<IEnumerable<SemesterDTO>>(400, "Take and skip must more than or equal 0");
+
             IEnumerable<Semester> semesters = _context.Semesters.OrderByDescending(S => S.SemesterYear).Skip(takeSkipModel.skip).Take(takeSkipModel.take);
 
             if (semesters.Count() == 0)

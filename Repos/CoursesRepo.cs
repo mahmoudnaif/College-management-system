@@ -21,6 +21,10 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<IEnumerable<CourseDTO>>> GetCourses(TakeSkipModel takeSkipModel)
         {
+            if (takeSkipModel.take < 0 ||  takeSkipModel.skip < 0)
+                return new CustomResponse<IEnumerable<CourseDTO>>(400, "Take and skip must more than or equal 0");
+
+
             IEnumerable<Course> courses = _context.Courses.Skip(takeSkipModel.skip)
                                                           .Take(takeSkipModel.take);
 

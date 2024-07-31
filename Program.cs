@@ -98,6 +98,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddScoped<IClassroomsRepo , ClassroomsRepo>();
 builder.Services.AddScoped<IPrereqsCoursesRepo, PrereqsCoursesRepo>();
 builder.Services.AddScoped<ICoursesRepo, CoursesRepo>();
 builder.Services.AddScoped<IDepartmentsRepo, DepartmentsRepo>();
