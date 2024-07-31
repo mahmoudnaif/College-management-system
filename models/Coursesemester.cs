@@ -27,5 +27,5 @@ public partial class Coursesemester
 
     public virtual Semester Semester { get; set; } = null!;
 
-    public virtual ICollection<StudentCoursesJoinscourseSemester> StudentCoursesJoinscourseSemesters { get; set; } = new List<StudentCoursesJoinscourseSemester>();
+    public virtual ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
 }
