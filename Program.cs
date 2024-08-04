@@ -98,6 +98,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddScoped<IGroupsRepo , GroupsRepo>();
 builder.Services.AddScoped<IClassroomsRepo , ClassroomsRepo>();
 builder.Services.AddScoped<IPrereqsCoursesRepo, PrereqsCoursesRepo>();
 builder.Services.AddScoped<ICoursesRepo, CoursesRepo>();
@@ -145,6 +146,18 @@ builder.Services.AddDbContext<CollegeDBContext>(op =>
     op.UseSqlServer(builder.Configuration["ConnectionStrings:default"]);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .AllowCredentials(); // Allow credentials (cookies, authorization headers, etc.)
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -153,6 +166,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 

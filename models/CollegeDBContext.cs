@@ -371,7 +371,7 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.Grade).HasMaxLength(255);
             entity.Property(e => e.Status).HasMaxLength(255);
 
-            entity.HasOne(d => d.CourseSemester).WithMany(p => p.StudentCoursesJoinscourseSemesters)
+            entity.HasOne(d => d.CourseSemester).WithMany(p => p.StudentCourses)
                 .HasForeignKey(d => d.CourseSemesterId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("StudentCourses$CourseSemesterID");

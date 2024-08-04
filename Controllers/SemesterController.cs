@@ -7,11 +7,11 @@ namespace College_managemnt_system.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SemesterControllercs : Controller
+    public class SemesterController : Controller
     {
         private readonly ISemstersRepo _semstersRepo;
 
-        public SemesterControllercs(ISemstersRepo semstersRepo)
+        public SemesterController(ISemstersRepo semstersRepo)
         {
             _semstersRepo = semstersRepo;
         }

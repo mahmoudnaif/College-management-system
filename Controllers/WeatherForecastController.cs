@@ -1,3 +1,4 @@
+using College_managemnt_system.ClientModels;
 using College_managemnt_system.models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,13 +15,11 @@ namespace College_managemnt_system.Controllers
             _context = context;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IActionResult Get(int courseId)
+        [HttpPost(Name = "GetWeatherForecast")]
+        public IActionResult Get([FromBody]SemesterInputModel semesterInputModel)
         {
-            IEnumerable<Course> prereqsCoursesDTO = _context.Prereqs.Where(P => P.CourseId == courseId).Select(P => _context.Courses.SingleOrDefault(C => C.CourseId == P.PrereqCourseId));
-
-
-            return Ok(prereqsCoursesDTO);
+            Semester semesterExists = _context.Semesters.SingleOrDefault(S => S.SemesterName == semesterInputModel.semesterName.ToUpper() && S.SemesterYear == semesterInputModel.semesterYear);
+            return Ok(semesterExists);
         }
     }
 }

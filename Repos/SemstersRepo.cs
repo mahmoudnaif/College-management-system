@@ -21,30 +21,40 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<SemesterDTO>> AddSemester(SemesterInputModel semesterInputModel)
         {
-            if (semesterInputModel.semesterName != "FALL" && semesterInputModel.semesterName != "SPRING" && semesterInputModel.semesterName != "SUMMER")
+            string semesterName = semesterInputModel.semesterName.ToUpper();
+            int semesterYear = semesterInputModel.semesterYear;
+            DateTime startDate = semesterInputModel.startDate;
+            DateTime endDate = semesterInputModel.endDate;
+
+            if (semesterName!= "FALL" && semesterName != "SPRING" && semesterName != "SUMMER")
                 return new CustomResponse<SemesterDTO>(400,"Invalid semester name");
 
 
-            if (semesterInputModel.semesterYear < DateTime.UtcNow.Year)
+            if (semesterYear < DateTime.UtcNow.Year)
                 return new CustomResponse<SemesterDTO>(400, "Invalid semester year");
 
-            if(semesterInputModel.startDate < DateTime.UtcNow)
+            if(startDate < DateTime.UtcNow)
                 return new CustomResponse<SemesterDTO>(400, "Invalid start Date");
 
-            if (semesterInputModel.endDate <= DateTime.UtcNow)
+            if (endDate <= DateTime.UtcNow)
                 return new CustomResponse<SemesterDTO>(400, "Invalid end Date");
+
+            Semester semesterExists = _context.Semesters.SingleOrDefault(S => S.SemesterName == semesterInputModel.semesterName.ToUpper() && S.SemesterYear == semesterInputModel.semesterYear);
+
+            if (semesterExists != null)
+                return new CustomResponse<SemesterDTO>(409, "Semester already exists");
 
 
             Semester semester = new Semester();
 
 
-            semester.SemesterName = semesterInputModel.semesterName;
+            semester.SemesterName = semesterName.ToUpper();
 
-            semester.SemesterYear = semesterInputModel.semesterYear;
+            semester.SemesterYear = semesterYear;
 
-            semester.StartDate = semesterInputModel.startDate;
+            semester.StartDate = startDate;
 
-            semester.EndDate = semesterInputModel.endDate;
+            semester.EndDate = endDate;
 
 
 

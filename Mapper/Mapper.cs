@@ -10,6 +10,7 @@ namespace College_managemnt_system.Mapper
     {
         public MappingProfile()
         {
+            CreateMap<Group, GroupDTO>();
             CreateMap<Classroom, ClassRoomDTO>();
             CreateMap<Prereq, PrereqDTO>();
             CreateMap<Semester, SemesterDTO>();
