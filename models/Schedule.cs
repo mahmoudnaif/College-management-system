@@ -13,13 +13,9 @@ public partial class Schedule
 
     public string Type { get; set; } = null!;
 
-    public string DayOfWeek { get; set; } = null!;
+    public int DayOfWeek { get; set; }
 
     public int PeriodNumber { get; set; }
-
-    public DateTime? StartTime { get; set; }
-
-    public DateTime? EndTime { get; set; }
 
     public virtual Classroom Classroom { get; set; } = null!;
 

@@ -187,9 +187,9 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.GroupId).HasName("Groups$PrimaryKey");
 
-            entity.HasIndex(e => e.GroupId, "Groups$GroupID");
+            entity.HasIndex(e => e.GroupName, "IX_Groups_GroupName");
 
-            entity.HasIndex(e => e.SemesterId, "Groups$SemesterID");
+            entity.HasIndex(e => new { e.GroupName, e.StudentsYear, e.SemesterId }, "UQ_Groups_GroupName_StudentsYear_SemesterID").IsUnique();
 
             entity.Property(e => e.GroupId).HasColumnName("GroupID");
             entity.Property(e => e.GroupName).HasMaxLength(255);
@@ -254,18 +254,9 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.ScheduleId).HasName("Schedules$PrimaryKey");
 
-            entity.HasIndex(e => e.ClassroomId, "Schedules$ClassroomID");
-
-            entity.HasIndex(e => e.CourseSemesterId, "Schedules$CourseSemesterID");
-
-            entity.HasIndex(e => e.ScheduleId, "Schedules$ScheduleID");
-
             entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
             entity.Property(e => e.ClassroomId).HasColumnName("ClassroomID");
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
-            entity.Property(e => e.DayOfWeek).HasMaxLength(255);
-            entity.Property(e => e.EndTime).HasPrecision(0);
-            entity.Property(e => e.StartTime).HasPrecision(0);
             entity.Property(e => e.Type)
                 .HasMaxLength(255)
                 .HasColumnName("type");
@@ -309,7 +300,7 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.SemesterId).HasName("Semesters$PrimaryKey");
 
-            entity.HasIndex(e => e.SemesterId, "Semesters$SemesterID");
+            entity.HasIndex(e => new { e.SemesterName, e.SemesterYear }, "UQ_Semesters_SemesterName_SemesterYear").IsUnique();
 
             entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.EndDate).HasPrecision(0);
