@@ -10,16 +10,18 @@ namespace College_managemnt_system.Controllers
     public class SemesterController : Controller
     {
         private readonly ISemstersRepo _semstersRepo;
+        private readonly ICoursesSemestersRepo _coursesSemestersRepo;
 
-        public SemesterController(ISemstersRepo semstersRepo)
+        public SemesterController(ISemstersRepo semstersRepo, ICoursesSemestersRepo coursesSemestersRepo)
         {
             _semstersRepo = semstersRepo;
+            _coursesSemestersRepo = coursesSemestersRepo;
         }
 
 
         [HttpGet("GetSemesters")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> GetSemesters([FromQuery]TakeSkipModel takeSkipModel)
+        public async Task<IActionResult> GetSemesters([FromQuery] TakeSkipModel takeSkipModel)
         {
 
             var response = await _semstersRepo.GetSemesters(takeSkipModel);
@@ -41,7 +43,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpGet("GetByNameYear")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> GetSemesterByNameYear([FromQuery]GetSemesterModel getSemesterModel)
+        public async Task<IActionResult> GetSemesterByNameYear([FromQuery] GetSemesterModel getSemesterModel)
         {
 
             var response = await _semstersRepo.GetSemesterByNameYear(getSemesterModel);
@@ -51,7 +53,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPost("AddSemester")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> AddSemester([FromBody]SemesterInputModel semesterInputModel)
+        public async Task<IActionResult> AddSemester([FromBody] SemesterInputModel semesterInputModel)
         {
             var response = await _semstersRepo.AddSemester(semesterInputModel);
 
@@ -81,7 +83,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPut("EditActiveStatus")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> EditActiveStatus([FromBody] EditIsActiveModel editIsActiveModel )
+        public async Task<IActionResult> EditActiveStatus([FromBody] EditIsActiveModel editIsActiveModel)
         {
             var response = await _semstersRepo.EditActiveStatus(editIsActiveModel);
 
@@ -98,6 +100,15 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
+
+        [HttpGet("{id}/courses")]
+        [Authorize(Roles = "admin,root")]
+        public async Task<IActionResult> GetCoursesBySemesterId(int id)
+        {
+            var response = await _coursesSemestersRepo.GetCoursesBySemester(id);
+
+            return StatusCode(response.responseCode, response);
+        }
 
 
     }

@@ -40,6 +40,10 @@ namespace College_managemnt_system.Repos
             if (courseExists == null)
                 return new CustomResponse<PrereqDTO>(404, "Preqes course does not exist");
 
+            Prereq prereqExists = _context.Prereqs.SingleOrDefault(P => P.CourseId == prereqsInputModel.CourseId && P.PrereqCourseId ==  prereqsInputModel.PrereqsCourseId);
+
+            if(prereqExists != null)
+                return new CustomResponse<PrereqDTO>(409, "Preqes already exists");
 
             Prereq prereq = new Prereq()
             {

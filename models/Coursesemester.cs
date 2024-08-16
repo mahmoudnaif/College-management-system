@@ -15,8 +15,6 @@ public partial class Coursesemester
 
     public bool Isactive { get; set; }
 
-    public byte[] SsmaTimeStamp { get; set; } = null!;
-
     public virtual ICollection<AssistantsJoinscourseSemester> AssistantsJoinscourseSemesters { get; set; } = new List<AssistantsJoinscourseSemester>();
 
     public virtual Course Course { get; set; } = null!;

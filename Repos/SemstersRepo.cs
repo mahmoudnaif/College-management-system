@@ -152,12 +152,30 @@ namespace College_managemnt_system.Repos
             if (semester.IsActive == editIsActiveModel.isActive)
                 return new CustomResponse<SemesterDTO>(409, "Semester already set to: " + editIsActiveModel.isActive);
 
+            if (editIsActiveModel.isActive)
+            {
+                Semester activeSemester = _context.Semesters.FirstOrDefault(S => S.IsActive == true);
+
+                if (activeSemester != null)
+                    return new CustomResponse<SemesterDTO>(409, "You can't activate multiple semesters at once");
+
+            }
+            else
+            {
+                Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(CS => CS.SemesterId == editIsActiveModel.semesterId && CS.Isactive == true);
+
+                if (coursesemester != null)
+                    return new CustomResponse<SemesterDTO>(409, "Please deativate the courses for this semester first");
+            }
+
+
             semester.IsActive = editIsActiveModel.isActive;
 
             try
             {
                 await _context.SaveChangesAsync();
                 SemesterDTO semestersDTO = _mapper.Map<SemesterDTO>(semester);
+                Console.WriteLine("i am" +semester.IsActive);
                 return new CustomResponse<SemesterDTO>(200, "Semester set to "+ editIsActiveModel.isActive + " Successfully", semestersDTO);
             }
             catch

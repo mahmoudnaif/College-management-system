@@ -150,10 +150,7 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.Isactive).HasColumnName("ISActive");
             entity.Property(e => e.ProfessorId).HasColumnName("ProfessorID");
             entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
-            entity.Property(e => e.SsmaTimeStamp)
-                .IsRowVersion()
-                .IsConcurrencyToken()
-                .HasColumnName("SSMA_TimeStamp");
+        
 
             entity.HasOne(d => d.Course).WithMany(p => p.Coursesemesters)
                 .HasForeignKey(d => d.CourseId)
@@ -360,7 +357,7 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
             entity.Property(e => e.Grade).HasMaxLength(255);
-            entity.Property(e => e.Status).HasMaxLength(255);
+            entity.Property(e => e.IsFinished).HasDefaultValue(false);
 
             entity.HasOne(d => d.CourseSemester).WithMany(p => p.StudentCourses)
                 .HasForeignKey(d => d.CourseSemesterId)
