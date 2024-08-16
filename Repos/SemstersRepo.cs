@@ -39,7 +39,7 @@ namespace College_managemnt_system.Repos
             if (endDate <= DateTime.UtcNow)
                 return new CustomResponse<SemesterDTO>(400, "Invalid end Date");
 
-            Semester semesterExists = _context.Semesters.SingleOrDefault(S => S.SemesterName == semesterInputModel.semesterName.ToUpper() && S.SemesterYear == semesterInputModel.semesterYear);
+            Semester semesterExists = _context.Semesters.FirstOrDefault(S => S.SemesterName == semesterInputModel.semesterName.ToUpper() && S.SemesterYear == semesterInputModel.semesterYear);
 
             if (semesterExists != null)
                 return new CustomResponse<SemesterDTO>(409, "Semester already exists");
@@ -75,7 +75,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<bool>> DeleteSemester(int semesterID) //WARNING DO NOT USE UNLESS NECESSARY
         {
-            Semester semester = _context.Semesters.SingleOrDefault(S => S.SemesterId == semesterID);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == semesterID);
 
             if (semester == null)
                 return new CustomResponse<bool>(404, "SemesterNotFound");
@@ -97,7 +97,7 @@ namespace College_managemnt_system.Repos
             if (editDateModel.newDate< DateTime.UtcNow)
                 return new CustomResponse<SemesterDTO>(400, "Can not assign start date to an old one");
 
-            Semester semester = _context.Semesters.SingleOrDefault(S => S.SemesterId == editDateModel.semesterId);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == editDateModel.semesterId);
 
             if (semester == null)
                 return new CustomResponse<SemesterDTO>(404, "SemesterNotFound");
@@ -122,7 +122,7 @@ namespace College_managemnt_system.Repos
             if (editDateModel.newDate < DateTime.UtcNow)
                 return new CustomResponse<SemesterDTO>(400, "Can not assign start date to an old one");
 
-            Semester semester = _context.Semesters.SingleOrDefault(S => S.SemesterId == editDateModel.semesterId);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == editDateModel.semesterId);
 
             if (semester == null)
                 return new CustomResponse<SemesterDTO>(404, "SemesterNotFound");
@@ -144,7 +144,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<SemesterDTO>> EditActiveStatus(EditIsActiveModel editIsActiveModel)
         {
-            Semester semester = _context.Semesters.SingleOrDefault(S => S.SemesterId == editIsActiveModel.semesterId);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == editIsActiveModel.semesterId);
 
             if (semester == null)
                 return new CustomResponse<SemesterDTO>(404, "SemesterNotFound");
@@ -205,7 +205,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<SemesterDTO>> GetSingleSemester(int semesterID)
         {
-            Semester semester = _context.Semesters.SingleOrDefault(S => S.SemesterId == semesterID);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == semesterID);
 
             if (semester == null)
                 return new CustomResponse<SemesterDTO>(404, "SemesterNotFound");
@@ -218,7 +218,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<SemesterDTO>> GetSemesterByNameYear(GetSemesterModel getSemesterModel)
         {
-            Semester semester = _context.Semesters.SingleOrDefault(S => S.SemesterName == getSemesterModel.semesterName && 
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterName == getSemesterModel.semesterName && 
                                                                     S.SemesterYear == getSemesterModel.SemesterYear);
 
             if (semester == null)

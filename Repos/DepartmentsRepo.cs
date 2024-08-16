@@ -22,7 +22,7 @@ namespace College_managemnt_system.Repos
             if(departmnetName.Trim().Length == 0)
                 return new CustomResponse<DepartmentDTO>(400,"Department name must be specefied");
 
-            Department departmentExists = _context.Departments.SingleOrDefault(D => D.DepartmentName == departmnetName);
+            Department departmentExists = _context.Departments.FirstOrDefault(D => D.DepartmentName == departmnetName);
 
             if(departmentExists != null)
                 return  new CustomResponse<DepartmentDTO>(409, "Department already exists");
@@ -46,7 +46,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<bool>> DeleteDepartment(int departmentId)
         {
-            Department department = _context.Departments.SingleOrDefault(D => D.DepartmentId == departmentId);
+            Department department = _context.Departments.FirstOrDefault(D => D.DepartmentId == departmentId);
 
             if (department == null)
                 return new CustomResponse<bool>(409, "Department does not exist");
@@ -70,12 +70,12 @@ namespace College_managemnt_system.Repos
             if (editModel.newName.Trim().Length == 0)
                 return new CustomResponse<DepartmentDTO>(400, "New name must be specefied");
 
-            Department departmentExists = _context.Departments.SingleOrDefault(D => D.DepartmentName == editModel.newName);
+            Department departmentExists = _context.Departments.FirstOrDefault(D => D.DepartmentName == editModel.newName);
 
             if (departmentExists != null)
                 return new CustomResponse<DepartmentDTO>(409,"Name already exists");
 
-            Department department = _context.Departments.SingleOrDefault(D => D.DepartmentId == editModel.departmentId);
+            Department department = _context.Departments.FirstOrDefault(D => D.DepartmentId == editModel.departmentId);
 
             if (department == null)
                 return new CustomResponse<DepartmentDTO>(404, "Department doesn't exist");

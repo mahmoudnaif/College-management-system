@@ -48,7 +48,7 @@ namespace College_managemnt_system.Repos
             if (coursesemester == null)
                 return new CustomResponse<SchedueleDTO>(404, "Course does not exist");
 
-            Classroom classroom = _context.Classrooms.SingleOrDefault(C => C.ClassroomId == ClassroomId);
+            Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == ClassroomId);
 
             if (classroom == null)
                 return new CustomResponse<SchedueleDTO>(404, "classroom does not exist");
@@ -67,7 +67,7 @@ namespace College_managemnt_system.Repos
                 _context.Schedules.Add(schedule);
                 await _context.SaveChangesAsync();
                 SchedueleDTO schedueleDTO = _mapper.Map<SchedueleDTO>(schedule);
-                schedueleDTO.courseName = _context.Courses.SingleOrDefault(C => C.CourseId == coursesemester.CourseId)?.CourseName;
+                schedueleDTO.courseName = _context.Courses.FirstOrDefault(C => C.CourseId == coursesemester.CourseId)?.CourseName;
                 schedueleDTO.roomNumber = classroom.RoomNumber;
                 return new CustomResponse<SchedueleDTO>(201, "Schedule added successfully", schedueleDTO);
             }
@@ -90,17 +90,17 @@ namespace College_managemnt_system.Repos
             if (PeriodNumber < 1 || PeriodNumber > 3) // we should replace the "3" with a dynamic variable sat by the root user
                 return new CustomResponse<SchedueleDTO>(400, "Perion number must be between 1 and 3");
 
-            Classroom classroom = _context.Classrooms.SingleOrDefault(C => C.ClassroomId == ClassroomId);
+            Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == ClassroomId);
 
             if (classroom == null)
                 return new CustomResponse<SchedueleDTO>(404, "classroom does not exist");
 
-            Schedule scheduleExists = _context.Schedules.SingleOrDefault(S => S.ClassroomId == ClassroomId && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber);
+            Schedule scheduleExists = _context.Schedules.FirstOrDefault(S => S.ClassroomId == ClassroomId && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber);
 
             if (scheduleExists != null)
                 return new CustomResponse<SchedueleDTO>(409, "There is a schedule at that time at that palce :> find another spot");
 
-            Schedule schedule = _context.Schedules.SingleOrDefault(S => S.ScheduleId == ScheduleId);
+            Schedule schedule = _context.Schedules.FirstOrDefault(S => S.ScheduleId == ScheduleId);
 
             if (schedule == null)
                 return new CustomResponse<SchedueleDTO>(404, "Schedule does not exist");
@@ -162,7 +162,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<bool>> Remove(int scheduleId)
         {
-            Schedule schedule = _context.Schedules.SingleOrDefault(S => S.ScheduleId == scheduleId);
+            Schedule schedule = _context.Schedules.FirstOrDefault(S => S.ScheduleId == scheduleId);
 
             if (schedule == null)
                 return new CustomResponse<bool>(404, "Schedule does not exist");

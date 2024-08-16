@@ -39,7 +39,7 @@ namespace College_managemnt_system.Repos
 
 
 
-            var emailUser = _context.Accounts.SingleOrDefault(acc => acc.Email.ToLower() == siqnupModel.email.ToLower());
+            var emailUser = _context.Accounts.FirstOrDefault(acc => acc.Email.ToLower() == siqnupModel.email.ToLower());
             if (emailUser != null)
                 return new CustomResponse<bool>(409, "Email already exists");
 
@@ -72,7 +72,7 @@ namespace College_managemnt_system.Repos
 
             if (_utilitiesRepo.IsValidEmail(siqninmodel.email))
             {
-                account = _context.Accounts.SingleOrDefault(acc => acc.Email.ToLower() == siqninmodel.email.ToLower());
+                account = _context.Accounts.FirstOrDefault(acc => acc.Email.ToLower() == siqninmodel.email.ToLower());
             }
             else
             {

@@ -6,7 +6,7 @@ using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
 
 namespace College_managemnt_system.Repos
-{
+{//remodel the db so that the roomnumber and building are numbers instead of strings (primary key will be the roomnumber).
     public class ClassroomsRepo : IClassroomsRepo
     {
         private readonly CollegeDBContext _context;
@@ -79,7 +79,7 @@ namespace College_managemnt_system.Repos
             if (capacityEditModel.classRoomCapacity < 0)
                 return new CustomResponse<ClassRoomDTO>(400, "capacity must be more than or equal to 0");
 
-            Classroom classroom = _context.Classrooms.SingleOrDefault(C => C.ClassroomId == capacityEditModel.classRoomId);
+            Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == capacityEditModel.classRoomId);
 
             if (classroom == null)
                 return new CustomResponse<ClassRoomDTO>(404, "Class room not found");
@@ -102,7 +102,7 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<bool>> RemoveClassRoom(int classRoomId)
         {
-            Classroom classroom = _context.Classrooms.SingleOrDefault(C => C.ClassroomId == classRoomId);
+            Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == classRoomId);
 
             if (classroom == null)
                 return new CustomResponse<bool>(404, "Class room not found");

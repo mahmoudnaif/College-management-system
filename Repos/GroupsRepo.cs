@@ -28,13 +28,13 @@ namespace College_managemnt_system.Repos
             if(!char.IsLetter(groupInputModel.GroupName[0])  || !char.IsNumber(groupInputModel.GroupName[1]))
                 return new CustomResponse<GroupDTO>(400, "Group name must contain one char and one number. ex: A1,B1, etc");
 
-            Semester semester = _context.Semesters.SingleOrDefault(S => S.SemesterId == groupInputModel.SemesterId);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == groupInputModel.SemesterId);
 
             if (semester == null)
                 return new CustomResponse<GroupDTO>(404, "Smester was not found");
 
 
-            Group groupExists = _context.Groups.SingleOrDefault(G => G.GroupName == groupInputModel.GroupName && G.StudentsYear == groupInputModel.StudentsYear && G.SemesterId == groupInputModel.SemesterId );
+            Group groupExists = _context.Groups.FirstOrDefault(G => G.GroupName == groupInputModel.GroupName && G.StudentsYear == groupInputModel.StudentsYear && G.SemesterId == groupInputModel.SemesterId );
 
             if (groupExists != null)
                 return new CustomResponse<GroupDTO>(409, "Group with the name: " + groupInputModel.GroupName + " and year: " + groupInputModel.StudentsYear + " already exists for this semester");
@@ -61,7 +61,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<bool>> DeleteGroup(int groupId)
         {
-            Group group= _context.Groups.SingleOrDefault(G => G.GroupId == groupId);
+            Group group= _context.Groups.FirstOrDefault(G => G.GroupId == groupId);
 
             if (group == null)
                 return new CustomResponse<bool>(404, "Group was not found");

@@ -20,15 +20,15 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<CourseSemesterDTO>> Add(CourseSemesterInputModel model)
         {
-            Professor professor= _context.Professors.SingleOrDefault(P => P.ProfessorId == model.ProfessorId);
+            Professor professor= _context.Professors.FirstOrDefault(P => P.ProfessorId == model.ProfessorId);
             if(professor == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Professor does not exist");
 
-            Course course = _context.Courses.SingleOrDefault(C => C.CourseId == model.CourseId);
+            Course course = _context.Courses.FirstOrDefault(C => C.CourseId == model.CourseId);
             if (course == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Coruse does not exist");
 
-            Semester semester = _context.Semesters.SingleOrDefault(S => S.SemesterId == model.SemesterId);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == model.SemesterId);
             if (semester == null)
                 return new CustomResponse<CourseSemesterDTO>(200, "Semester does not exist");
 
@@ -59,7 +59,7 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<bool>> Delete(int courseSemesterId)
         {
-            Coursesemester coursesemester = _context.Coursesemesters.SingleOrDefault(CS => CS.CourseSemesterId == courseSemesterId);
+            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(CS => CS.CourseSemesterId == courseSemesterId);
             if (coursesemester == null)
                 return new CustomResponse<bool>(409, "Course Does not exist");
 
@@ -76,11 +76,11 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(ChangeProfInputModel model)
         {
-            Professor professor = _context.Professors.SingleOrDefault(P => P.ProfessorId == model.ProfessorId);
+            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == model.ProfessorId);
             if (professor == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Professor does not exist");
 
-            Coursesemester coursesemester = _context.Coursesemesters.SingleOrDefault(C => C.CourseSemesterId==model.CourseSemesterId);
+            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(C => C.CourseSemesterId==model.CourseSemesterId);
             if (coursesemester == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Course does not exist in this semester");
 
@@ -93,7 +93,7 @@ namespace College_managemnt_system.Repos
             {
                 await _context.SaveChangesAsync();
                 CourseSemesterDTO courseSemesterDTO = _mapper.Map<CourseSemesterDTO>(coursesemester);
-                courseSemesterDTO.CourseName = _context.Courses.SingleOrDefault(C => C.CourseId == coursesemester.CourseId)?.CourseName ;
+                courseSemesterDTO.CourseName = _context.Courses.FirstOrDefault(C => C.CourseId == coursesemester.CourseId)?.CourseName ;
                 return new CustomResponse<CourseSemesterDTO>(200, "Professor edited successfully", courseSemesterDTO);
             }
             catch
@@ -105,7 +105,7 @@ namespace College_managemnt_system.Repos
         public async Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(EditActivationStatus model)
         {
 
-            Coursesemester coursesemester = _context.Coursesemesters.SingleOrDefault(C => C.CourseSemesterId == model.CourseSemesterId);
+            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(C => C.CourseSemesterId == model.CourseSemesterId);
             if (coursesemester == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Course does not exist in this semester");
 
@@ -130,7 +130,7 @@ namespace College_managemnt_system.Repos
             {
                 await _context.SaveChangesAsync();
                 CourseSemesterDTO courseSemesterDTO = _mapper.Map<CourseSemesterDTO>(coursesemester);
-                courseSemesterDTO.CourseName = _context.Courses.SingleOrDefault(C => C.CourseId == coursesemester.CourseId)?.CourseName;
+                courseSemesterDTO.CourseName = _context.Courses.FirstOrDefault(C => C.CourseId == coursesemester.CourseId)?.CourseName;
                 return new CustomResponse<CourseSemesterDTO>(200, "Activation changed successfully", courseSemesterDTO);
             }
             catch

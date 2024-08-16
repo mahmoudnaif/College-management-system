@@ -56,12 +56,12 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<CourseDTO>(400, "Course name and code must be specified");
 
 
-            Course courseDuplication = _context.Courses.SingleOrDefault(C => C.CourseCode == courseInputModel.CourseCode);
+            Course courseDuplication = _context.Courses.FirstOrDefault(C => C.CourseCode == courseInputModel.CourseCode);
 
             if (courseDuplication != null)
                 return new CustomResponse<CourseDTO>(409, "Course Code already exists");
 
-            Department departmentExists = _context.Departments.SingleOrDefault(D => D.DepartmentId == courseInputModel.DepartmentId);
+            Department departmentExists = _context.Departments.FirstOrDefault(D => D.DepartmentId == courseInputModel.DepartmentId);
 
             if(departmentExists == null)
                 return new CustomResponse<CourseDTO>(404,"Department does not exist");
@@ -138,7 +138,7 @@ namespace College_managemnt_system.Repos
             if (courseCode.Trim() == "")
                 return new CustomResponse<CourseDTO>(400, "Course code must be specified");
 
-            Course courseDuplication = _context.Courses.SingleOrDefault(C => C.CourseCode == courseCode);
+            Course courseDuplication = _context.Courses.FirstOrDefault(C => C.CourseCode == courseCode);
 
             if (courseDuplication != null)
                 return new CustomResponse<CourseDTO>(409, "Course Code already exists");
@@ -201,7 +201,7 @@ namespace College_managemnt_system.Repos
             if (!int.TryParse(courseEditModel.Editproberty, out int deprtmentID))
                 return new CustomResponse<CourseDTO>(400, "Deprtment id must be a number");
 
-            Department departmentExists = _context.Departments.SingleOrDefault(D => D.DepartmentId == deprtmentID);
+            Department departmentExists = _context.Departments.FirstOrDefault(D => D.DepartmentId == deprtmentID);
 
             if (departmentExists == null)
                 return new CustomResponse<CourseDTO>(404, "Department does not exist");

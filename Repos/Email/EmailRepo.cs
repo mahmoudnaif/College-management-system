@@ -35,7 +35,7 @@ namespace College_managemnt_system.Repos.Email
         public async Task<CustomResponse<bool>> SendVerificationEmail(int accountId)
         {
 
-            Account account = _context.Accounts.SingleOrDefault(acc => acc.AccountId == accountId);
+            Account account = _context.Accounts.FirstOrDefault(acc => acc.AccountId == accountId);
 
             if (account == null)
                 return new CustomResponse<bool>(404, "Account not found");
@@ -78,7 +78,7 @@ namespace College_managemnt_system.Repos.Email
 
         public CustomResponse<bool> VerifyAccount(int accountId)
         {
-            Account account = _context.Accounts.SingleOrDefault(acc => acc.AccountId == accountId);
+            Account account = _context.Accounts.FirstOrDefault(acc => acc.AccountId == accountId);
             if (account == null)
                 return new CustomResponse<bool>(404, "Account not found");
 
@@ -103,7 +103,7 @@ namespace College_managemnt_system.Repos.Email
                 return new CustomResponse<bool>(400, "Plesae enter a correct email");
 
 
-            Account account = _context.Accounts.SingleOrDefault(acc => acc.Email == email);
+            Account account = _context.Accounts.FirstOrDefault(acc => acc.Email == email);
 
             if (account == null)
                 return new CustomResponse<bool>(404, "Account not found");
@@ -152,7 +152,7 @@ namespace College_managemnt_system.Repos.Email
 
 
 
-            Account account = _context.Accounts.SingleOrDefault(acc => acc.AccountId == accountId);
+            Account account = _context.Accounts.FirstOrDefault(acc => acc.AccountId == accountId);
             if (account == null)
                 return new CustomResponse<bool>(404, "Account not found");
 
