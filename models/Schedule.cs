@@ -11,6 +11,8 @@ public partial class Schedule
 
     public int ClassroomId { get; set; }
 
+    public int SemesterId { get; set; }
+
     public string Type { get; set; } = null!;
 
     public int DayOfWeek { get; set; }
@@ -22,4 +24,6 @@ public partial class Schedule
     public virtual Coursesemester CourseSemester { get; set; } = null!;
 
     public virtual ICollection<SchedulesJoinsgroup> SchedulesJoinsgroups { get; set; } = new List<SchedulesJoinsgroup>();
+
+    public virtual Semester Semester { get; set; } = null!;
 }

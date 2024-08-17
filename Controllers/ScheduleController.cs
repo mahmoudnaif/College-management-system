@@ -19,9 +19,9 @@ namespace College_managemnt_system.Controllers
 
         [HttpGet]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> Add([FromQuery] TakeSkipModel takeSkipModel)
+        public async Task<IActionResult> Add([FromQuery] GetSchduelsBySemester model)
         {
-            var response = await _schedulesRepo.GetScheduls(takeSkipModel);
+            var response = await _schedulesRepo.GetScheduls(model);
 
             return StatusCode(response.responseCode, response);
 

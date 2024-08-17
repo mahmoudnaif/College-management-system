@@ -32,6 +32,8 @@ namespace College_managemnt_system.Repos
 
             int PeriodNumber = schdulesInputModel.PeriodNumber;
 
+            int SemesterId = schdulesInputModel.SemesterId;
+
 
 
             if (DayOfWeek < 1 || DayOfWeek > 7)
@@ -43,15 +45,22 @@ namespace College_managemnt_system.Repos
             if (Type != "LEC" && Type != "LAB")
                 return new CustomResponse<SchedueleDTO>(400, "Type must be Lec or Lab");
 
-            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(C => C.CourseSemesterId == CourseSemesterId);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == SemesterId);
+            if (semester == null)
+                return new CustomResponse<SchedueleDTO>(404, "Semester does not exist");
 
+            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(C => C.CourseSemesterId == CourseSemesterId);
             if (coursesemester == null)
                 return new CustomResponse<SchedueleDTO>(404, "Course does not exist");
 
             Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == ClassroomId);
-
             if (classroom == null)
                 return new CustomResponse<SchedueleDTO>(404, "classroom does not exist");
+
+            Schedule scheduleExists = _context.Schedules.FirstOrDefault(S => S.ClassroomId == ClassroomId && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber && S.SemesterId == SemesterId);
+            if (scheduleExists != null)
+                return new CustomResponse<SchedueleDTO>(409, "There is a schedule at that time at that palce :> find another spot");
+
 
             Schedule schedule = new Schedule()
             {
@@ -59,7 +68,8 @@ namespace College_managemnt_system.Repos
                 ClassroomId = ClassroomId,
                 Type = Type,
                 DayOfWeek = DayOfWeek,
-                PeriodNumber = PeriodNumber
+                PeriodNumber = PeriodNumber,
+                SemesterId = SemesterId
             };
 
             try
@@ -95,15 +105,17 @@ namespace College_managemnt_system.Repos
             if (classroom == null)
                 return new CustomResponse<SchedueleDTO>(404, "classroom does not exist");
 
-            Schedule scheduleExists = _context.Schedules.FirstOrDefault(S => S.ClassroomId == ClassroomId && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber);
-
-            if (scheduleExists != null)
-                return new CustomResponse<SchedueleDTO>(409, "There is a schedule at that time at that palce :> find another spot");
-
             Schedule schedule = _context.Schedules.FirstOrDefault(S => S.ScheduleId == ScheduleId);
 
             if (schedule == null)
                 return new CustomResponse<SchedueleDTO>(404, "Schedule does not exist");
+
+            Schedule scheduleExists = _context.Schedules.FirstOrDefault(S => S.ClassroomId == ClassroomId && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber && S.SemesterId == schedule.SemesterId );
+
+            if (scheduleExists != null)
+                return new CustomResponse<SchedueleDTO>(409, "There is a schedule at that time at that palce :> find another spot");
+
+
 
             schedule.ClassroomId = ClassroomId;
             schedule.DayOfWeek = DayOfWeek;
@@ -128,13 +140,19 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<IEnumerable<SchedueleDTO>>> GetScheduls(TakeSkipModel takeSkipModel)
+        public async Task<CustomResponse<IEnumerable<SchedueleDTO>>> GetScheduls(GetSchduelsBySemester model)
         {
-            if (takeSkipModel.take < 0 || takeSkipModel.skip < 0)
+
+            if (model.take < 0 || model.skip < 0)
                 return new CustomResponse<IEnumerable<SchedueleDTO>>(400, "Take and skip must more than or equal 0");
 
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == model.SemesterId);
 
-            IEnumerable<SchedueleDTO> Schedules = from s in _context.Schedules.Skip(takeSkipModel.skip).Take(takeSkipModel.take)
+            if (semester == null)
+                return new CustomResponse<IEnumerable<SchedueleDTO>>(404, "Semester does not exist");
+
+
+            IEnumerable<SchedueleDTO> Schedules = from s in _context.Schedules.Where(S => S.SemesterId == model.SemesterId).Skip(model.skip).Take(model.take)
                         join cs in _context.Coursesemesters on s.CourseSemesterId equals cs.CourseSemesterId
                         join c in _context.Courses on cs.CourseId equals c.CourseId
                         join r in _context.Classrooms on s.ClassroomId equals r.ClassroomId
@@ -146,6 +164,8 @@ namespace College_managemnt_system.Repos
 
                               ClassroomId = s.ClassroomId,
 
+                              SemesterId = s.SemesterId,
+
                               Type = s.Type,
 
                               DayOfWeek = s.DayOfWeek,
@@ -156,6 +176,9 @@ namespace College_managemnt_system.Repos
 
                               roomNumber = r.RoomNumber
                         };
+
+            if (Schedules.Count() == 0)
+                return new CustomResponse<IEnumerable<SchedueleDTO>>(404, "No schdules were found");
 
             return new CustomResponse<IEnumerable<SchedueleDTO>>(200, "Schdeules retreived successfully", Schedules);
         }

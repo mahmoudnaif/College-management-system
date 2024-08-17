@@ -8,6 +8,8 @@
 
         public int ClassroomId { get; set; }
 
+        public int SemesterId { get; set; }
+
         public string Type { get; set; } = null!;
 
         public int DayOfWeek { get; set; }

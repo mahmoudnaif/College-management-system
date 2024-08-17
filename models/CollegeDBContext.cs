@@ -81,10 +81,6 @@ public partial class CollegeDBContext : DbContext
 
             entity.ToTable("AssistantsJOINSCourseSemesters");
 
-            entity.HasIndex(e => e.AssistantId, "AssistantsJOINSCourseSemesters$AssistantID");
-
-            entity.HasIndex(e => e.CourseSemesterId, "AssistantsJOINSCourseSemesters$CourseSemesterID");
-
             entity.Property(e => e.AssistantId).HasColumnName("AssistantID");
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
@@ -103,8 +99,6 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.ClassroomId).HasName("Classrooms$PrimaryKey");
 
-            entity.HasIndex(e => e.ClassroomId, "Classrooms$ClassroomID");
-
             entity.HasIndex(e => e.RoomNumber, "UQ__Classroo__AE10E07A4953E4EC").IsUnique();
 
             entity.Property(e => e.ClassroomId).HasColumnName("ClassroomID");
@@ -119,10 +113,6 @@ public partial class CollegeDBContext : DbContext
             entity.HasKey(e => e.CourseId).HasName("Courses$PrimaryKey");
 
             entity.HasIndex(e => e.CourseCode, "Courses$CourseCode").IsUnique();
-
-            entity.HasIndex(e => e.CourseId, "Courses$CourseID");
-
-            entity.HasIndex(e => e.DepartmentId, "Courses$DepartmentID");
 
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.CourseCode).HasMaxLength(255);
@@ -139,18 +129,15 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.CourseSemesterId).HasName("Coursesemesters$PrimaryKey");
 
-            entity.HasIndex(e => e.CourseId, "Coursesemesters$CourseID");
+            entity.HasIndex(e => e.SemesterId, "Coursesemesters$SemesterID");
 
-            entity.HasIndex(e => e.CourseSemesterId, "Coursesemesters$CourseSemesterID");
-
-            entity.HasIndex(e => e.ProfessorId, "Coursesemesters$ProfessorID");
+            entity.HasIndex(e => new { e.CourseId, e.SemesterId }, "Coursesemesters$UniqueCoursesemesters").IsUnique();
 
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.Isactive).HasColumnName("ISActive");
             entity.Property(e => e.ProfessorId).HasColumnName("ProfessorID");
             entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
-        
 
             entity.HasOne(d => d.Course).WithMany(p => p.Coursesemesters)
                 .HasForeignKey(d => d.CourseId)
@@ -183,8 +170,6 @@ public partial class CollegeDBContext : DbContext
         modelBuilder.Entity<Group>(entity =>
         {
             entity.HasKey(e => e.GroupId).HasName("Groups$PrimaryKey");
-
-            entity.HasIndex(e => e.GroupName, "IX_Groups_GroupName");
 
             entity.HasIndex(e => new { e.GroupName, e.StudentsYear, e.SemesterId }, "UQ_Groups_GroupName_StudentsYear_SemesterID").IsUnique();
 
@@ -222,10 +207,6 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.ProfessorId).HasName("Professors$PrimaryKey");
 
-            entity.HasIndex(e => e.DepartmentId, "Professors$DepartmentID");
-
-            entity.HasIndex(e => e.ProfessorId, "Professors$ProfessorID");
-
             entity.HasIndex(e => e.AccountId, "UQ__Professo__F267253F89A41818").IsUnique();
 
             entity.Property(e => e.ProfessorId).HasColumnName("ProfessorID");
@@ -251,9 +232,12 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.ScheduleId).HasName("Schedules$PrimaryKey");
 
+            entity.HasIndex(e => new { e.ClassroomId, e.DayOfWeek, e.PeriodNumber, e.SemesterId }, "Schedules$UNIQUE").IsUnique();
+
             entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
             entity.Property(e => e.ClassroomId).HasColumnName("ClassroomID");
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
+            entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.Type)
                 .HasMaxLength(255)
                 .HasColumnName("type");
@@ -266,6 +250,11 @@ public partial class CollegeDBContext : DbContext
                 .HasForeignKey(d => d.CourseSemesterId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Schedules$CoursesemestersSchedules");
+
+            entity.HasOne(d => d.Semester).WithMany(p => p.Schedules)
+                .HasForeignKey(d => d.SemesterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Schedueles$SemestersSchedules");
         });
 
         modelBuilder.Entity<SchedulesJoinsgroup>(entity =>
@@ -275,8 +264,6 @@ public partial class CollegeDBContext : DbContext
             entity.ToTable("SchedulesJOINSGroups");
 
             entity.HasIndex(e => e.GroupId, "SchedulesJOINSGroups$GroupID");
-
-            entity.HasIndex(e => e.ScheduleId, "SchedulesJOINSGroups$ScheduleID");
 
             entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
             entity.Property(e => e.GroupId).HasColumnName("GroupID");
@@ -354,10 +341,11 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => new { e.StudentId, e.CourseSemesterId }).HasName("StudentCourses$PrimaryKey");
 
+            entity.HasIndex(e => e.StudentId, "StudentCourses");
+
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
             entity.Property(e => e.Grade).HasMaxLength(255);
-            entity.Property(e => e.IsFinished).HasDefaultValue(false);
 
             entity.HasOne(d => d.CourseSemester).WithMany(p => p.StudentCourses)
                 .HasForeignKey(d => d.CourseSemesterId)
@@ -374,6 +362,8 @@ public partial class CollegeDBContext : DbContext
             entity.HasKey(e => new { e.StudentId, e.GroupId }).HasName("StudentsJOINSGroups$PrimaryKey");
 
             entity.ToTable("StudentsJOINSGroups");
+
+            entity.HasIndex(e => e.GroupId, "StudentsJOINSGroups$GroupID");
 
             entity.HasIndex(e => e.StudentId, "StudentsJOINSGroups$StudentID");
 
@@ -393,8 +383,6 @@ public partial class CollegeDBContext : DbContext
         modelBuilder.Entity<TeachingAssistance>(entity =>
         {
             entity.HasKey(e => e.AssistantId).HasName("TeachingAssistances$PrimaryKey");
-
-            entity.HasIndex(e => e.AssistantId, "TeachingAssistances$AssistantID");
 
             entity.HasIndex(e => e.AccountId, "UQ__Teaching__F267253FFF770244").IsUnique();
 

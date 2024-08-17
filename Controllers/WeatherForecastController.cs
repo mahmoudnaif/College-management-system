@@ -18,8 +18,24 @@ namespace College_managemnt_system.Controllers
         [HttpPost(Name = "GetWeatherForecast")]
         public IActionResult Get([FromBody]SemesterInputModel semesterInputModel)
         {
-            Semester semesterExists = _context.Semesters.FirstOrDefault(S => S.SemesterName == semesterInputModel.semesterName.ToUpper() && S.SemesterYear == semesterInputModel.semesterYear);
-            return Ok(semesterExists);
+            StudentCourse studentCourse = new StudentCourse()
+            {
+                StudentId = 1,
+                CourseSemesterId = 6,
+                IsFinished = false,
+                Grade = "Z"
+            };
+            _context.StudentCourses.Add(studentCourse);
+            try
+            {
+                _context.SaveChanges();
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+            
         }
     }
 }
