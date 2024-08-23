@@ -10,10 +10,12 @@ namespace College_managemnt_system.Controllers
     public class DepartmentController : Controller
     {
         private readonly IDepartmentsRepo _departmentsRepo;
+        private readonly IProfessorsRepo _professorsRepo;
 
-        public DepartmentController(IDepartmentsRepo departmentsRepo)
+        public DepartmentController(IDepartmentsRepo departmentsRepo, IProfessorsRepo professorsRepo)
         {
             _departmentsRepo = departmentsRepo;
+            _professorsRepo = professorsRepo;
         }
 
 
@@ -57,8 +59,15 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
+        [HttpGet("{id}/Professors")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetProfessorsByDepartment(int id, [FromQuery] TakeSkipModel takeSkipModel)
+        {
+         var response = await _professorsRepo.GetProfessorsByDepartment(id, takeSkipModel);
 
-
-
+            return StatusCode(response.responseCode, response);
         }
+
+
+    }
 }

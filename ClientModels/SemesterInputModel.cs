@@ -21,7 +21,7 @@
 
     }
 
-    public class EditDateModel
+    public class EditDateModel // duplicate can be deleted later
     {
 
         public int semesterId { get; set; }

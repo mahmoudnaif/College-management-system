@@ -35,7 +35,6 @@ namespace College_managemnt_system.Controllers
             {
                 return BadRequest();
             }
-            
         }
     }
 }

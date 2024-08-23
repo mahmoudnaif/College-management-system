@@ -216,6 +216,7 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.HiringDate).HasPrecision(0);
             entity.Property(e => e.LastName).HasMaxLength(255);
             entity.Property(e => e.Phone).HasMaxLength(255);
+            entity.Property(e => e.NationalNumber).HasMaxLength(255);
 
             entity.HasOne(d => d.Account).WithOne(p => p.Professor)
                 .HasForeignKey<Professor>(d => d.AccountId)
@@ -317,8 +318,6 @@ public partial class CollegeDBContext : DbContext
         modelBuilder.Entity<Student>(entity =>
         {
             entity.HasKey(e => e.StudentId).HasName("Students$PrimaryKey");
-
-            entity.HasIndex(e => e.StudentId, "Students$StudentID");
 
             entity.HasIndex(e => e.AccountId, "UQ__Students__F267253F253690E5").IsUnique();
 
