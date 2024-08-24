@@ -4,6 +4,7 @@ using College_managemnt_system.CustomResponse;
 using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace College_managemnt_system.Repos
 {
@@ -140,19 +141,19 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<IEnumerable<SchedueleDTO>>> GetScheduls(GetSchduelsBySemester model)
+        public async Task<CustomResponse<IEnumerable<SchedueleDTO>>> GetScheduls(int semesterId, TakeSkipModel model)
         {
 
             if (model.take < 0 || model.skip < 0)
                 return new CustomResponse<IEnumerable<SchedueleDTO>>(400, "Take and skip must more than or equal 0");
 
-            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == model.SemesterId);
+            Semester semester = _context.Semesters.FirstOrDefault(S => S.SemesterId == semesterId);
 
             if (semester == null)
                 return new CustomResponse<IEnumerable<SchedueleDTO>>(404, "Semester does not exist");
 
 
-            IEnumerable<SchedueleDTO> Schedules = from s in _context.Schedules.Where(S => S.SemesterId == model.SemesterId).Skip(model.skip).Take(model.take)
+            IEnumerable<SchedueleDTO> Schedules = from s in _context.Schedules.Where(S => S.SemesterId == semesterId).Skip(model.skip).Take(model.take)
                         join cs in _context.Coursesemesters on s.CourseSemesterId equals cs.CourseSemesterId
                         join c in _context.Courses on cs.CourseId equals c.CourseId
                         join r in _context.Classrooms on s.ClassroomId equals r.ClassroomId

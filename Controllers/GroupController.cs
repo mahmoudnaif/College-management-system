@@ -18,7 +18,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> AddGroup([FromBody]GroupInputModel groupInputModel)
+        public async Task<IActionResult> AddGroup([FromBody] GroupInputModel groupInputModel)
         {
             var result = await _groupsRepo.AddGroup(groupInputModel);
 
@@ -26,9 +26,9 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        [HttpDelete]
+        [HttpDelete("{groupId}")]
         [Authorize(Roles = "root")]
-        public async Task<IActionResult> DeleteGroup([FromBody]int groupId)
+        public async Task<IActionResult> DeleteGroup(int groupId)
         {
             var result = await _groupsRepo.DeleteGroup(groupId);
 

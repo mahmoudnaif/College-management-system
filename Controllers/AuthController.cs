@@ -1,6 +1,7 @@
 ﻿using College_managemnt_system.ClientModels;
 using College_managemnt_system.CustomResponse;
 using College_managemnt_system.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace College_managemnt_system.Controllers
@@ -18,6 +19,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPost("/signup")]
         [ProducesResponseType(201)]
+        [Authorize(Roles ="root,admin")]
         public async Task<IActionResult> Siqnup([FromBody] SiqnupModel signupModel)
         {
             CustomResponse<bool> customResponse = await _authRepo.CreateAccountAsync(signupModel);

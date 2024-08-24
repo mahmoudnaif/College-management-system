@@ -74,20 +74,20 @@ namespace College_managemnt_system.Repos
 
 
         }
-        public async Task<CustomResponse<ClassRoomDTO>> EditClassRoomCapacity(CapacityEditModel capacityEditModel)
+        public async Task<CustomResponse<ClassRoomDTO>> EditClassRoomCapacity(int classRoomId, int capacity)
         {
-            if (capacityEditModel.classRoomCapacity < 0)
+            if (capacity < 0)
                 return new CustomResponse<ClassRoomDTO>(400, "capacity must be more than or equal to 0");
 
-            Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == capacityEditModel.classRoomId);
+            Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == classRoomId);
 
             if (classroom == null)
                 return new CustomResponse<ClassRoomDTO>(404, "Class room not found");
 
-            if(classroom.Capacity == capacityEditModel.classRoomCapacity)
-                return new CustomResponse<ClassRoomDTO>(409,"Class room capacity already set to: " + capacityEditModel.classRoomCapacity);
+            if(classroom.Capacity == capacity)
+                return new CustomResponse<ClassRoomDTO>(409,$"Class room capacity already set to: {capacity}");
 
-            classroom.Capacity = capacityEditModel.classRoomCapacity;
+            classroom.Capacity = capacity;
 
             try
             {

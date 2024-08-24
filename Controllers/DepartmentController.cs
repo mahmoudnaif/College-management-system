@@ -1,5 +1,6 @@
 ﻿using College_managemnt_system.ClientModels;
 using College_managemnt_system.Interfaces;
+using College_managemnt_system.models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,7 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        [HttpGet("GetAll")]
+        [HttpGet("All")]
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> GetAllDepartments() { 
             
@@ -31,7 +32,7 @@ namespace College_managemnt_system.Controllers
 
 
 
-        [HttpPost("Add")]
+        [HttpPost]
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> AddDepartment([FromBody] string DepartmentName)
         {
@@ -40,10 +41,15 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("EditName")]
+        [HttpPut("{departmentId}/Name")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> EditDepartmentName([FromBody] EditDepartmentNameModel editDepartmentNameModel)
+        public async Task<IActionResult> EditDepartmentName(int departmentId, [FromBody]string newName)
         {
+            EditDepartmentNameModel editDepartmentNameModel = new EditDepartmentNameModel()
+            {
+                departmentId = departmentId,
+                newName = newName
+            };
             var response = await _departmentsRepo.EditDepartmentName(editDepartmentNameModel);
 
             return StatusCode(response.responseCode, response);
@@ -63,7 +69,7 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> GetProfessorsByDepartment(int id, [FromQuery] TakeSkipModel takeSkipModel)
         {
-         var response = await _professorsRepo.GetProfessorsByDepartment(id, takeSkipModel);
+            var response = await _professorsRepo.GetProfessorsByDepartment(id, takeSkipModel);
 
             return StatusCode(response.responseCode, response);
         }

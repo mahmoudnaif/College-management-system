@@ -17,18 +17,18 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        [HttpGet("ActiveSemester")]
+        [HttpGet("Active")]
         [Authorize(Roles = "admin,root")]
-        public async  Task<IActionResult> GetActiveCourses()
+        public async Task<IActionResult> GetActiveCourses()
         {
             var response = await _coursesSemestersRepo.GetActiveSemesterCourses();
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("EditActiveAll")]
+        [HttpPut("Active")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> EditActiveCourses([FromBody]bool isActive)
+        public async Task<IActionResult> EditActiveCourses([FromBody] bool isActive)
         {
             var response = await _coursesSemestersRepo.EditActiveStatusForAllCourses(isActive);
 
@@ -37,35 +37,45 @@ namespace College_managemnt_system.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> Add([FromBody]CourseSemesterInputModel  model)
+        public async Task<IActionResult> Add([FromBody] CourseSemesterInputModel model)
         {
             var response = await _coursesSemestersRepo.Add(model);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpDelete]
+        [HttpDelete("{courseSemesterId}")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> Delete([FromBody] int courseSemesterId )
+        public async Task<IActionResult> Delete(int courseSemesterId)
         {
             var response = await _coursesSemestersRepo.Delete(courseSemesterId);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("prof")]
+        [HttpPut("{courseSemesterId}/prof")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> ChangeProfessor([FromBody] ChangeProfInputModel model)
+        public async Task<IActionResult> ChangeProfessor(int courseSemesterId, [FromBody] int profId)
         {
+            ChangeProfInputModel model = new ChangeProfInputModel()
+            {
+                CourseSemesterId = courseSemesterId,
+                ProfessorId = profId
+            };
             var response = await _coursesSemestersRepo.ChangeProfessor(model);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut()]
+        [HttpPut("{courseSemesterId}")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> EditActivationStatus(EditActivationStatus model)
+        public async Task<IActionResult> EditActivationStatus(int courseSemesterId, bool isActive)
         {
+            EditActivationStatus model = new EditActivationStatus()
+            {
+                CourseSemesterId = courseSemesterId,
+                Isactive = isActive
+            };
             var response = await _coursesSemestersRepo.EditActivationStatus(model);
 
             return StatusCode(response.responseCode, response);

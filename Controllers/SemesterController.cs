@@ -11,11 +11,13 @@ namespace College_managemnt_system.Controllers
     {
         private readonly ISemstersRepo _semstersRepo;
         private readonly ICoursesSemestersRepo _coursesSemestersRepo;
+        private readonly ISchedulesRepo _schedulesRepo;
 
-        public SemesterController(ISemstersRepo semstersRepo, ICoursesSemestersRepo coursesSemestersRepo)
+        public SemesterController(ISemstersRepo semstersRepo, ICoursesSemestersRepo coursesSemestersRepo, ISchedulesRepo schedulesRepo)
         {
             _semstersRepo = semstersRepo;
             _coursesSemestersRepo = coursesSemestersRepo;
+            _schedulesRepo = schedulesRepo;
         }
 
 
@@ -110,6 +112,14 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
+        [HttpGet("{semesterId}/schedule")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetScheduls(int semesterId, [FromQuery] TakeSkipModel takeSkipModel)
+        {
+            var response = await _schedulesRepo.GetScheduls(semesterId,takeSkipModel);
 
+            return StatusCode(response.responseCode, response);
+
+        }
     }
 }

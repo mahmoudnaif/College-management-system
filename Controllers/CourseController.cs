@@ -1,5 +1,6 @@
 ﻿using College_managemnt_system.ClientModels;
 using College_managemnt_system.Interfaces;
+using College_managemnt_system.models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,12 @@ namespace College_managemnt_system.Controllers
     public class CourseController : Controller
     {
         private readonly ICoursesRepo _coursesRepo;
+        private readonly IPrereqsCoursesRepo _prereqsCoursesRepo;
 
-        public CourseController(ICoursesRepo coursesRepo)
+        public CourseController(ICoursesRepo coursesRepo, IPrereqsCoursesRepo prereqsCoursesRepo)
         {
             _coursesRepo = coursesRepo;
+            _prereqsCoursesRepo = prereqsCoursesRepo;
         }
 
 
@@ -26,9 +29,9 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        [HttpGet()]
+        [HttpGet("{courseCode}")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> GetCourseByCode([FromQuery] string courseCode)
+        public async Task<IActionResult> GetCourseByCode(string courseCode)
         {
             var result = await _coursesRepo.GetCourseByCourseCode(courseCode);
             return StatusCode(result.responseCode, result);
@@ -42,37 +45,74 @@ namespace College_managemnt_system.Controllers
             return StatusCode(result.responseCode, result);
         }
 
-        [HttpPut("EditCourseName")]
+        [HttpPut("{courseId}/name")]
         [Authorize(Roles ="root")]
-        public async Task<IActionResult> EditCourseName(CourseEditModel courseEditModel)
+        public async Task<IActionResult> EditCourseName(int courseId,[FromBody] string newName)
         {
-            var result = await _coursesRepo.EditCourseName(courseEditModel);
+            
+            var result = await _coursesRepo.EditCourseName(courseId,newName);
             return StatusCode(result.responseCode, result);
         }
-        [HttpPut("EditCourseCode")]
+        [HttpPut("{courseId}/code")]
         [Authorize(Roles = "root")]
-        public async Task<IActionResult> EditCourseCode(CourseEditModel courseEditModel)
+        public async Task<IActionResult> EditCourseCode(int courseId, [FromBody] string courseCode)
         {
-            var result = await _coursesRepo.EditCourseCode(courseEditModel);
+            var result = await _coursesRepo.EditCourseCode(courseId, courseCode);
             return StatusCode(result.responseCode, result);
         }
 
-        [HttpPut("EditCourseCredits")]
+        [HttpPut("{courseId}/Credits")]
         [Authorize(Roles = "root")]
-        public async Task<IActionResult> EditCourseCredits(CourseEditModel courseEditModel)
+        public async Task<IActionResult> EditCourseCredits(int courseId, [FromBody] int credits)
         {
-            var result = await _coursesRepo.EditCreditHours(courseEditModel);
+            var result = await _coursesRepo.EditCreditHours(courseId,credits);
             return StatusCode(result.responseCode, result);
         }
 
-        [HttpPut("ChangeDeprtment")]
+        [HttpPut("{courseId}/Deprtment")]
         [Authorize(Roles = "root")]
-        public async Task<IActionResult> ChangeDeprtment(CourseEditModel courseEditModel)
+        public async Task<IActionResult> ChangeDeprtment(int courseId, [FromBody] int departmentId)
         {
-            var result = await _coursesRepo.EditDepartment(courseEditModel);
+            var result = await _coursesRepo.EditDepartment(courseId,departmentId);
             return StatusCode(result.responseCode, result);
         }
 
+        [HttpGet("{courseId}/preqs")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetPrereqs(int courseId)
+        {
+            var result = await _prereqsCoursesRepo.GetPrereqsCourses(courseId);
+
+            return StatusCode(result.responseCode, result);
+        }
+
+        [HttpPost("{courseId}/preqs")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> AddPrereqs(int courseId, [FromBody] int prereqsCourseId )
+        {
+            PrereqsInputModel prereqsInputModel = new PrereqsInputModel()
+            {
+                CourseId = courseId,
+                PrereqsCourseId = prereqsCourseId
+            };
+            var result = await _prereqsCoursesRepo.AddPrereqsCourse(prereqsInputModel);
+
+            return StatusCode(result.responseCode, result);
+        }
+
+        [HttpDelete("{courseId}/preqs/{prereqsCourseId}")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> DeletePrereqs(int courseId, int prereqsCourseId)
+        {
+            PrereqsInputModel prereqsInputModel = new PrereqsInputModel()
+            {
+                CourseId = courseId,
+                PrereqsCourseId = prereqsCourseId
+            };
+            var result = await _prereqsCoursesRepo.RemovePrereqsCourse(prereqsInputModel);
+
+            return StatusCode(result.responseCode, result);
+        }
 
 
     }

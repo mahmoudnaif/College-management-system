@@ -52,6 +52,9 @@ namespace College_managemnt_system.Repos
             if (account == null)
                 return new CustomResponse<ProfessorDTO>(404, "there is no account associated with this email");
 
+            if (account.Role != "prof")
+                return new CustomResponse<ProfessorDTO>(403, "Account associated must be a prof account");
+
             Professor professorDuplicate = _context.Professors.FirstOrDefault(P => P.AccountId == account.AccountId);
             if (professorDuplicate != null)
                 return new CustomResponse<ProfessorDTO>(409, "Email already associated with another professor");
@@ -98,20 +101,20 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<ProfessorDTO>> EditDepartment(EditDepartmentInputModle model)
+        public async Task<CustomResponse<ProfessorDTO>> EditDepartment(int profId,int departmentId)
         {
-            Department department = _context.Departments.FirstOrDefault(D =>D.DepartmentId == model.departmentId);
+            Department department = _context.Departments.FirstOrDefault(D =>D.DepartmentId == departmentId);
             if (department == null)
                 return new CustomResponse<ProfessorDTO>(404, "Department does not exist");
 
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == model.id);
+            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<ProfessorDTO>(404, "Professor does not exist");
 
-            if (professor.DepartmentId == department.DepartmentId)
+            if (professor.DepartmentId == departmentId)
                 return new CustomResponse<ProfessorDTO>(409, $"Department is already set to: {department.DepartmentName}.");
 
-            professor.DepartmentId = model.departmentId;
+            professor.DepartmentId = departmentId;
 
             try
             {
@@ -125,16 +128,16 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<ProfessorDTO>> EditHiringDate(EditDateInputModel model)
+        public async Task<CustomResponse<ProfessorDTO>> EditHiringDate(int profId,DateTime date)
         {
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == model.id);
+            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<ProfessorDTO>(404, "Professor does not exist");
 
-            if (professor.HiringDate.Date == model.date.Date)
-                return new CustomResponse<ProfessorDTO>(409, $"Date is already set to: {model.date.Date}");
+            if (professor.HiringDate.Date == date.Date)
+                return new CustomResponse<ProfessorDTO>(409, $"Date is already set to: {date.Date}");
 
-            professor.HiringDate = model.date;
+            professor.HiringDate = date;
 
             try
             {
@@ -149,7 +152,7 @@ namespace College_managemnt_system.Repos
 
         }
 
-        public async Task<CustomResponse<ProfessorDTO>> EditName(EditNameInputModel model)
+        public async Task<CustomResponse<ProfessorDTO>> EditName(int profId,NameInputModel model)
         {
             string firstName = model.firstName.Trim();
             string lastName = model.lastName.Trim();
@@ -157,7 +160,7 @@ namespace College_managemnt_system.Repos
             if (firstName== "" || lastName== "")
                 return new CustomResponse<ProfessorDTO>(400, "Name must be specefied");
 
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == model.id);
+            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<ProfessorDTO>(404, "Professor does not exist");
 
@@ -178,14 +181,14 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<ProfessorDTO>> EditPhoneNumber(EditPhoneNumberInputModel model)
+        public async Task<CustomResponse<ProfessorDTO>> EditPhoneNumber(int profId,string newPhoneNumber)
         {
-            string phoneNumber = model.phoneNumber.Trim();
+            string phoneNumber = newPhoneNumber.Trim();
 
             if (!_utilities.IsValidPhoneNumber(phoneNumber))
                 return new CustomResponse<ProfessorDTO>(400, "Invalid phone number");
 
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == model.id);
+            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<ProfessorDTO>(404, "Professor does not exist");
 

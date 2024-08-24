@@ -14,12 +14,12 @@ namespace College_managemnt_system.Interfaces
 
         public Task<CustomResponse<bool>> Delete(int profId);
 
-        public Task<CustomResponse<ProfessorDTO>> EditName(EditNameInputModel model);
+        public Task<CustomResponse<ProfessorDTO>> EditName(int profId,NameInputModel model);
 
-        public Task<CustomResponse<ProfessorDTO>> EditHiringDate(EditDateInputModel model);
+        public Task<CustomResponse<ProfessorDTO>> EditHiringDate(int profId,DateTime date);
 
-        public Task<CustomResponse<ProfessorDTO>> EditDepartment(EditDepartmentInputModle modle);
+        public Task<CustomResponse<ProfessorDTO>> EditDepartment(int profId,int departmentId);
 
-        public Task<CustomResponse<ProfessorDTO>> EditPhoneNumber(EditPhoneNumberInputModel model);
+        public Task<CustomResponse<ProfessorDTO>> EditPhoneNumber(int profId, string newPhoneNumber);
     }
 }

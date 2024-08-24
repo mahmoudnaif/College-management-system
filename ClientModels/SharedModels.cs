@@ -1,8 +1,7 @@
 ﻿namespace College_managemnt_system.ClientModels
 {
-    public class EditNameInputModel
+    public class NameInputModel
     {
-        public int id { get; set; }
         public string firstName { get; set; } = null!;
         public string lastName { get; set; } = null!;
     }

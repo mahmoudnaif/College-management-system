@@ -33,7 +33,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpDelete]
+        [HttpDelete("{profId}")]
         [Authorize(Roles ="root,admin")]
         public async Task<IActionResult> Delete(int profId)
         {
@@ -42,38 +42,41 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("Name")]
+        [HttpPut("{profId}/Name")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> EditName(EditNameInputModel model)
+        public async Task<IActionResult> EditName(int profId, [FromBody] NameInputModel model)
         {
-            var response = await _professorsRepo.EditName(model);
+          
+            var response = await _professorsRepo.EditName(profId,model);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("hiringdate")]
+        [HttpPut("{profId}/hiringdate")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> HiringDate(EditDateInputModel model)
+        public async Task<IActionResult> HiringDate(int profId,[FromBody] DateTime date)
         {
-            var response = await _professorsRepo.EditHiringDate(model);
+            
+            
+            var response = await _professorsRepo.EditHiringDate(profId,date);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("phone")]
+        [HttpPut("{profId}/phone")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> Phone(EditPhoneNumberInputModel model)
+        public async Task<IActionResult> Phone(int profId,[FromBody]string phoneNumber)
         {
-            var response = await _professorsRepo.EditPhoneNumber(model);
+            var response = await _professorsRepo.EditPhoneNumber(profId,phoneNumber);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("department")]
+        [HttpPut("{profId}/department")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> Department(EditDepartmentInputModle model)
+        public async Task<IActionResult> Department(int profId,[FromBody]int departmentId)
         {
-            var response = await _professorsRepo.EditDepartment(model);
+            var response = await _professorsRepo.EditDepartment(profId,departmentId);
 
             return StatusCode(response.responseCode, response);
         }

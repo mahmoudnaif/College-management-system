@@ -33,11 +33,12 @@ namespace College_managemnt_system.Repos
             if (!_utilitiesRepo.IsValidPassword(siqnupModel.password))
                 return new CustomResponse<bool>(400, "Password must be at least 8 character long with at least 1 capital letter one small and a number.");
 
-
             if (siqnupModel.password != siqnupModel.repeatPassword)
                 return new CustomResponse<bool>(400, "Passwords does not match");
 
-
+            string role = siqnupModel.role.ToLower();
+            if (role != "student" && role != "admin" && role != "prof" && role != "ta")
+                return new CustomResponse<bool>(400, "Invalid role");
 
             var emailUser = _context.Accounts.FirstOrDefault(acc => acc.Email.ToLower() == siqnupModel.email.ToLower());
             if (emailUser != null)
@@ -49,7 +50,7 @@ namespace College_managemnt_system.Repos
             account.Email = siqnupModel.email;
             account.Password = _passwordService.HashPassword(account, siqnupModel.password);
             account.DateCreated = DateTime.UtcNow;
-            account.Role = "user";
+            account.Role = role;
 
 
             try

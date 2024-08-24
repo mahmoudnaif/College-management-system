@@ -17,15 +17,15 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        [HttpGet]
+      /*  [HttpGet]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> Add([FromQuery] GetSchduelsBySemester model)
+        public async Task<IActionResult> GetScheduls([FromQuery] GetSchduelsBySemester model)
         {
-            var response = await _schedulesRepo.GetScheduls(model);
+            var response = await _schedulesRepo.GetScheduls(model.SemesterId,new TakeSkipModel() { skip = model.skip, take=model.take});
 
             return StatusCode(response.responseCode, response);
 
-        }
+        } */  // migrated to the semester controller
 
 
         [HttpPost]
@@ -38,7 +38,7 @@ namespace College_managemnt_system.Controllers
 
         }
 
-        [HttpPut]
+        [HttpPut("time&place")]
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> Edit([FromBody] EditScheduleTimeandPlace editScheduleTimeandPlace)
         {

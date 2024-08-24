@@ -10,6 +10,6 @@ namespace College_managemnt_system.Interfaces
         public Task<CustomResponse<IEnumerable<ClassRoomDTO>>> SearchClassRooms(SearchModel searchModel);
         public Task<CustomResponse<ClassRoomDTO>> AddClassRoom(ClassRoomInputModel classRoomInputModel);
         public Task<CustomResponse<bool>> RemoveClassRoom(int classRoonmId);
-        public Task<CustomResponse<ClassRoomDTO>> EditClassRoomCapacity(CapacityEditModel capacityEditModel);
+        public Task<CustomResponse<ClassRoomDTO>> EditClassRoomCapacity(int classRoomId, int capacity);
     }
 }

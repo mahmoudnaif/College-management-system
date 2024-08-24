@@ -1,5 +1,6 @@
 ﻿using College_managemnt_system.ClientModels;
 using College_managemnt_system.Interfaces;
+using College_managemnt_system.models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -45,18 +46,18 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("Capacity")]
+        [HttpPut("{classRoomId}/Capacity")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> EditClassRoomCapacity([FromBody] CapacityEditModel capacityEditModel)
+        public async Task<IActionResult> EditClassRoomCapacity(int classRoomId, [FromBody]int capacity)
         {
-            var response = await _classroomsRepo.EditClassRoomCapacity(capacityEditModel);
+            var response = await _classroomsRepo.EditClassRoomCapacity(classRoomId, capacity);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpDelete()]
+        [HttpDelete("{classRoomId}")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> RemoveClassRoom([FromBody] int classRoomId)
+        public async Task<IActionResult> RemoveClassRoom(int classRoomId)
         {
             var response = await _classroomsRepo.RemoveClassRoom(classRoomId);
 

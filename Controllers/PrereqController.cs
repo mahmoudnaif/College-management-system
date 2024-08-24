@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace College_managemnt_system.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] //Controller migrated to the courses controller for better a url and can be deleted later
     [ApiController]
     public class PrereqController : Controller
     {

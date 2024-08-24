@@ -100,11 +100,8 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<bool>(500, "Internal server error");
             }
         }
-        public async Task<CustomResponse<CourseDTO>> EditCourseName(CourseEditModel courseEditModel)
+        public async Task<CustomResponse<CourseDTO>> EditCourseName(int courseId,string courseName)
         {
-            int courseId = courseEditModel.CourseId;
-            string courseName = courseEditModel.Editproberty;
-
             if (courseName.Trim() == "")
                 return new CustomResponse<CourseDTO>(400, "Course name must be specified");
 
@@ -130,11 +127,8 @@ namespace College_managemnt_system.Repos
             }
 
         }
-        public async Task<CustomResponse<CourseDTO>> EditCourseCode(CourseEditModel courseEditModel)
+        public async Task<CustomResponse<CourseDTO>> EditCourseCode(int courseId, string courseCode)
         {
-            int courseId = courseEditModel.CourseId;
-            string courseCode = courseEditModel.Editproberty;
-
             if (courseCode.Trim() == "")
                 return new CustomResponse<CourseDTO>(400, "Course code must be specified");
 
@@ -162,13 +156,8 @@ namespace College_managemnt_system.Repos
             }
 
         }
-        public async Task<CustomResponse<CourseDTO>> EditCreditHours(CourseEditModel courseEditModel)
+        public async Task<CustomResponse<CourseDTO>> EditCreditHours(int courseId, int credits)
         {
-            int courseId = courseEditModel.CourseId;
-
-            if (!int.TryParse(courseEditModel.Editproberty, out int credits))
-                return new CustomResponse<CourseDTO>(400, "Credit hours must be a number");
-
             if(credits < 0)
                 return new CustomResponse<CourseDTO>(400, "Credit hour must be greater than or equal to 0");
 
@@ -194,13 +183,8 @@ namespace College_managemnt_system.Repos
             }
 
         }
-        public async Task<CustomResponse<CourseDTO>> EditDepartment(CourseEditModel courseEditModel)
+        public async Task<CustomResponse<CourseDTO>> EditDepartment(int courseId, int deprtmentID)
         {
-            int courseId = courseEditModel.CourseId;
-
-            if (!int.TryParse(courseEditModel.Editproberty, out int deprtmentID))
-                return new CustomResponse<CourseDTO>(400, "Deprtment id must be a number");
-
             Department departmentExists = _context.Departments.FirstOrDefault(D => D.DepartmentId == deprtmentID);
 
             if (departmentExists == null)
