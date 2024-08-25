@@ -4,6 +4,7 @@ using College_managemnt_system.CustomResponse;
 using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Abstractions;
 
 namespace College_managemnt_system.Repos
@@ -74,20 +75,20 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<bool>(500, "Internal server error");
             }
         }
-        public async Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(ChangeProfInputModel model)
+        public async Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(int courseSemesterId, int profId)
         {
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == model.ProfessorId);
+            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Professor does not exist");
 
-            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(C => C.CourseSemesterId==model.CourseSemesterId);
+            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(C => C.CourseSemesterId==courseSemesterId);
             if (coursesemester == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Course does not exist in this semester");
 
-            if (coursesemester.ProfessorId == model.ProfessorId)
+            if (coursesemester.ProfessorId == profId)
                 return new CustomResponse<CourseSemesterDTO>(409, $"professor {professor.FirstName} {professor.LastName} is already set for this course");
 
-            coursesemester.ProfessorId = model.ProfessorId;
+            coursesemester.ProfessorId = profId;
 
             try
             {
@@ -102,17 +103,17 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(EditActivationStatus model)
+        public async Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(int courseSemesterId, bool isActive)
         {
 
-            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(C => C.CourseSemesterId == model.CourseSemesterId);
+            Coursesemester coursesemester = _context.Coursesemesters.FirstOrDefault(C => C.CourseSemesterId == courseSemesterId);
             if (coursesemester == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Course does not exist in this semester");
 
-            if (coursesemester.Isactive == model.Isactive)
+            if (coursesemester.Isactive == isActive)
                 return new CustomResponse<CourseSemesterDTO>(409, "Course is already active/notactive");
 
-            if (model.Isactive)
+            if (isActive)
             {
                 if (!await CheckActiveSemester(coursesemester.SemesterId))
                     return new CustomResponse<CourseSemesterDTO>(400, "Semester must be active to activate the course");
@@ -124,7 +125,7 @@ namespace College_managemnt_system.Repos
             }
             
 
-            coursesemester.Isactive = model.Isactive;
+            coursesemester.Isactive = isActive;
 
             try
             {

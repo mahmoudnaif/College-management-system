@@ -207,16 +207,22 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.ProfessorId).HasName("Professors$PrimaryKey");
 
-            entity.HasIndex(e => e.AccountId, "UQ__Professo__F267253F89A41818").IsUnique();
+            entity.HasIndex(e => e.AccountId, "UQ__Professo__F267253FBB207F5B").IsUnique();
+
+            entity.HasIndex(e => e.NationalNumber, "UQ__Professo__FEA173C287218C2A").IsUnique();
+
+            entity.HasIndex(e => e.AccountId, "UQ__tmp_ms_x__F267253FC3E2BDE3").IsUnique();
 
             entity.Property(e => e.ProfessorId).HasColumnName("ProfessorID");
             entity.Property(e => e.AccountId).HasColumnName("accountID");
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.FirstName).HasMaxLength(255);
-            entity.Property(e => e.HiringDate).HasPrecision(0);
+            entity.Property(e => e.HiringDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.LastName).HasMaxLength(255);
-            entity.Property(e => e.Phone).HasMaxLength(255);
             entity.Property(e => e.NationalNumber).HasMaxLength(255);
+            entity.Property(e => e.Phone).HasMaxLength(255);
 
             entity.HasOne(d => d.Account).WithOne(p => p.Professor)
                 .HasForeignKey<Professor>(d => d.AccountId)
@@ -319,14 +325,21 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.StudentId).HasName("Students$PrimaryKey");
 
-            entity.HasIndex(e => e.AccountId, "UQ__Students__F267253F253690E5").IsUnique();
+            entity.HasIndex(e => e.AccountId, "UQ__tmp_ms_x__F267253F7BB38717").IsUnique();
+
+            entity.HasIndex(e => e.AccountId, "UQ__tmp_ms_x__F267253FA3601381").IsUnique();
 
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.AccountId).HasColumnName("accountID");
             entity.Property(e => e.Cgpa).HasColumnName("CGPA");
-            entity.Property(e => e.EnrollmentDate).HasPrecision(0);
+            entity.Property(e => e.EnrollmentDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.FathertName).HasMaxLength(255);
             entity.Property(e => e.FirstName).HasMaxLength(255);
+            entity.Property(e => e.GrandfatherName).HasMaxLength(255);
             entity.Property(e => e.LastName).HasMaxLength(255);
+            entity.Property(e => e.NationalNumber).HasMaxLength(255);
             entity.Property(e => e.Phone).HasMaxLength(255);
             entity.Property(e => e.TotalHours).HasColumnName("totalHours");
 
@@ -388,7 +401,9 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.AssistantId).HasColumnName("AssistantID");
             entity.Property(e => e.AccountId).HasColumnName("accountID");
             entity.Property(e => e.FirstName).HasMaxLength(255);
-            entity.Property(e => e.HiringDate).HasPrecision(0);
+            entity.Property(e => e.HiringDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.LastName).HasMaxLength(255);
             entity.Property(e => e.Phone)
                 .HasMaxLength(255)

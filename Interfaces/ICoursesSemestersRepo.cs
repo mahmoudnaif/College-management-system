@@ -1,6 +1,7 @@
 ﻿using College_managemnt_system.DTOS;
 using College_managemnt_system.CustomResponse;
 using College_managemnt_system.ClientModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace College_managemnt_system.Interfaces
 {
@@ -13,8 +14,8 @@ namespace College_managemnt_system.Interfaces
 
         public Task<CustomResponse<bool>> Delete(int courseSemesterId);
 
-        public Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(ChangeProfInputModel model);
+        public Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(int courseSemesterId,int profId);
 
-        public Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(EditActivationStatus editActivationStatus);
+        public Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(int courseSemesterId, bool isActive);
     }
 }

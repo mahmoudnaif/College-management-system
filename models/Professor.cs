@@ -11,8 +11,9 @@ public partial class Professor
 
     public string LastName { get; set; } = null!;
 
-    public string NationalNumber { get; set; } = null!;
     public string Phone { get; set; } = null!;
+
+    public string NationalNumber { get; set; } = null!;
 
     public DateTime HiringDate { get; set; }
 

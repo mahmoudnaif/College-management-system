@@ -5,6 +5,13 @@
         public string firstName { get; set; } = null!;
         public string lastName { get; set; } = null!;
     }
+    public class FullNameInputModel
+    {
+        public string FirstName { get; set; } = null!;
+        public string FathertName { get; set; } = null!;
+        public string GrandfatherName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+    }
 
     public class EditDepartmentInputModle
     {

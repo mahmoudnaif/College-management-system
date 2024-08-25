@@ -57,26 +57,16 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "admin,root")]
         public async Task<IActionResult> ChangeProfessor(int courseSemesterId, [FromBody] int profId)
         {
-            ChangeProfInputModel model = new ChangeProfInputModel()
-            {
-                CourseSemesterId = courseSemesterId,
-                ProfessorId = profId
-            };
-            var response = await _coursesSemestersRepo.ChangeProfessor(model);
+            var response = await _coursesSemestersRepo.ChangeProfessor(courseSemesterId,profId);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("{courseSemesterId}")]
+        [HttpPut("{courseSemesterId}/acitve")]
         [Authorize(Roles = "admin,root")]
         public async Task<IActionResult> EditActivationStatus(int courseSemesterId, bool isActive)
         {
-            EditActivationStatus model = new EditActivationStatus()
-            {
-                CourseSemesterId = courseSemesterId,
-                Isactive = isActive
-            };
-            var response = await _coursesSemestersRepo.EditActivationStatus(model);
+            var response = await _coursesSemestersRepo.EditActivationStatus(courseSemesterId, isActive);
 
             return StatusCode(response.responseCode, response);
         }

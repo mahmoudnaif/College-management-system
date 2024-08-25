@@ -9,9 +9,15 @@ public partial class Student
 
     public string FirstName { get; set; } = null!;
 
+    public string FathertName { get; set; } = null!;
+
+    public string GrandfatherName { get; set; } = null!;
+
     public string LastName { get; set; } = null!;
 
     public string Phone { get; set; } = null!;
+
+    public string NationalNumber { get; set; } = null!;
 
     public int Cgpa { get; set; }
 
