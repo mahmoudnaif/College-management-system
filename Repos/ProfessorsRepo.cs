@@ -5,6 +5,7 @@ using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
 using College_managemnt_system.Repos.Utilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System.Numerics;
 
@@ -44,18 +45,18 @@ namespace College_managemnt_system.Repos
             if (firstName == "" || lastName == "")
                 return new CustomResponse<ProfessorDTO>(400, "Name must be specefied");
 
-            Department department = _context.Departments.FirstOrDefault(D => D.DepartmentId == departmentId);
+            Department department = await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentId == departmentId);
             if (department == null)
                 return new CustomResponse<ProfessorDTO>(404, "Department does not exist");
 
-            Account account = _context.Accounts.FirstOrDefault(A => A.Email == email);
+            Account account = await _context.Accounts.FirstOrDefaultAsync(A => A.Email == email);
             if (account == null)
                 return new CustomResponse<ProfessorDTO>(404, "there is no account associated with this email");
 
             if (account.Role != "prof")
                 return new CustomResponse<ProfessorDTO>(403, "Account associated must be a prof account");
 
-            Professor professorDuplicate = _context.Professors.FirstOrDefault(P => P.AccountId == account.AccountId);
+            Professor professorDuplicate = await _context.Professors.FirstOrDefaultAsync(P => P.AccountId == account.AccountId);
             if (professorDuplicate != null)
                 return new CustomResponse<ProfessorDTO>(409, "Email already associated with another professor");
 
@@ -85,7 +86,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<bool>> Delete(int profId)
         {
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
+            Professor professor = await _context.Professors.FirstOrDefaultAsync(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<bool>(404, "Professsor is not found");
 
@@ -103,11 +104,11 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<ProfessorDTO>> EditDepartment(int profId,int departmentId)
         {
-            Department department = _context.Departments.FirstOrDefault(D =>D.DepartmentId == departmentId);
+            Department department = await _context.Departments.FirstOrDefaultAsync(D =>D.DepartmentId == departmentId);
             if (department == null)
                 return new CustomResponse<ProfessorDTO>(404, "Department does not exist");
 
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
+            Professor professor = await _context.Professors.FirstOrDefaultAsync(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<ProfessorDTO>(404, "Professor does not exist");
 
@@ -130,7 +131,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<ProfessorDTO>> EditHiringDate(int profId,DateTime date)
         {
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
+            Professor professor = await _context.Professors.FirstOrDefaultAsync(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<ProfessorDTO>(404, "Professor does not exist");
 
@@ -160,7 +161,7 @@ namespace College_managemnt_system.Repos
             if (firstName== "" || lastName== "")
                 return new CustomResponse<ProfessorDTO>(400, "Name must be specefied");
 
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
+            Professor professor = await _context.Professors.FirstOrDefaultAsync(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<ProfessorDTO>(404, "Professor does not exist");
 
@@ -188,7 +189,7 @@ namespace College_managemnt_system.Repos
             if (!_utilities.IsValidPhoneNumber(phoneNumber))
                 return new CustomResponse<ProfessorDTO>(400, "Invalid phone number");
 
-            Professor professor = _context.Professors.FirstOrDefault(P => P.ProfessorId == profId);
+            Professor professor = await _context.Professors.FirstOrDefaultAsync(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<ProfessorDTO>(404, "Professor does not exist");
 
@@ -223,7 +224,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<IEnumerable<ProfessorDTO>>> GetProfessorsByDepartment(int departmentId, TakeSkipModel takeSkipModel)
         {
-            /*Department department = _context.Departments.FirstOrDefault(D => D.DepartmentId == departmentId);
+            /*Department department = await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentId == departmentId);
 
             if (department == null)
                 return new CustomResponse<IEnumerable<ProfessorDTO>>(404, "Department does not exist");*/

@@ -40,7 +40,7 @@ namespace College_managemnt_system.Repos
             if (role != "student" && role != "admin" && role != "prof" && role != "ta")
                 return new CustomResponse<bool>(400, "Invalid role");
 
-            var emailUser = _context.Accounts.FirstOrDefault(acc => acc.Email.ToLower() == siqnupModel.email.ToLower());
+            var emailUser = await _context.Accounts.FirstOrDefaultAsync(acc => acc.Email.ToLower() == siqnupModel.email.ToLower());
             if (emailUser != null)
                 return new CustomResponse<bool>(409, "Email already exists");
 
@@ -73,7 +73,7 @@ namespace College_managemnt_system.Repos
 
             if (_utilitiesRepo.IsValidEmail(siqninmodel.email))
             {
-                account = _context.Accounts.FirstOrDefault(acc => acc.Email.ToLower() == siqninmodel.email.ToLower());
+                account = await _context.Accounts.FirstOrDefaultAsync(acc => acc.Email.ToLower() == siqninmodel.email.ToLower());
             }
             else
             {

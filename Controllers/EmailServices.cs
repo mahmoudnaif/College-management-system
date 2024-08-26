@@ -39,7 +39,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPut("VerifyEmail")]
         [Authorize]
-        public IActionResult VerifyEmail()
+        public async Task<IActionResult> VerifyEmail()
         {
             int id;
             try
@@ -52,7 +52,7 @@ namespace College_managemnt_system.Controllers
             {
                 return StatusCode(400, new CustomResponse<bool>(400, "Can't verify email using that token"));
             }
-            CustomResponse<bool> customResponse = _emailServicesRepo.VerifyAccount(id);
+            CustomResponse<bool> customResponse = await _emailServicesRepo.VerifyAccount(id);
 
             return StatusCode(customResponse.responseCode, customResponse);
         }
@@ -70,7 +70,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPut("ChangePassword")]
         [Authorize]
-        public IActionResult ChangePassword(ChangePasswordEmailModel changePasswordEmailModel)
+        public async Task<IActionResult> ChangePassword(ChangePasswordEmailModel changePasswordEmailModel)
         {
             int id;
             try
@@ -83,7 +83,7 @@ namespace College_managemnt_system.Controllers
             {
                 return StatusCode(400, new CustomResponse<bool>(400, "Can't verify email using that token"));
             }
-            CustomResponse<bool> customResponse = _emailServicesRepo.ChangePassword(id, changePasswordEmailModel.newPassword, changePasswordEmailModel.repeatNewPassword);
+            CustomResponse<bool> customResponse = await _emailServicesRepo.ChangePassword(id, changePasswordEmailModel.newPassword, changePasswordEmailModel.repeatNewPassword);
 
             return StatusCode(customResponse.responseCode, customResponse);
         }

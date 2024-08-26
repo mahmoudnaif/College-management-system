@@ -4,6 +4,7 @@ using College_managemnt_system.CustomResponse;
 using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
+using Microsoft.EntityFrameworkCore;
 
 namespace College_managemnt_system.Repos
 {
@@ -30,17 +31,17 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<PrereqDTO>> AddPrereqsCourse(PrereqsInputModel prereqsInputModel)
         {
-            Course courseExists = _context.Courses.FirstOrDefault(C=> C.CourseId == prereqsInputModel.CourseId);
+            Course courseExists = await _context.Courses.FirstOrDefaultAsync(C=> C.CourseId == prereqsInputModel.CourseId);
 
             if (courseExists == null)
                 return new CustomResponse<PrereqDTO>(404, "Course does not exist");
 
-            courseExists = _context.Courses.FirstOrDefault(C => C.CourseId == prereqsInputModel.PrereqsCourseId);
+            courseExists = await _context.Courses.FirstOrDefaultAsync(C => C.CourseId == prereqsInputModel.PrereqsCourseId);
 
             if (courseExists == null)
                 return new CustomResponse<PrereqDTO>(404, "Preqes course does not exist");
 
-            Prereq prereqExists = _context.Prereqs.FirstOrDefault(P => P.CourseId == prereqsInputModel.CourseId && P.PrereqCourseId ==  prereqsInputModel.PrereqsCourseId);
+            Prereq prereqExists = await _context.Prereqs.FirstOrDefaultAsync(P => P.CourseId == prereqsInputModel.CourseId && P.PrereqCourseId ==  prereqsInputModel.PrereqsCourseId);
 
             if(prereqExists != null)
                 return new CustomResponse<PrereqDTO>(409, "Preqes already exists");
@@ -66,7 +67,7 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<bool>> RemovePrereqsCourse(PrereqsInputModel prereqsInputModel)
         {
-            Prereq prereq = _context.Prereqs.FirstOrDefault(P => P.CourseId == prereqsInputModel.CourseId && P.PrereqCourseId ==  prereqsInputModel.PrereqsCourseId);
+            Prereq prereq = await _context.Prereqs.FirstOrDefaultAsync(P => P.CourseId == prereqsInputModel.CourseId && P.PrereqCourseId ==  prereqsInputModel.PrereqsCourseId);
             if (prereq == null)
                 return new CustomResponse<bool>(404, "Prereqs not found");
 

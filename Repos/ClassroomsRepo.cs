@@ -4,6 +4,7 @@ using College_managemnt_system.CustomResponse;
 using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
+using Microsoft.EntityFrameworkCore;
 
 namespace College_managemnt_system.Repos
 {//remodel the db so that the roomnumber and building are numbers instead of strings (primary key will be the roomnumber).
@@ -54,6 +55,13 @@ namespace College_managemnt_system.Repos
             if (roomNumber <= 0 || buildingNumber <= 0 || classRoomInputModel.Capacity < 0)
                 return new CustomResponse<ClassRoomDTO>(400, "Room number, building number and capacity must be positive values");
 
+
+            Classroom classroomDup = await _context.Classrooms.FirstOrDefaultAsync(C => C.RoomNumber == classRoomInputModel.RoomNumber);
+
+            if (classroomDup != null)
+                return new CustomResponse<ClassRoomDTO>(400, "Class room already exists");
+
+
             Classroom classroom = new Classroom()
             {
                 RoomNumber = classRoomInputModel.RoomNumber,
@@ -79,7 +87,7 @@ namespace College_managemnt_system.Repos
             if (capacity < 0)
                 return new CustomResponse<ClassRoomDTO>(400, "capacity must be more than or equal to 0");
 
-            Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == classRoomId);
+            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.ClassroomId == classRoomId);
 
             if (classroom == null)
                 return new CustomResponse<ClassRoomDTO>(404, "Class room not found");
@@ -102,7 +110,7 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<bool>> RemoveClassRoom(int classRoomId)
         {
-            Classroom classroom = _context.Classrooms.FirstOrDefault(C => C.ClassroomId == classRoomId);
+            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.ClassroomId == classRoomId);
 
             if (classroom == null)
                 return new CustomResponse<bool>(404, "Class room not found");

@@ -46,7 +46,7 @@ namespace College_managemnt_system.Repos
             if (!_utilitiesRepo.IsValidPhoneNumber(phone))
                 return new CustomResponse<StudentDTO>(400, "phone number is not valid");
 
-            Account account = _context.Accounts.FirstOrDefault(A => A.Email == email);
+            Account account = await _context.Accounts.FirstOrDefaultAsync(A => A.Email == email);
 
             if (account == null)
                 return new CustomResponse<StudentDTO>(404, "No account associated with this email was found");
@@ -82,7 +82,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<bool>> Delete(int studentId)
         {
-            Student student = _context.Students.FirstOrDefault(S => S.StudentId == studentId);
+            Student student = await _context.Students.FirstOrDefaultAsync(S => S.StudentId == studentId);
 
             if (student == null)
                 return new CustomResponse<bool>(404, "Student not found");
@@ -109,7 +109,7 @@ namespace College_managemnt_system.Repos
             if (firstName == "" || fatherName == "" || grandFatherName == "" || lastName == "")
                 return new CustomResponse<StudentDTO>(400, "Full name must be specefied");
 
-            Student student = _context.Students.FirstOrDefault(S => S.StudentId == studentId);
+            Student student = await _context.Students.FirstOrDefaultAsync(S => S.StudentId == studentId);
 
             if (student == null)
                 return new CustomResponse<StudentDTO>(404, "Student not found");
@@ -122,7 +122,7 @@ namespace College_managemnt_system.Repos
             {
                 await _context.SaveChangesAsync();
                 StudentDTO studentDTO = _mapper.Map<StudentDTO>(student);
-                return new CustomResponse<StudentDTO>(200, "Name edited successfully");
+                return new CustomResponse<StudentDTO>(200, "Name edited successfully", studentDTO);
             }
             catch
             {
@@ -136,7 +136,7 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<StudentDTO>(400, "phone number is not valid");
 
 
-            Student student = _context.Students.FirstOrDefault(S => S.StudentId == studentId);
+            Student student = await _context.Students.FirstOrDefaultAsync(S => S.StudentId == studentId);
 
             if (student == null)
                 return new CustomResponse<StudentDTO>(404, "Student not found");
@@ -150,7 +150,7 @@ namespace College_managemnt_system.Repos
             {
                 await _context.SaveChangesAsync();
                 StudentDTO studentDTO = _mapper.Map<StudentDTO>(student);
-                return new CustomResponse<StudentDTO>(200, "Phone number edited successfully");
+                return new CustomResponse<StudentDTO>(200, "Phone number edited successfully", studentDTO);
             }
             catch
             {

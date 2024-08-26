@@ -4,6 +4,7 @@ using College_managemnt_system.CustomResponse;
 using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace College_managemnt_system.Repos
@@ -38,7 +39,7 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<CourseDTO>> GetCourseByCourseCode(string courseCode)
         {
-            Course course = _context.Courses.FirstOrDefault(c => c.CourseCode == courseCode);
+            Course course =await _context.Courses.FirstOrDefaultAsync(c => c.CourseCode == courseCode);
 
             if (course == null)
                 return new CustomResponse<CourseDTO>(404, "Course Not found");
@@ -56,12 +57,12 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<CourseDTO>(400, "Course name and code must be specified");
 
 
-            Course courseDuplication = _context.Courses.FirstOrDefault(C => C.CourseCode == courseInputModel.CourseCode);
+            Course courseDuplication = await _context.Courses.FirstOrDefaultAsync(C => C.CourseCode == courseInputModel.CourseCode);
 
             if (courseDuplication != null)
                 return new CustomResponse<CourseDTO>(409, "Course Code already exists");
 
-            Department departmentExists = _context.Departments.FirstOrDefault(D => D.DepartmentId == courseInputModel.DepartmentId);
+            Department departmentExists =await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentId == courseInputModel.DepartmentId);
 
             if(departmentExists == null)
                 return new CustomResponse<CourseDTO>(404,"Department does not exist");
@@ -84,7 +85,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<bool>> DeleteCourse(int courseId)
         {
-            Course course = _context.Courses.FirstOrDefault(c => c.CourseId == courseId);
+            Course course = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId);
 
             if (course == null)
                 return new CustomResponse<bool>(404, "Course Not found");
@@ -105,7 +106,7 @@ namespace College_managemnt_system.Repos
             if (courseName.Trim() == "")
                 return new CustomResponse<CourseDTO>(400, "Course name must be specified");
 
-            Course course = _context.Courses.FirstOrDefault(c => c.CourseId == courseId);
+            Course course = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId);
 
             if (course == null)
                 return new CustomResponse<CourseDTO>(404, "Course Not found");
@@ -132,12 +133,12 @@ namespace College_managemnt_system.Repos
             if (courseCode.Trim() == "")
                 return new CustomResponse<CourseDTO>(400, "Course code must be specified");
 
-            Course courseDuplication = _context.Courses.FirstOrDefault(C => C.CourseCode == courseCode);
+            Course courseDuplication =await _context.Courses.FirstOrDefaultAsync(C => C.CourseCode == courseCode);
 
             if (courseDuplication != null)
                 return new CustomResponse<CourseDTO>(409, "Course Code already exists");
 
-            Course course = _context.Courses.FirstOrDefault(c => c.CourseId == courseId);
+            Course course = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId);
 
             if (course == null)
                 return new CustomResponse<CourseDTO>(404, "Course Not found");
@@ -161,7 +162,7 @@ namespace College_managemnt_system.Repos
             if(credits < 0)
                 return new CustomResponse<CourseDTO>(400, "Credit hour must be greater than or equal to 0");
 
-            Course course = _context.Courses.FirstOrDefault(c => c.CourseId == courseId);
+            Course course = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId);
 
             if (course == null)
                 return new CustomResponse<CourseDTO>(404, "Course Not found");
@@ -185,13 +186,13 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<CourseDTO>> EditDepartment(int courseId, int deprtmentID)
         {
-            Department departmentExists = _context.Departments.FirstOrDefault(D => D.DepartmentId == deprtmentID);
+            Department departmentExists = await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentId == deprtmentID);
 
             if (departmentExists == null)
                 return new CustomResponse<CourseDTO>(404, "Department does not exist");
 
 
-            Course course = _context.Courses.FirstOrDefault(c => c.CourseId == courseId);
+            Course course = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId);
 
             if (course == null)
                 return new CustomResponse<CourseDTO>(404, "Course Not found");
