@@ -169,8 +169,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(C => C.InjectJavascript("/SwaggerJs/autologin.js"));
 }
+
+app.UseStaticFiles();
 
 app.UseCors("CorsPolicy");
 
