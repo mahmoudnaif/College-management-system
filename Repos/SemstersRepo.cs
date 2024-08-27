@@ -5,7 +5,6 @@ using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Asn1;
 
 namespace College_managemnt_system.Repos
 {
@@ -185,20 +184,20 @@ namespace College_managemnt_system.Repos
 
         }
 
-        public async Task<CustomResponse<IEnumerable<SemesterDTO>>> GetSemesters(TakeSkipModel takeSkipModel)
+        public async Task<CustomResponse<List<SemesterDTO>>> GetSemesters(TakeSkipModel takeSkipModel)
         {
             if (takeSkipModel.take < 0 || takeSkipModel.skip < 0)
-                return new CustomResponse<IEnumerable<SemesterDTO>>(400, "Take and skip must more than or equal 0");
+                return new CustomResponse<List<SemesterDTO>>(400, "Take and skip must more than or equal 0");
 
-            IEnumerable<Semester> semesters = _context.Semesters.OrderByDescending(S => S.SemesterYear).Skip(takeSkipModel.skip).Take(takeSkipModel.take);
+            List<Semester> semesters = await _context.Semesters.OrderByDescending(S => S.SemesterYear).Skip(takeSkipModel.skip).Take(takeSkipModel.take).ToListAsync();
 
-            if (semesters.Count() == 0)
-                return new CustomResponse<IEnumerable<SemesterDTO>>(404,"Not found");
+            if (!semesters.Any())
+                return new CustomResponse<List<SemesterDTO>>(404,"Not found");
 
 
-            IEnumerable<SemesterDTO> semestersDTO = _mapper.Map<IEnumerable<SemesterDTO>>(semesters);
+            List<SemesterDTO> semestersDTO = _mapper.Map<List<SemesterDTO>>(semesters);
 
-            return new CustomResponse<IEnumerable<SemesterDTO>>(200, "Semesters retreived successfully", semestersDTO);
+            return new CustomResponse<List<SemesterDTO>>(200, "Semesters retreived successfully", semestersDTO);
 
 
         }

@@ -18,34 +18,34 @@ namespace College_managemnt_system.Repos
             _context = context;
             _mapper = mapper;
         }
-        public async Task<CustomResponse<IEnumerable<ClassRoomDTO>>> GetAllClassRooms(TakeSkipModel takeSkipModel)
+        public async Task<CustomResponse<List<ClassRoomDTO>>> GetAllClassRooms(TakeSkipModel takeSkipModel)
         {
             if (takeSkipModel.take < 0 || takeSkipModel.skip < 0)
-                return new CustomResponse<IEnumerable<ClassRoomDTO>>(400, "Take and skip must more than or equal 0");
+                return new CustomResponse<List<ClassRoomDTO>>(400, "Take and skip must more than or equal 0");
 
-            IEnumerable<Classroom> classrooms = _context.Classrooms.OrderBy(C => C.RoomNumber).Skip(takeSkipModel.skip).Take(takeSkipModel.take);
+            List<Classroom> classrooms = await _context.Classrooms.OrderBy(C => C.RoomNumber).Skip(takeSkipModel.skip).Take(takeSkipModel.take).ToListAsync();
 
-            if (classrooms.Count() == 0)
-                return new CustomResponse<IEnumerable<ClassRoomDTO>>(404, "Not found");
+            if (!classrooms.Any())
+                return new CustomResponse<List<ClassRoomDTO>>(404, "Not found");
 
-            IEnumerable<ClassRoomDTO> classRoomsDTO = _mapper.Map<IEnumerable<ClassRoomDTO>>(classrooms);
+            List<ClassRoomDTO> classRoomsDTO = _mapper.Map<List<ClassRoomDTO>>(classrooms);
 
-            return new CustomResponse<IEnumerable<ClassRoomDTO>>(200, "Class rooms retreved successfully", classRoomsDTO);
+            return new CustomResponse<List<ClassRoomDTO>>(200, "Class rooms retreved successfully", classRoomsDTO);
 
         }
-        public async Task<CustomResponse<IEnumerable<ClassRoomDTO>>> SearchClassRooms(SearchModel searchModel)
+        public async Task<CustomResponse<List<ClassRoomDTO>>> SearchClassRooms(SearchModel searchModel)
         {
             if (searchModel.takeSkip.take < 0 || searchModel.takeSkip.skip < 0)
-                return new CustomResponse<IEnumerable<ClassRoomDTO>>(400, "Take and skip must more than or equal 0");
+                return new CustomResponse<List<ClassRoomDTO>>(400, "Take and skip must more than or equal 0");
 
-            IEnumerable<Classroom> classrooms = _context.Classrooms.Where(C => C.RoomNumber.StartsWith(searchModel.searchQuery)).OrderBy(C => C.RoomNumber).Skip(searchModel.takeSkip.skip).Take(searchModel.takeSkip.take);
+            var classrooms = await _context.Classrooms.Where(C => C.RoomNumber.StartsWith(searchModel.searchQuery)).OrderBy(C => C.RoomNumber).Skip(searchModel.takeSkip.skip).Take(searchModel.takeSkip.take).ToListAsync();
 
-            if (classrooms.Count() == 0)
-                return new CustomResponse<IEnumerable<ClassRoomDTO>>(404, "Not found");
+            if (!classrooms.Any())
+                return new CustomResponse<List<ClassRoomDTO>>(404, "Not found");
 
-            IEnumerable<ClassRoomDTO> classRoomsDTO = _mapper.Map<IEnumerable<ClassRoomDTO>>(classrooms);
+            List<ClassRoomDTO> classRoomsDTO = _mapper.Map<List<ClassRoomDTO>>(classrooms);
 
-            return new CustomResponse<IEnumerable<ClassRoomDTO>>(200, "Class rooms retreved successfully", classRoomsDTO);
+            return new CustomResponse<List<ClassRoomDTO>>(200, "Class rooms retreved successfully", classRoomsDTO);
         }
         public async Task<CustomResponse<ClassRoomDTO>> AddClassRoom(ClassRoomInputModel classRoomInputModel)
         {

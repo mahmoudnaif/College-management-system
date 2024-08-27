@@ -5,7 +5,7 @@ namespace College_managemnt_system.Interfaces
 {
     public interface IPrereqsCoursesRepo
     {
-        public Task<CustomResponse<IEnumerable<CourseDTO>>> GetPrereqsCourses(int courseId);
+        public Task<CustomResponse<List<CourseDTO>>> GetPrereqsCourses(int courseId);
 
         public Task<CustomResponse<PrereqDTO>> AddPrereqsCourse(PrereqsInputModel prereqsInputModel);
 

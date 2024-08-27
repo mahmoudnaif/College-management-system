@@ -19,7 +19,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpGet("Active")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> GetActiveCourses()
+        public async Task<IActionResult> GetActiveSemesterCourses() //migrated to semester controller
         {
             var response = await _coursesSemestersRepo.GetActiveSemesterCourses();
 
@@ -28,7 +28,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPut("Active")]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> EditActiveCourses([FromBody] bool isActive)
+        public async Task<IActionResult> EditActiveCourses([FromBody] bool isActive) //migrated to semester controller
         {
             var response = await _coursesSemestersRepo.EditActiveStatusForAllCourses(isActive);
 
@@ -37,7 +37,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> Add([FromBody] CourseSemesterInputModel model)
+        public async Task<IActionResult> Add([FromBody] CourseSemesterInputModel model) 
         {
             var response = await _coursesSemestersRepo.Add(model);
 

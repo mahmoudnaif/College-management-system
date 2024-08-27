@@ -128,10 +128,10 @@ namespace College_managemnt_system.Repos
                 await _context.SaveChangesAsync();
                 SchedueleDTO schedueleDTO = _mapper.Map<SchedueleDTO>(schedule);
 
-                schedueleDTO.courseName = _context.Coursesemesters.Where(C => C.CourseSemesterId == schedule.CourseSemesterId).Join(_context.Courses,
+                schedueleDTO.courseName = await _context.Coursesemesters.Where(C => C.CourseSemesterId == schedule.CourseSemesterId).Join(_context.Courses,
                     CS => CS.CourseId, C => C.CourseId,
                     (CS,C) => C.CourseName
-                    ).First();
+                    ).FirstAsync();
 
                 schedueleDTO.roomNumber = classroom.RoomNumber;
                 return new CustomResponse<SchedueleDTO>(200, "Time and place edited successfully", schedueleDTO);
@@ -142,19 +142,19 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<IEnumerable<SchedueleDTO>>> GetScheduls(int semesterId, TakeSkipModel model)
+        public async Task<CustomResponse<List<SchedueleDTO>>> GetScheduls(int semesterId, TakeSkipModel model)
         {
 
             if (model.take < 0 || model.skip < 0)
-                return new CustomResponse<IEnumerable<SchedueleDTO>>(400, "Take and skip must more than or equal 0");
+                return new CustomResponse<List<SchedueleDTO>>(400, "Take and skip must more than or equal 0");
 
             Semester semester = await _context.Semesters.FirstOrDefaultAsync(S => S.SemesterId == semesterId);
 
             if (semester == null)
-                return new CustomResponse<IEnumerable<SchedueleDTO>>(404, "Semester does not exist");
+                return new CustomResponse<List<SchedueleDTO>>(404, "Semester does not exist");
 
 
-            IEnumerable<SchedueleDTO> Schedules = from s in _context.Schedules.Where(S => S.SemesterId == semesterId).Skip(model.skip).Take(model.take)
+            List<SchedueleDTO> Schedules = await (from s in _context.Schedules.Where(S => S.SemesterId == semesterId).Skip(model.skip).Take(model.take)
                         join cs in _context.Coursesemesters on s.CourseSemesterId equals cs.CourseSemesterId
                         join c in _context.Courses on cs.CourseId equals c.CourseId
                         join r in _context.Classrooms on s.ClassroomId equals r.ClassroomId
@@ -177,12 +177,12 @@ namespace College_managemnt_system.Repos
                               courseName = c.CourseName,
 
                               roomNumber = r.RoomNumber
-                        };
+                        }).ToListAsync();
 
-            if (Schedules.Count() == 0)
-                return new CustomResponse<IEnumerable<SchedueleDTO>>(404, "No schdules were found");
+            if (!Schedules.Any())
+                return new CustomResponse<List<SchedueleDTO>>(404, "No schdules were found");
 
-            return new CustomResponse<IEnumerable<SchedueleDTO>>(200, "Schdeules retreived successfully", Schedules);
+            return new CustomResponse<List<SchedueleDTO>>(200, "Schdeules retreived successfully", Schedules);
         }
 
         public async Task<CustomResponse<bool>> Remove(int scheduleId)

@@ -8,5 +8,9 @@ namespace College_managemnt_system.Interfaces
     {
         public Task<CustomResponse<GroupDTO>> AddGroup(GroupInputModel groupInputModel);
         public Task<CustomResponse<bool>> DeleteGroup(int groupId);
+
+        public Task<CustomResponse<List<GroupDTO>>> GetGroupsBySemesterId_StudentYear(int semesterId, int studentYear,TakeSkipModel model);
+
+        public Task<CustomResponse<List<GroupDTO>>> GetGroupsByActiveSemester_StudentYear(int studentYear,TakeSkipModel model);
     }
 }

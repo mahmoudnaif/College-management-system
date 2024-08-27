@@ -5,7 +5,7 @@ namespace College_managemnt_system.Interfaces
 {
     public interface ICoursesRepo
     {
-        public Task<CustomResponse<IEnumerable<CourseDTO>>> GetCourses(TakeSkipModel takeSkipModel);
+        public Task<CustomResponse<List<CourseDTO>>> GetCourses(TakeSkipModel takeSkipModel);
         public Task<CustomResponse<CourseDTO>> GetCourseByCourseCode(string courseCode);
         public Task<CustomResponse<CourseDTO>> AddCourse(CourseInputModel courseInputModel);
         public Task<CustomResponse<bool>> DeleteCourse(int courseId);

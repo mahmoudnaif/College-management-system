@@ -18,15 +18,15 @@ namespace College_managemnt_system.Repos
             _context = collegeDBContext;
             _mapper = mapper;
         }
-        public async Task<CustomResponse<IEnumerable<CourseDTO>>> GetPrereqsCourses(int courseId)
+        public async Task<CustomResponse<List<CourseDTO>>> GetPrereqsCourses(int courseId)
         { // you can make another DTO for the prereqs courses and make it less detailed for efficiency
-            IEnumerable<Course> prereqsCourses = _context.Prereqs.Where(P => P.CourseId == courseId).Select(P => P.PrereqCourse);
-            if(prereqsCourses.Count() == 0)
-                return new CustomResponse<IEnumerable<CourseDTO>>(404,"NOT FOUND");
+            List<Course> prereqsCourses = await _context.Prereqs.Where(P => P.CourseId == courseId).Select(P => P.PrereqCourse).ToListAsync();
+            if(!prereqsCourses.Any())
+                return new CustomResponse<List<CourseDTO>>(404,"NOT FOUND");
 
-            IEnumerable<CourseDTO> prereqsCoursesDTO = _mapper.Map<IEnumerable<CourseDTO>>(prereqsCourses);
+            List<CourseDTO> prereqsCoursesDTO = _mapper.Map<List<CourseDTO>>(prereqsCourses);
 
-            return new CustomResponse<IEnumerable<CourseDTO>>(200, "Prereqs courses retreived", prereqsCoursesDTO);
+            return new CustomResponse<List<CourseDTO>>(200, "Prereqs courses retreived", prereqsCoursesDTO);
 
         }
         public async Task<CustomResponse<PrereqDTO>> AddPrereqsCourse(PrereqsInputModel prereqsInputModel)

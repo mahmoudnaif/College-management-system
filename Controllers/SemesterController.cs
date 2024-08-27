@@ -12,12 +12,14 @@ namespace College_managemnt_system.Controllers
         private readonly ISemstersRepo _semstersRepo;
         private readonly ICoursesSemestersRepo _coursesSemestersRepo;
         private readonly ISchedulesRepo _schedulesRepo;
+        private readonly IGroupsRepo _groupsRepo;
 
-        public SemesterController(ISemstersRepo semstersRepo, ICoursesSemestersRepo coursesSemestersRepo, ISchedulesRepo schedulesRepo)
+        public SemesterController(ISemstersRepo semstersRepo, ICoursesSemestersRepo coursesSemestersRepo, ISchedulesRepo schedulesRepo,IGroupsRepo groupsRepo)
         {
             _semstersRepo = semstersRepo;
             _coursesSemestersRepo = coursesSemestersRepo;
             _schedulesRepo = schedulesRepo;
+            _groupsRepo = groupsRepo;
         }
 
 
@@ -121,5 +123,48 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
 
         }
+
+
+
+        [HttpGet("{semesterId}/studentYear/{studentYear}/groups")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetGroupsBySemesterId_StudentYear(int semesterId, int studentYear,[FromQuery] TakeSkipModel takeSkipModel)
+        {
+            var response = await _groupsRepo.GetGroupsBySemesterId_StudentYear(semesterId, studentYear,takeSkipModel);
+
+            return StatusCode(response.responseCode, response);
+
+        }
+
+        [HttpGet("active/studentYear/{studentYear}/groups")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetGroupsByActiveSemester_StudentYear(int studentYear, [FromQuery] TakeSkipModel takeSkipModel)
+        {
+            var response = await _groupsRepo.GetGroupsByActiveSemester_StudentYear(studentYear, takeSkipModel);
+
+            return StatusCode(response.responseCode, response);
+
+        }
+
+
+        [HttpGet("active/courses")]
+        [Authorize(Roles = "admin,root")]
+        public async Task<IActionResult> GetActiveSemesterCourses()
+        {
+            var response = await _coursesSemestersRepo.GetActiveSemesterCourses();
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPut("active/courses")]
+        [Authorize(Roles = "admin,root")]
+        public async Task<IActionResult> EditActiveCourses([FromBody] bool isActive)
+        {
+            var response = await _coursesSemestersRepo.EditActiveStatusForAllCourses(isActive);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+
     }
 }

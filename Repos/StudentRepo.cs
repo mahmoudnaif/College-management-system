@@ -174,38 +174,38 @@ namespace College_managemnt_system.Repos
             return new CustomResponse<StudentDTO>(200, "Student retreived", studentDTO);
         }
 
-        public async Task<CustomResponse<IEnumerable<StudentDTO>>> GetStudentSByYear(int year, TakeSkipModel model)
+        public async Task<CustomResponse<List<StudentDTO>>> GetStudentSByYear(int year, TakeSkipModel model)
         {
             if (model.skip < 0 || model.take < 1)
-                return new CustomResponse<IEnumerable<StudentDTO>>(400, "Take must be more than 0 and skip must be bigger than or equal to 0");
+                return new CustomResponse<List<StudentDTO>>(400, "Take must be more than 0 and skip must be bigger than or equal to 0");
 
-            IEnumerable<Student> students = _context.Students.Where(S => S.EnrollmentDate.Year == year).Skip(model.skip).Take(model.take);
+            List<Student> students = await _context.Students.Where(S => S.EnrollmentDate.Year == year).Skip(model.skip).Take(model.take).ToListAsync();
 
-            if (students.Count() == 0)
-                return new CustomResponse<IEnumerable<StudentDTO>>(404, "No students were found");
+            if (!students.Any())
+                return new CustomResponse<List<StudentDTO>>(404, "No students were found");
 
-            IEnumerable<StudentDTO> studentsDTO = _mapper.Map<IEnumerable<StudentDTO>>(students);
+            List<StudentDTO> studentsDTO = _mapper.Map<List<StudentDTO>>(students);
 
-            return new CustomResponse<IEnumerable<StudentDTO>>(200, "Students retreived", studentsDTO);
+            return new CustomResponse<List<StudentDTO>>(200, "Students retreived", studentsDTO);
         }
 
-        public async Task<CustomResponse<IEnumerable<StudentDTO>>> SearchStudentsByName(string searchQuery, TakeSkipModel model)
+        public async Task<CustomResponse<List<StudentDTO>>> SearchStudentsByName(string searchQuery, TakeSkipModel model)
         {
             if (searchQuery.Trim() == "")
-                return new CustomResponse<IEnumerable<StudentDTO>>(400, "Search query must be specefied");
+                return new CustomResponse<List<StudentDTO>>(400, "Search query must be specefied");
 
             if (model.skip < 0 || model.take < 1)
-                return new CustomResponse<IEnumerable<StudentDTO>>(400, "Take must be more than 0 and skip must be bigger than or equal to 0");
+                return new CustomResponse<List<StudentDTO>>(400, "Take must be more than 0 and skip must be bigger than or equal to 0");
 
 
-            IEnumerable<Student> students = _context.Students.Where(S => $"{S.FirstName} {S.FathertName} {S.GrandfatherName} {S.LastName}".StartsWith(searchQuery)).Skip(model.skip).Take(model.take);
+            List<Student> students = await _context.Students.Where(S => $"{S.FirstName} {S.FathertName} {S.GrandfatherName} {S.LastName}".StartsWith(searchQuery)).Skip(model.skip).Take(model.take).ToListAsync();
 
-            if (students.Count() == 0)
-                return new CustomResponse<IEnumerable<StudentDTO>>(404, "No students were found");
+            if (!students.Any())
+                return new CustomResponse<List<StudentDTO>>(404, "No students were found");
 
-            IEnumerable<StudentDTO> studentsDTO = _mapper.Map<IEnumerable<StudentDTO>>(students);
+            List<StudentDTO> studentsDTO = _mapper.Map<List<StudentDTO>>(students);
 
-            return new CustomResponse<IEnumerable<StudentDTO>>(200, "Students retreived", studentsDTO);
+            return new CustomResponse<List<StudentDTO>>(200, "Students retreived", studentsDTO);
 
         }
     }

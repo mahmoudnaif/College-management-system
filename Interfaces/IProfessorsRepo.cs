@@ -6,9 +6,9 @@ namespace College_managemnt_system.Interfaces
 {
     public interface IProfessorsRepo
     {
-        public Task<CustomResponse<IEnumerable<ProfessorDTO>>> GetProfessorsByDepartment(int departmentId,TakeSkipModel takeSkipModel);
+        public Task<CustomResponse<List<ProfessorDTO>>> GetProfessorsByDepartment(int departmentId,TakeSkipModel takeSkipModel);
 
-        public Task<CustomResponse<IEnumerable<ProfessorDTO>>> GetAllProfessors(TakeSkipModel takeSkipModel);
+        public Task<CustomResponse<List<ProfessorDTO>>> GetAllProfessors(TakeSkipModel takeSkipModel);
 
         public Task<CustomResponse<ProfessorDTO>> Add(ProfessorInputModel model);
 

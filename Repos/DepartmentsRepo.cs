@@ -97,18 +97,18 @@ namespace College_managemnt_system.Repos
 
         }
 
-        public async Task<CustomResponse<IEnumerable<DepartmentDTO>>> GetDepartments()
+        public async Task<CustomResponse<List<DepartmentDTO>>> GetDepartments()
         {
-            IEnumerable<Department> departments = _context.Departments;
+            List<Department> departments = await _context.Departments.ToListAsync();
 
 
-            if(departments == null || departments.Count() == 0)
-                return new CustomResponse<IEnumerable<DepartmentDTO>>(404,"No departments found");
+            if(departments == null || !departments.Any())
+                return new CustomResponse<List<DepartmentDTO>>(404,"No departments found");
 
 
-            IEnumerable<DepartmentDTO> departmentsDTO = _mapper.Map<IEnumerable<DepartmentDTO>>(departments);
+            List<DepartmentDTO> departmentsDTO = _mapper.Map<List<DepartmentDTO>>(departments);
 
-            return new CustomResponse<IEnumerable<DepartmentDTO>>(200, "Departments retreived", departmentsDTO);
+            return new CustomResponse<List<DepartmentDTO>>(200, "Departments retreived", departmentsDTO);
 
         }
     }

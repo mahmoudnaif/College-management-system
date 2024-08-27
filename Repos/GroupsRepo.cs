@@ -80,5 +80,38 @@ namespace College_managemnt_system.Repos
             }
 
         }
+
+        public async Task<CustomResponse<List<GroupDTO>>> GetGroupsByActiveSemester_StudentYear(int studentsYear, TakeSkipModel model)
+        {
+            if (model.skip < 0 && model.take < 1)
+                return new CustomResponse<List<GroupDTO>>(400, "Take must be more than 0 and skip must be more than or equal to 0");
+
+            if (!(studentsYear > 0 && studentsYear < 5))
+                return new CustomResponse<List<GroupDTO>>(400, "Student year must be between 1 and 4");
+
+            Semester semester = await _context.Semesters.FirstOrDefaultAsync(S=>S.IsActive);
+
+            if (semester == null)
+                return new CustomResponse<List<GroupDTO>>(404, "No active semester");
+
+            return await GetGroupsBySemesterId_StudentYear(semester.SemesterId,studentsYear, model);
+        }
+
+        public async Task<CustomResponse<List<GroupDTO>>> GetGroupsBySemesterId_StudentYear(int semesterId, int studentsYear, TakeSkipModel model)
+        {
+            if (model.skip < 0 && model.take < 1)
+                return new CustomResponse<List<GroupDTO>>(400, "Take must be more than 0 and skip must be more than or equal to 0");
+
+            if (!(studentsYear > 0 && studentsYear < 5))
+                return new CustomResponse<List<GroupDTO>>(400, "Student year must be between 1 and 4");
+
+            List<Group> groups = await _context.Groups.Where(G => G.SemesterId == semesterId && G.StudentsYear == studentsYear).Skip(model.skip).Take(model.take).ToListAsync();
+
+            if (!groups.Any())
+                return new CustomResponse<List<GroupDTO>>(404, "No groups were found");
+
+            List<GroupDTO> groupsDTO= _mapper.Map<List<GroupDTO>>(groups);
+            return new CustomResponse<List<GroupDTO>>(200,"Groups retreived successfully",groupsDTO);
+        }
     }
 }

@@ -20,21 +20,21 @@ namespace College_managemnt_system.Repos
             _mapper = mapper;
         }
 
-        public async Task<CustomResponse<IEnumerable<CourseDTO>>> GetCourses(TakeSkipModel takeSkipModel)
+        public async Task<CustomResponse<List<CourseDTO>>> GetCourses(TakeSkipModel takeSkipModel)
         {
             if (takeSkipModel.take < 0 ||  takeSkipModel.skip < 0)
-                return new CustomResponse<IEnumerable<CourseDTO>>(400, "Take and skip must more than or equal 0");
+                return new CustomResponse<List<CourseDTO>>(400, "Take and skip must more than or equal 0");
 
 
-            IEnumerable<Course> courses = _context.Courses.Skip(takeSkipModel.skip)
-                                                          .Take(takeSkipModel.take);
+            List<Course> courses = await _context.Courses.Skip(takeSkipModel.skip)
+                                                          .Take(takeSkipModel.take).ToListAsync();
 
-            if (courses.Count() == 0)
-                return new CustomResponse<IEnumerable<CourseDTO>>(404, "Not found");
+            if (!courses.Any())
+                return new CustomResponse<List<CourseDTO>>(404, "Not found");
 
-            IEnumerable<CourseDTO> coursesDTO = _mapper.Map<IEnumerable<CourseDTO>>(courses);
+            List<CourseDTO> coursesDTO = _mapper.Map<List<CourseDTO>>(courses);
 
-            return new CustomResponse<IEnumerable<CourseDTO>>(200,"Courses Retreived", coursesDTO);
+            return new CustomResponse<List<CourseDTO>>(200,"Courses Retreived", coursesDTO);
 
         }
         public async Task<CustomResponse<CourseDTO>> GetCourseByCourseCode(string courseCode)

@@ -7,7 +7,7 @@ namespace College_managemnt_system.Interfaces
 {
     public interface IDepartmentsRepo
     {
-        public Task<CustomResponse<IEnumerable<DepartmentDTO>>> GetDepartments();
+        public Task<CustomResponse<List<DepartmentDTO>>> GetDepartments();
 
         //public Task<CustomResponse<Department>> GetDepartmentById(int departmentId); 
         public Task<CustomResponse<DepartmentDTO>> AddDepartment(string departmnetName);

@@ -6,7 +6,7 @@ namespace College_managemnt_system.Interfaces
 {
     public interface ISemstersRepo
     {
-        public Task<CustomResponse<IEnumerable<SemesterDTO>>> GetSemesters(TakeSkipModel takeSkipModel);
+        public Task<CustomResponse<List<SemesterDTO>>> GetSemesters(TakeSkipModel takeSkipModel);
         public Task<CustomResponse<SemesterDTO>> GetSingleSemester(int semesterID);
 
         public Task<CustomResponse<SemesterDTO>> GetSemesterByNameYear(GetSemesterModel getSemesterModel);

@@ -210,33 +210,33 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<IEnumerable<ProfessorDTO>>> GetAllProfessors(TakeSkipModel takeSkipModel)
+        public async Task<CustomResponse<List<ProfessorDTO>>> GetAllProfessors(TakeSkipModel takeSkipModel)
         {
-            IEnumerable<Professor> professors = _context.Professors.Skip(takeSkipModel.skip).Take(takeSkipModel.take);
+            List<Professor> professors = await _context.Professors.Skip(takeSkipModel.skip).Take(takeSkipModel.take).ToListAsync();
 
-            if(professors.Count() == 0)
-                return new CustomResponse<IEnumerable<ProfessorDTO>>(404,"Not found");
+            if(!professors.Any())
+                return new CustomResponse<List<ProfessorDTO>>(404,"Not found");
 
-            IEnumerable<ProfessorDTO> professorsDTO = _mapper.Map<IEnumerable<ProfessorDTO>>(professors);
+            List<ProfessorDTO> professorsDTO = _mapper.Map<List<ProfessorDTO>>(professors);
 
-            return new CustomResponse<IEnumerable<ProfessorDTO>>(200, "Professors retreived succesfully", professorsDTO);
+            return new CustomResponse<List<ProfessorDTO>>(200, "Professors retreived succesfully", professorsDTO);
         }
 
-        public async Task<CustomResponse<IEnumerable<ProfessorDTO>>> GetProfessorsByDepartment(int departmentId, TakeSkipModel takeSkipModel)
+        public async Task<CustomResponse<List<ProfessorDTO>>> GetProfessorsByDepartment(int departmentId, TakeSkipModel takeSkipModel)
         {
             /*Department department = await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentId == departmentId);
 
             if (department == null)
                 return new CustomResponse<IEnumerable<ProfessorDTO>>(404, "Department does not exist");*/
 
-            IEnumerable<Professor> professors = _context.Professors.Where(P => P.DepartmentId == departmentId).Skip(takeSkipModel.skip).Take(takeSkipModel.take);
+            List<Professor> professors = await _context.Professors.Where(P => P.DepartmentId == departmentId).Skip(takeSkipModel.skip).Take(takeSkipModel.take).ToListAsync();
 
-            if (professors.Count() == 0)
-                return new CustomResponse<IEnumerable<ProfessorDTO>>(404, "Not found");
+            if (!professors.Any())
+                return new CustomResponse<List<ProfessorDTO>>(404, "Not found");
 
-            IEnumerable<ProfessorDTO> professorsDTO = _mapper.Map<IEnumerable<ProfessorDTO>>(professors);
+            List<ProfessorDTO> professorsDTO = _mapper.Map<List<ProfessorDTO>>(professors);
 
-            return new CustomResponse<IEnumerable<ProfessorDTO>>(200, "Professors retreived succesfully", professorsDTO);
+            return new CustomResponse<List<ProfessorDTO>>(200, "Professors retreived succesfully", professorsDTO);
         }
     }
 }

@@ -7,8 +7,8 @@ namespace College_managemnt_system.Interfaces
 {
     public interface ICoursesSemestersRepo
     {
-        public Task<CustomResponse<IEnumerable<CourseSemesterDTO>>> GetCoursesBySemester(int semesterId);
-        public Task<CustomResponse<IEnumerable<CourseSemesterDTO>>> GetActiveSemesterCourses();
+        public Task<CustomResponse<List<CourseSemesterDTO>>> GetCoursesBySemester(int semesterId);
+        public Task<CustomResponse<List<CourseSemesterDTO>>> GetActiveSemesterCourses();
         public Task<CustomResponse<bool>> EditActiveStatusForAllCourses(bool isActive); // activates or deactivates all the semestercourses assosiated to the current active semester
         public Task<CustomResponse<CourseSemesterDTO>> Add(CourseSemesterInputModel model);
 

@@ -151,9 +151,9 @@ namespace College_managemnt_system.Repos
 
             int semesterId = (int)semesterIdExists;
 
-            List<Coursesemester> coursesemesters = _context.Coursesemesters.Where(CS => CS.SemesterId == semesterId && CS.Isactive != isActive).ToList();
+            List<Coursesemester> coursesemesters = await _context.Coursesemesters.Where(CS => CS.SemesterId == semesterId && CS.Isactive != isActive).ToListAsync();
 
-            if (coursesemesters.Count() == 0)
+            if (!coursesemesters.Any())
                 return new CustomResponse<bool>(400, "No courses were found");
 
             foreach (Coursesemester coursesemester in coursesemesters)
@@ -181,17 +181,17 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<IEnumerable<CourseSemesterDTO>>> GetActiveSemesterCourses()
+        public async Task<CustomResponse<List<CourseSemesterDTO>>> GetActiveSemesterCourses()
         {
             int? semesterIdExists = (await _context.Semesters.FirstOrDefaultAsync(S => S.IsActive == true))?.SemesterId;
 
             if (semesterIdExists == null)
-                return new CustomResponse<IEnumerable<CourseSemesterDTO>>(404, "No active semester at the moment");
+                return new CustomResponse<List<CourseSemesterDTO>>(404, "No active semester at the moment");
 
             int semesterId = (int)semesterIdExists;
 
 
-            IEnumerable<CourseSemesterDTO> coursesemestersDTO = _context.Coursesemesters.Where(CS => CS.SemesterId == semesterId).Join(_context.Courses, CS => CS.CourseId, C => C.CourseId,
+            List<CourseSemesterDTO> coursesemestersDTO = await _context.Coursesemesters.Where(CS => CS.SemesterId == semesterId).Join(_context.Courses, CS => CS.CourseId, C => C.CourseId,
               (CS, C) => new CourseSemesterDTO
               {
                   CourseId = CS.CourseId,
@@ -201,24 +201,24 @@ namespace College_managemnt_system.Repos
                   Isactive = CS.Isactive,
                   ProfessorId = CS.ProfessorId,
               }
-              );
+              ).ToListAsync();
 
-            if (coursesemestersDTO.Count() == 0)
-                return new CustomResponse<IEnumerable<CourseSemesterDTO>>(400, "No courses were found");
+            if (!coursesemestersDTO.Any())
+                return new CustomResponse<List<CourseSemesterDTO>>(400, "No courses were found");
 
-            return new CustomResponse<IEnumerable<CourseSemesterDTO>>(200, "Courses retreived successfully", coursesemestersDTO);
+            return new CustomResponse<List<CourseSemesterDTO>>(200, "Courses retreived successfully", coursesemestersDTO);
         }
 
-        public async Task<CustomResponse<IEnumerable<CourseSemesterDTO>>> GetCoursesBySemester(int semesterId)
+        public async Task<CustomResponse<List<CourseSemesterDTO>>> GetCoursesBySemester(int semesterId)
         {
 
             Semester semester = await _context.Semesters.FirstOrDefaultAsync(S => S.SemesterId == semesterId);
             if (semester == null)
-                return  new CustomResponse<IEnumerable<CourseSemesterDTO>>(404, "Semester does not exist");
+                return  new CustomResponse<List<CourseSemesterDTO>>(404, "Semester does not exist");
             
 
 
-            IEnumerable<CourseSemesterDTO> coursesemestersDTO = _context.Coursesemesters.Where(CS => CS.SemesterId == semesterId).Join(_context.Courses, CS => CS.CourseId, C => C.CourseId,
+            List<CourseSemesterDTO> coursesemestersDTO =await _context.Coursesemesters.Where(CS => CS.SemesterId == semesterId).Join(_context.Courses, CS => CS.CourseId, C => C.CourseId,
               (CS, C) => new CourseSemesterDTO
               {
                   CourseId = CS.CourseId,
@@ -228,12 +228,12 @@ namespace College_managemnt_system.Repos
                   Isactive = CS.Isactive,
                   ProfessorId = CS.ProfessorId,
               }
-              );
+              ).ToListAsync();
 
-            if (coursesemestersDTO.Count() == 0)
-                return new CustomResponse<IEnumerable<CourseSemesterDTO>>(400, "No courses were found");
+            if (!coursesemestersDTO.Any())
+                return new CustomResponse<List<CourseSemesterDTO>>(400, "No courses were found");
 
-            return new CustomResponse<IEnumerable<CourseSemesterDTO>>(200, "Courses retreived successfully", coursesemestersDTO);
+            return new CustomResponse<List<CourseSemesterDTO>>(200, "Courses retreived successfully", coursesemestersDTO);
         }
 
 
