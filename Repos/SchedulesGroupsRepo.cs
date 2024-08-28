@@ -50,7 +50,7 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<List<SchedueleDTO>>> GetSchedulsByGroup(int groupId)
         {
-            List<SchedueleDTO> schedules = await (from SG in _context.SchedulesJoinsgroups
+            List<SchedueleDTO> scheduelesDTO = await (from SG in _context.SchedulesJoinsgroups
                                               where SG.GroupId == groupId
                                               join S in _context.Schedules on SG.ScheduleId equals S.ScheduleId
                                               join CS in _context.Coursesemesters on S.CourseSemesterId equals CS.CourseSemesterId
@@ -78,11 +78,8 @@ namespace College_managemnt_system.Repos
                                                   }).ToListAsync();
 
 
-
-            if (!schedules.Any())
+            if (!scheduelesDTO.Any())
                 return new CustomResponse<List<SchedueleDTO>>(404, "No schedules where found");
-
-            List<SchedueleDTO> scheduelesDTO = _mapper.Map<List<SchedueleDTO>>(schedules);
 
             return new CustomResponse<List<SchedueleDTO>>(200, "Schedules retreived successfully", scheduelesDTO);
         }

@@ -212,7 +212,11 @@ namespace College_managemnt_system.Repos
 
         public async Task<CustomResponse<List<ProfessorDTO>>> GetAllProfessors(TakeSkipModel takeSkipModel)
         {
-            List<Professor> professors = await _context.Professors.Skip(takeSkipModel.skip).Take(takeSkipModel.take).ToListAsync();
+            if (takeSkipModel.take <= 0 || takeSkipModel.skip < 0)
+                return new CustomResponse<List<ProfessorDTO>>(400, "Take must be more than 0 and skip must be more than or equal 0");
+
+
+            List<Professor> professors = await _context.Professors.OrderBy(P =>P.ProfessorId).Skip(takeSkipModel.skip).Take(takeSkipModel.take).ToListAsync();
 
             if(!professors.Any())
                 return new CustomResponse<List<ProfessorDTO>>(404,"Not found");
@@ -228,8 +232,10 @@ namespace College_managemnt_system.Repos
 
             if (department == null)
                 return new CustomResponse<IEnumerable<ProfessorDTO>>(404, "Department does not exist");*/
+            if (takeSkipModel.take <= 0 || takeSkipModel.skip < 0)
+                return new CustomResponse<List<ProfessorDTO>>(400, "Take must be more than 0 and skip must be more than or equal 0");
 
-            List<Professor> professors = await _context.Professors.Where(P => P.DepartmentId == departmentId).Skip(takeSkipModel.skip).Take(takeSkipModel.take).ToListAsync();
+            List<Professor> professors = await _context.Professors.Where(P => P.DepartmentId == departmentId).OrderBy(P=>P.ProfessorId).Skip(takeSkipModel.skip).Take(takeSkipModel.take).ToListAsync();
 
             if (!professors.Any())
                 return new CustomResponse<List<ProfessorDTO>>(404, "Not found");

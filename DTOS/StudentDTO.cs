@@ -9,7 +9,9 @@
         public string LastName { get; set; } = null!;
         public string Phone { get; set; } = null!;
         public string NationalNumber { get; set; } = null!;
-        public int Cgpa { get; set; }
+        public float Cgpa { get; set; }
         public DateTime EnrollmentDate { get; set; }
+        public int TotalHours { get; set; }
+        public int? DepartmentId { get; set; }
     }
 }

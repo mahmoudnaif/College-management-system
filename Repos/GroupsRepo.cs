@@ -105,7 +105,7 @@ namespace College_managemnt_system.Repos
             if (!(studentsYear > 0 && studentsYear < 5))
                 return new CustomResponse<List<GroupDTO>>(400, "Student year must be between 1 and 4");
 
-            List<Group> groups = await _context.Groups.Where(G => G.SemesterId == semesterId && G.StudentsYear == studentsYear).Skip(model.skip).Take(model.take).ToListAsync();
+            List<Group> groups = await _context.Groups.Where(G => G.SemesterId == semesterId && G.StudentsYear == studentsYear).OrderBy(S=>S.SemesterId).Skip(model.skip).Take(model.take).ToListAsync();
 
             if (!groups.Any())
                 return new CustomResponse<List<GroupDTO>>(404, "No groups were found");

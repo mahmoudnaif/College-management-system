@@ -82,5 +82,24 @@ namespace College_managemnt_system.Controllers
         }
 
 
+        [HttpPut("All/gpa_totalhours")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> calculateALLStudentsCGPA_totalHours()
+        {
+            var result = await _studentRepo.calculateALLStudentsCGPA_totalHours();
+
+            return StatusCode(result.responseCode, result);
+        }
+
+
+        [HttpPut("{studentId}/gpa_totalhours")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> Upda(int studentId)
+        {
+            var result = await _studentRepo.calculateStudentCGPA_totalHours(studentId);
+
+            return StatusCode(result.responseCode, result);
+        }
+
     }
 }

@@ -13,5 +13,10 @@ namespace College_managemnt_system.Interfaces
         public Task<CustomResponse<StudentDTO>> EditPhone(int studentId, string phoneNumber);
         public Task<CustomResponse<StudentDTO>> EditName(int studentId, FullNameInputModel model);
         public Task<CustomResponse<bool>> Delete(int studentId);
+
+        public Task<CustomResponse<bool>> calculateALLStudentsCGPA_totalHours();
+        public Task<CustomResponse<StudentDTO>> calculateStudentCGPA_totalHours(int sutdentId);
+
+
     }
 }

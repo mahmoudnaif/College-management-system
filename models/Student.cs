@@ -19,7 +19,7 @@ public partial class Student
 
     public string NationalNumber { get; set; } = null!;
 
-    public int Cgpa { get; set; }
+    public float Cgpa { get; set; }
 
     public DateTime EnrollmentDate { get; set; }
 
@@ -27,7 +27,11 @@ public partial class Student
 
     public int TotalHours { get; set; }
 
+    public int? DepartmentId { get; set; }
+
     public virtual Account Account { get; set; } = null!;
+
+    public virtual Department? Department { get; set; }
 
     public virtual ICollection<StduentsJoinsdepartment> StduentsJoinsdepartments { get; set; } = new List<StduentsJoinsdepartment>();
 

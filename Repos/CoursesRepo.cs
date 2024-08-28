@@ -26,7 +26,7 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<List<CourseDTO>>(400, "Take and skip must more than or equal 0");
 
 
-            List<Course> courses = await _context.Courses.Skip(takeSkipModel.skip)
+            List<Course> courses = await _context.Courses.OrderBy(C => C.CourseId).Skip(takeSkipModel.skip)
                                                           .Take(takeSkipModel.take).ToListAsync();
 
             if (!courses.Any())

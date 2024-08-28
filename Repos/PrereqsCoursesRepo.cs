@@ -75,7 +75,7 @@ namespace College_managemnt_system.Repos
             {
                 _context.Remove(prereq);
                 await _context.SaveChangesAsync();
-                return new CustomResponse<bool>(200, "Course deleted successfully");
+                return new CustomResponse<bool>(200, "Prereqsuit Course deleted successfully");
             }
             catch
             {

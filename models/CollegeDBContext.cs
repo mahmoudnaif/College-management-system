@@ -171,6 +171,10 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.GroupId).HasName("Groups$PrimaryKey");
 
+            entity.HasIndex(e => e.SemesterId, "GroupsIndex$SemesterId");
+
+            entity.HasIndex(e => e.StudentsYear, "GroupsIndex$StudentYear");
+
             entity.HasIndex(e => new { e.GroupName, e.StudentsYear, e.SemesterId }, "UQ_Groups_GroupName_StudentsYear_SemesterID").IsUnique();
 
             entity.Property(e => e.GroupId).HasColumnName("GroupID");
@@ -206,8 +210,6 @@ public partial class CollegeDBContext : DbContext
         modelBuilder.Entity<Professor>(entity =>
         {
             entity.HasKey(e => e.ProfessorId).HasName("Professors$PrimaryKey");
-
-            entity.HasIndex(e => e.AccountId, "UQ__Professo__F267253FBB207F5B").IsUnique();
 
             entity.HasIndex(e => e.NationalNumber, "UQ__Professo__FEA173C287218C2A").IsUnique();
 
@@ -272,6 +274,8 @@ public partial class CollegeDBContext : DbContext
 
             entity.HasIndex(e => e.GroupId, "SchedulesJOINSGroups$GroupID");
 
+            entity.HasIndex(e => e.ScheduleId, "SchedulesJOINSGroups$Scheduleid");
+
             entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
             entity.Property(e => e.GroupId).HasColumnName("GroupID");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
@@ -306,6 +310,8 @@ public partial class CollegeDBContext : DbContext
 
             entity.ToTable("StduentsJOINSDepartment");
 
+            entity.HasIndex(e => e.DepartmentId, "StduentsJOINSDepartment$DepartmentID");
+
             entity.HasIndex(e => e.StudentId, "StduentsJOINSDepartment$StudentID");
 
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
@@ -327,11 +333,10 @@ public partial class CollegeDBContext : DbContext
 
             entity.HasIndex(e => e.AccountId, "UQ__tmp_ms_x__F267253F7BB38717").IsUnique();
 
-            entity.HasIndex(e => e.AccountId, "UQ__tmp_ms_x__F267253FA3601381").IsUnique();
-
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.AccountId).HasColumnName("accountID");
             entity.Property(e => e.Cgpa).HasColumnName("CGPA");
+            entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.EnrollmentDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -347,6 +352,10 @@ public partial class CollegeDBContext : DbContext
                 .HasForeignKey<Student>(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Student_Accounts");
+
+            entity.HasOne(d => d.Department).WithMany(p => p.Students)
+                .HasForeignKey(d => d.DepartmentId)
+                .HasConstraintName("FK_Students_Departments");
         });
 
         modelBuilder.Entity<StudentCourse>(entity =>
