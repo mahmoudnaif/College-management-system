@@ -243,7 +243,7 @@ namespace College_managemnt_system.Repos
 
         private async Task<bool> CheckDeActiveStudents(int courseSemesterId)
         {
-            StudentCourse studentCourses = await _context.StudentCourses.FirstOrDefaultAsync(SC => SC.CourseSemesterId == courseSemesterId && SC.IsFinished == false);
+            StudentCourse studentCourses = await _context.StudentCourses.FirstOrDefaultAsync(SC => SC.CourseSemesterId == courseSemesterId && (SC.Status == "inprogress" ||SC.Status == "incomplete"));
 
             if (studentCourses == null)
                 return true;

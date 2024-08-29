@@ -367,6 +367,9 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
             entity.Property(e => e.Grade).HasMaxLength(255);
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValue("inprogress");
 
             entity.HasOne(d => d.CourseSemester).WithMany(p => p.StudentCourses)
                 .HasForeignKey(d => d.CourseSemesterId)

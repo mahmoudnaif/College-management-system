@@ -229,7 +229,7 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<StudentDTO>(404, "Student does not exsit");
 
             var result = await (from SC in _context.StudentCourses
-                                where SC.StudentId == studentId
+                                where SC.StudentId == studentId && SC.Status == "completed"
                                 join CS in _context.Coursesemesters on SC.CourseSemesterId equals CS.CourseSemesterId
                                 join C in _context.Courses on CS.CourseId equals C.CourseId
                                 select new
@@ -274,7 +274,7 @@ namespace College_managemnt_system.Repos
                         s.totalHours = COALESCE(cgpa_results.TotalCreditHours, 0)
                     FROM 
                         Students s
-                    INNER JOIN 
+                    LEFT JOIN 
                         (SELECT 
                             sc.StudentID,
                             SUM(c.Credits) AS TotalCreditHours,
@@ -299,7 +299,7 @@ namespace College_managemnt_system.Repos
                         INNER JOIN 
                             Courses c ON cs.CourseID = c.CourseID
                         WHERE 
-                            sc.IsFinished = 1
+                            sc.Status = 'completed'
                         GROUP BY 
                             sc.StudentID
                         ) AS cgpa_results 

@@ -11,7 +11,7 @@ public partial class StudentCourse
 
     public string Grade { get; set; } = null!;
 
-    public bool IsFinished { get; set; }
+    public string Status { get; set; } = null!;
 
     public virtual Coursesemester CourseSemester { get; set; } = null!;
 
