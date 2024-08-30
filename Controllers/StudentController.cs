@@ -12,10 +12,12 @@ namespace College_managemnt_system.Controllers
     public class StudentController : Controller 
     {
         private readonly IStudentRepo _studentRepo;
+        private readonly IStudetnsDepartmentsRepo _studetnsDepartmentsRepo;
 
-        public StudentController(IStudentRepo studentRepo)
+        public StudentController(IStudentRepo studentRepo,IStudetnsDepartmentsRepo studetnsDepartmentsRepo)
         {
             _studentRepo = studentRepo;
+            _studetnsDepartmentsRepo = studetnsDepartmentsRepo;
         }
 
         [HttpGet("year/{year}")]
@@ -101,5 +103,23 @@ namespace College_managemnt_system.Controllers
             return StatusCode(result.responseCode, result);
         }
 
+        [HttpPost("{studentId}/department")]
+        [Authorize(Roles ="root,admin")]
+        public async Task<IActionResult> AddDepartment(int studentId,[FromBody] int departmentId)
+        {
+            var response = await _studetnsDepartmentsRepo.AddStudentDepartment(studentId, departmentId);
+
+            return StatusCode(response.responseCode, response);
+
+        }
+
+        [HttpPut("{studentId}/department")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> EditDepartment(int studentId, [FromBody] int departmentId)
+        {
+            var response = await _studetnsDepartmentsRepo.changeStudentDepartment(studentId, departmentId);
+
+            return StatusCode(response.responseCode, response);
+        }
     }
 }

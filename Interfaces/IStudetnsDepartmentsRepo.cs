@@ -8,8 +8,8 @@ namespace College_managemnt_system.Interfaces
 {
     public interface IStudetnsDepartmentsRepo
     {
-        public CustomResponse<bool> AddStudentDepartment();
-        public CustomResponse<bool> change();
-        public CustomResponse<StudentDTO> ViewStudentsByDepartment(int departmentId, TakeSkipModel model);
+        public Task<CustomResponse<StudentDTO>> AddStudentDepartment(int studentId,int departmentId);
+        public Task<CustomResponse<StudentDTO>> changeStudentDepartment(int studentId, int departmentId);
+        public Task<CustomResponse<List<StudentDTO>>> ViewStudentsByDepartment(int departmentId, TakeSkipModel model);
     }
 }

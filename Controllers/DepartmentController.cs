@@ -12,11 +12,13 @@ namespace College_managemnt_system.Controllers
     {
         private readonly IDepartmentsRepo _departmentsRepo;
         private readonly IProfessorsRepo _professorsRepo;
+        private readonly IStudetnsDepartmentsRepo _studetnsDepartmentsRepo;
 
-        public DepartmentController(IDepartmentsRepo departmentsRepo, IProfessorsRepo professorsRepo)
+        public DepartmentController(IDepartmentsRepo departmentsRepo, IProfessorsRepo professorsRepo,IStudetnsDepartmentsRepo studetnsDepartmentsRepo)
         {
             _departmentsRepo = departmentsRepo;
             _professorsRepo = professorsRepo;
+            _studetnsDepartmentsRepo = studetnsDepartmentsRepo;
         }
 
 
@@ -74,6 +76,14 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
+        [HttpGet("{departmentId}/students")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetStudentsByDepartment(int departmentId,[FromQuery] TakeSkipModel takeSkipModel)
+        {
+            var response = await _studetnsDepartmentsRepo.ViewStudentsByDepartment(departmentId, takeSkipModel);
+
+            return StatusCode(response.responseCode, response);
+        }
 
     }
 }
