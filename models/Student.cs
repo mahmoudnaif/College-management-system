@@ -33,7 +33,6 @@ public partial class Student
 
     public virtual Department? Department { get; set; }
 
-    public virtual ICollection<StduentsJoinsdepartment> StduentsJoinsdepartments { get; set; } = new List<StduentsJoinsdepartment>();
 
     public virtual ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
 

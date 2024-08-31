@@ -1,35 +1,53 @@
 ﻿using College_managemnt_system.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace College_managemnt_system.Repos
 {
     public class BlackListTokensRepo : IBlackListTokensRepo
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _distributedCache;
 
-        public BlackListTokensRepo(IMemoryCache memoryCache)
+        public BlackListTokensRepo(IDistributedCache distributedCache)
         {
-            _memoryCache = memoryCache;
+            _distributedCache = distributedCache;
         }
-        public Task BlacklistTokensAsync(int accountId, DateTime timestamp)
+        public async Task<bool> BlacklistTokensAsync(int accountId, DateTime timestamp)
         {
-            int timeCached = 3 * 60; ; 
-          
+            int timeCached = 3 * 60; ;
 
-            _memoryCache.Set(accountId, timestamp, new MemoryCacheEntryOptions
+            try
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(timeCached)
-            });
-            return Task.CompletedTask;
-        }
+                await _distributedCache.SetStringAsync(accountId.ToString(), timestamp.ToString("o"), new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(timeCached)
+                });
 
-        public Task<bool> IsTokenBlacklisted(int accountId, DateTime issuedAt)
-        {
-            if (_memoryCache.TryGetValue(accountId, out DateTime blacklistTime))
-            {
-                return Task.FromResult(issuedAt <= blacklistTime);
+                return true;
             }
-            return Task.FromResult(false);
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> IsTokenBlacklisted(int accountId, DateTime issuedAt)
+        {
+            try
+            {
+                string dataAsString = await _distributedCache.GetStringAsync(accountId.ToString());
+                if (dataAsString == null)
+                    return false;
+
+                DateTime blacklistTime = DateTime.Parse(dataAsString, null, System.Globalization.DateTimeStyles.RoundtripKind);
+
+                return issuedAt <= blacklistTime;
+            }
+            catch
+            {
+                return true; //If redis some how failed all tokens will be treated as blacklisted.
+                             //(Edit later or keep it if it meets up with the maximum securtiy specifications for a college management system).
+            }
         }
     }
 }

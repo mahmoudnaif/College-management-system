@@ -13,7 +13,6 @@ public partial class Department
 
     public virtual ICollection<Professor> Professors { get; set; } = new List<Professor>();
 
-    public virtual ICollection<StduentsJoinsdepartment> StduentsJoinsdepartments { get; set; } = new List<StduentsJoinsdepartment>();
 
     public virtual ICollection<Student> Students { get; set; } = new List<Student>();
 }

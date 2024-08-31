@@ -2,7 +2,7 @@
 {
     public interface IBlackListTokensRepo
     {
-        public Task BlacklistTokensAsync(int accountId, DateTime timestamp);
+        public Task<bool> BlacklistTokensAsync(int accountId, DateTime timestamp);
         public Task<bool> IsTokenBlacklisted(int accountId, DateTime issuedAt);
     }
 }

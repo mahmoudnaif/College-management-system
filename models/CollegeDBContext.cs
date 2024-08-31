@@ -39,7 +39,6 @@ public partial class CollegeDBContext : DbContext
 
     public virtual DbSet<Semester> Semesters { get; set; }
 
-    public virtual DbSet<StduentsJoinsdepartment> StduentsJoinsdepartments { get; set; }
 
     public virtual DbSet<Student> Students { get; set; }
 
@@ -304,28 +303,7 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.StartDate).HasPrecision(0);
         });
 
-        modelBuilder.Entity<StduentsJoinsdepartment>(entity =>
-        {
-            entity.HasKey(e => new { e.DepartmentId, e.StudentId }).HasName("StduentsJOINSDepartment$PrimaryKey");
-
-            entity.ToTable("StduentsJOINSDepartment");
-
-            entity.HasIndex(e => e.DepartmentId, "StduentsJOINSDepartment$DepartmentID");
-
-            entity.HasIndex(e => e.StudentId, "StduentsJOINSDepartment$StudentID");
-
-            entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
-            entity.Property(e => e.StudentId).HasColumnName("StudentID");
-            entity.Property(e => e.IsActive).HasDefaultValue(true);
-
-            entity.HasOne(d => d.Department).WithMany(p => p.StduentsJoinsdepartments)
-                .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("StduentsJOINSDepartment$DepartmentsStduentsJOINSDepartment");
-
-            entity.HasOne(d => d.Student).WithMany(p => p.StduentsJoinsdepartments)
-                .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("StduentsJOINSDepartment$StudentsStduentsJOINSDepartment");
-        });
+       
 
         modelBuilder.Entity<Student>(entity =>
         {

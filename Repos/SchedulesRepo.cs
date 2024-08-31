@@ -157,7 +157,7 @@ namespace College_managemnt_system.Repos
             List<SchedueleDTO> Schedules = await (from s in _context.Schedules.Where(S => S.SemesterId == semesterId).OrderBy(S=>S.SemesterId).Skip(model.skip).Take(model.take)
                         join cs in _context.Coursesemesters on s.CourseSemesterId equals cs.CourseSemesterId
                         join c in _context.Courses on cs.CourseId equals c.CourseId
-                        join r in _context.Classrooms on s.ClassroomId equals r.ClassroomId
+                        join r in _context.Classrooms on s.ClassroomId equals r.ClassroomId 
                         select new SchedueleDTO
                         {
                              ScheduleId = s.ScheduleId,
