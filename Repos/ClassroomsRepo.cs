@@ -38,7 +38,7 @@ namespace College_managemnt_system.Repos
             if (searchModel.takeSkip.take < 0 || searchModel.takeSkip.skip < 0)
                 return new CustomResponse<List<ClassRoomDTO>>(400, "Take and skip must more than or equal 0");
 
-            var classrooms = await _context.Classrooms.Where(C => C.RoomNumber.StartsWith(searchModel.searchQuery)).OrderBy(C => C.RoomNumber).Skip(searchModel.takeSkip.skip).Take(searchModel.takeSkip.take).ToListAsync();
+            var classrooms = await _context.Classrooms.Where(C => C.RoomNumber.ToString().StartsWith(searchModel.searchQuery)).OrderBy(C => C.RoomNumber).Skip(searchModel.takeSkip.skip).Take(searchModel.takeSkip.take).ToListAsync();
 
             if (!classrooms.Any())
                 return new CustomResponse<List<ClassRoomDTO>>(404, "Not found");
@@ -49,10 +49,9 @@ namespace College_managemnt_system.Repos
         }
         public async Task<CustomResponse<ClassRoomDTO>> AddClassRoom(ClassRoomInputModel classRoomInputModel)
         {
-            if (!int.TryParse(classRoomInputModel.RoomNumber, out int roomNumber) || !int.TryParse(classRoomInputModel.Building, out int buildingNumber))
-                return new CustomResponse<ClassRoomDTO>(400, "Room and building numbers must be numbers");
+           
 
-            if (roomNumber <= 0 || buildingNumber <= 0 || classRoomInputModel.Capacity < 0)
+            if (classRoomInputModel.RoomNumber<= 0 || classRoomInputModel.Building <= 0 || classRoomInputModel.Capacity < 0)
                 return new CustomResponse<ClassRoomDTO>(400, "Room number, building number and capacity must be positive values");
 
 
@@ -82,12 +81,12 @@ namespace College_managemnt_system.Repos
 
 
         }
-        public async Task<CustomResponse<ClassRoomDTO>> EditClassRoomCapacity(int classRoomId, int capacity)
+        public async Task<CustomResponse<ClassRoomDTO>> EditClassRoomCapacity(int roomNumber, int capacity)
         {
             if (capacity < 0)
                 return new CustomResponse<ClassRoomDTO>(400, "capacity must be more than or equal to 0");
 
-            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.ClassroomId == classRoomId);
+            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.RoomNumber == roomNumber);
 
             if (classroom == null)
                 return new CustomResponse<ClassRoomDTO>(404, "Class room not found");
@@ -108,9 +107,9 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<ClassRoomDTO>(500, "Internal server error");
             }
         }
-        public async Task<CustomResponse<bool>> RemoveClassRoom(int classRoomId)
+        public async Task<CustomResponse<bool>> RemoveClassRoom(int roomNumber)
         {
-            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.ClassroomId == classRoomId);
+            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.RoomNumber == roomNumber);
 
             if (classroom == null)
                 return new CustomResponse<bool>(404, "Class room not found");

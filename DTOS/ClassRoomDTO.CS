@@ -2,11 +2,9 @@
 {
     public class ClassRoomDTO
     {
-        public int ClassroomId { get; set; }
+        public int RoomNumber { get; set; }
 
-        public string RoomNumber { get; set; } = null!;
-
-        public string Building { get; set; } = null!;
+        public int Building { get; set; }
 
         public int Capacity { get; set; }
     }

@@ -6,7 +6,7 @@
 
         public int CourseSemesterId { get; set; }
 
-        public int ClassroomId { get; set; }
+        public int RoomNumber { get; set; }
 
         public int SemesterId { get; set; }
 
@@ -17,7 +17,5 @@
         public int PeriodNumber { get; set; }
 
         public string courseName { get; set; }
-
-        public string roomNumber { get; set; } // TODO. edit the db scheme so that the classroom number is the primary key from now on (int).
     }
 }

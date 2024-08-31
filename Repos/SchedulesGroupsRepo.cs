@@ -55,14 +55,14 @@ namespace College_managemnt_system.Repos
                                               join S in _context.Schedules on SG.ScheduleId equals S.ScheduleId
                                               join CS in _context.Coursesemesters on S.CourseSemesterId equals CS.CourseSemesterId
                                               join C in _context.Courses on CS.CourseId equals C.CourseId
-                                              join CR in _context.Classrooms on S.ClassroomId equals CR.ClassroomId
+                                              
                                                   select new SchedueleDTO
                                                   {
                                                       ScheduleId = S.ScheduleId,
 
                                                       CourseSemesterId = S.CourseSemesterId,
 
-                                                      ClassroomId = S.ClassroomId,
+                                                      RoomNumber = S.RoomNumber,
 
                                                       SemesterId = S.SemesterId,
 
@@ -74,7 +74,7 @@ namespace College_managemnt_system.Repos
 
                                                       courseName = C.CourseName,
 
-                                                      roomNumber = CR.RoomNumber
+                                                   
                                                   }).ToListAsync();
 
 

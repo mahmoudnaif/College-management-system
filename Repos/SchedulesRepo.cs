@@ -26,7 +26,7 @@ namespace College_managemnt_system.Repos
 
             int CourseSemesterId = schdulesInputModel.CourseSemesterId;
 
-            int ClassroomId = schdulesInputModel.ClassroomId;
+            int roomNumber = schdulesInputModel.RoomNumber;
 
             string Type = schdulesInputModel.Type.ToUpper();
 
@@ -55,11 +55,11 @@ namespace College_managemnt_system.Repos
             if (coursesemester == null)
                 return new CustomResponse<SchedueleDTO>(404, "Course does not exist");
 
-            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.ClassroomId == ClassroomId);
+            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.RoomNumber == roomNumber);
             if (classroom == null)
                 return new CustomResponse<SchedueleDTO>(404, "classroom does not exist");
 
-            Schedule scheduleExists = await _context.Schedules.FirstOrDefaultAsync(S => S.ClassroomId == ClassroomId && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber && S.SemesterId == SemesterId);
+            Schedule scheduleExists = await _context.Schedules.FirstOrDefaultAsync(S => S.RoomNumber == roomNumber && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber && S.SemesterId == SemesterId);
             if (scheduleExists != null)
                 return new CustomResponse<SchedueleDTO>(409, "There is a schedule at that time at that palce :> find another spot");
 
@@ -67,7 +67,7 @@ namespace College_managemnt_system.Repos
             Schedule schedule = new Schedule()
             {
                 CourseSemesterId = CourseSemesterId,
-                ClassroomId = ClassroomId,
+                RoomNumber = roomNumber,
                 Type = Type,
                 DayOfWeek = DayOfWeek,
                 PeriodNumber = PeriodNumber,
@@ -80,7 +80,6 @@ namespace College_managemnt_system.Repos
                 await _context.SaveChangesAsync();
                 SchedueleDTO schedueleDTO = _mapper.Map<SchedueleDTO>(schedule);
                 schedueleDTO.courseName = (await _context.Courses.FirstOrDefaultAsync(C => C.CourseId == coursesemester.CourseId))?.CourseName;
-                schedueleDTO.roomNumber = classroom.RoomNumber;
                 return new CustomResponse<SchedueleDTO>(201, "Schedule added successfully", schedueleDTO);
             }
             catch
@@ -92,7 +91,7 @@ namespace College_managemnt_system.Repos
         public async Task<CustomResponse<SchedueleDTO>> EditTimeAndPlace(EditScheduleTimeandPlace editScheduleTimeandPlace)
         {
             int ScheduleId = editScheduleTimeandPlace.ScheduleId;
-            int ClassroomId = editScheduleTimeandPlace.ClassroomId;
+            int roomNumber = editScheduleTimeandPlace.RoomNumber;
             int DayOfWeek = editScheduleTimeandPlace.DayOfWeek;
             int PeriodNumber = editScheduleTimeandPlace.PeriodNumber;
 
@@ -102,7 +101,7 @@ namespace College_managemnt_system.Repos
             if (PeriodNumber < 1 || PeriodNumber > 3) // we should replace the "3" with a dynamic variable sat by the root user
                 return new CustomResponse<SchedueleDTO>(400, "Perion number must be between 1 and 3");
 
-            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.ClassroomId == ClassroomId);
+            Classroom classroom = await _context.Classrooms.FirstOrDefaultAsync(C => C.RoomNumber == roomNumber);
 
             if (classroom == null)
                 return new CustomResponse<SchedueleDTO>(404, "classroom does not exist");
@@ -112,14 +111,14 @@ namespace College_managemnt_system.Repos
             if (schedule == null)
                 return new CustomResponse<SchedueleDTO>(404, "Schedule does not exist");
 
-            Schedule scheduleExists = await _context.Schedules.FirstOrDefaultAsync(S => S.ClassroomId == ClassroomId && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber && S.SemesterId == schedule.SemesterId );
+            Schedule scheduleExists = await _context.Schedules.FirstOrDefaultAsync(S => S.RoomNumber == roomNumber && S.DayOfWeek == DayOfWeek && S.PeriodNumber == PeriodNumber && S.SemesterId == schedule.SemesterId );
 
             if (scheduleExists != null)
                 return new CustomResponse<SchedueleDTO>(409, "There is a schedule at that time at that palce :> find another spot");
 
 
 
-            schedule.ClassroomId = ClassroomId;
+            schedule.RoomNumber = roomNumber;
             schedule.DayOfWeek = DayOfWeek;
             schedule.PeriodNumber = PeriodNumber;
 
@@ -133,7 +132,7 @@ namespace College_managemnt_system.Repos
                     (CS,C) => C.CourseName
                     ).FirstAsync();
 
-                schedueleDTO.roomNumber = classroom.RoomNumber;
+              
                 return new CustomResponse<SchedueleDTO>(200, "Time and place edited successfully", schedueleDTO);
             }
             catch
@@ -157,14 +156,14 @@ namespace College_managemnt_system.Repos
             List<SchedueleDTO> Schedules = await (from s in _context.Schedules.Where(S => S.SemesterId == semesterId).OrderBy(S=>S.SemesterId).Skip(model.skip).Take(model.take)
                         join cs in _context.Coursesemesters on s.CourseSemesterId equals cs.CourseSemesterId
                         join c in _context.Courses on cs.CourseId equals c.CourseId
-                        join r in _context.Classrooms on s.ClassroomId equals r.ClassroomId 
+                        
                         select new SchedueleDTO
                         {
                              ScheduleId = s.ScheduleId,
 
                               CourseSemesterId = s.CourseSemesterId,
 
-                              ClassroomId = s.ClassroomId,
+                              RoomNumber = s.RoomNumber,
 
                               SemesterId = s.SemesterId,
 
@@ -176,7 +175,7 @@ namespace College_managemnt_system.Repos
 
                               courseName = c.CourseName,
 
-                              roomNumber = r.RoomNumber
+                             
                         }).ToListAsync();
 
             if (!Schedules.Any())

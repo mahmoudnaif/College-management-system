@@ -39,7 +39,6 @@ public partial class CollegeDBContext : DbContext
 
     public virtual DbSet<Semester> Semesters { get; set; }
 
-
     public virtual DbSet<Student> Students { get; set; }
 
     public virtual DbSet<StudentCourse> StudentCourses { get; set; }
@@ -96,15 +95,11 @@ public partial class CollegeDBContext : DbContext
 
         modelBuilder.Entity<Classroom>(entity =>
         {
-            entity.HasKey(e => e.ClassroomId).HasName("Classrooms$PrimaryKey");
+            entity.HasKey(e => e.RoomNumber).HasName("Classrooms$PrimaryKey");
 
-            entity.HasIndex(e => e.RoomNumber, "UQ__Classroo__AE10E07A4953E4EC").IsUnique();
+            entity.HasIndex(e => e.RoomNumber, "UQ__tmp_ms_x__AE10E07AE14A5EE1").IsUnique();
 
-            entity.Property(e => e.ClassroomId).HasColumnName("ClassroomID");
-            entity.Property(e => e.Building)
-                .HasMaxLength(255)
-                .HasColumnName("building");
-            entity.Property(e => e.RoomNumber).HasMaxLength(255);
+            entity.Property(e => e.Building).HasColumnName("building");
         });
 
         modelBuilder.Entity<Course>(entity =>
@@ -240,24 +235,24 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.ScheduleId).HasName("Schedules$PrimaryKey");
 
-            entity.HasIndex(e => new { e.ClassroomId, e.DayOfWeek, e.PeriodNumber, e.SemesterId }, "Schedules$UNIQUE").IsUnique();
+            entity.HasIndex(e => new { e.RoomNumber, e.DayOfWeek, e.PeriodNumber, e.SemesterId }, "Schedules$UNIQUE").IsUnique();
 
             entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
-            entity.Property(e => e.ClassroomId).HasColumnName("ClassroomID");
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
             entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.Type)
                 .HasMaxLength(255)
                 .HasColumnName("type");
 
-            entity.HasOne(d => d.Classroom).WithMany(p => p.Schedules)
-                .HasForeignKey(d => d.ClassroomId)
-                .HasConstraintName("Schedules$ClassroomsSchedules");
-
             entity.HasOne(d => d.CourseSemester).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.CourseSemesterId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Schedules$CoursesemestersSchedules");
+
+            entity.HasOne(d => d.RoomNumberNavigation).WithMany(p => p.Schedules)
+                .HasForeignKey(d => d.RoomNumber)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Schedules$ClassroomsSchedules");
 
             entity.HasOne(d => d.Semester).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.SemesterId)
@@ -303,8 +298,6 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.StartDate).HasPrecision(0);
         });
 
-       
-
         modelBuilder.Entity<Student>(entity =>
         {
             entity.HasKey(e => e.StudentId).HasName("Students$PrimaryKey");
@@ -341,6 +334,8 @@ public partial class CollegeDBContext : DbContext
             entity.HasKey(e => new { e.StudentId, e.CourseSemesterId }).HasName("StudentCourses$PrimaryKey");
 
             entity.HasIndex(e => e.StudentId, "StudentCourses");
+
+            entity.HasIndex(e => e.Status, "StudentCourses$Status");
 
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");

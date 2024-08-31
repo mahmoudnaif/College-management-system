@@ -2,16 +2,16 @@
 {
     public class ClassRoomInputModel
     {
-        public string RoomNumber { get; set; } = null!;
+        public int RoomNumber { get; set; }
 
-        public string Building { get; set; } = null!;
+        public int Building { get; set; }
 
         public int Capacity { get; set; }
     }
 
     public class CapacityEditModel
     {
-        public int classRoomId { get; set; }
+        public int RoomNumber { get; set; }
         public int classRoomCapacity { get; set; }
     }
 }
