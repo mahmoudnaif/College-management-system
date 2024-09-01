@@ -141,7 +141,7 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<List<SchedueleDTO>>> GetScheduls(int semesterId, TakeSkipModel model)
+        public async Task<CustomResponse<List<SchedueleDTO>>> GetScheduleBySemester(int semesterId, TakeSkipModel model)
         {
 
             if (model.take < 0 || model.skip < 0)

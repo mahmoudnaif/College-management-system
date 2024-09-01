@@ -1,4 +1,6 @@
 ﻿using College_managemnt_system.ClientModels;
+using College_managemnt_system.CustomResponse;
+using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
 using Microsoft.AspNetCore.Authorization;
@@ -88,28 +90,29 @@ namespace College_managemnt_system.Controllers
 
         [HttpPost("{courseId}/preqs")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> AddPrereqs(int courseId, [FromBody] int prereqsCourseId )
+        public async Task<IActionResult> AddPrereqs(int courseId, [FromBody] string prereqsCourseIdOrCode )
         {
-            PrereqsInputModel prereqsInputModel = new PrereqsInputModel()
+            CustomResponse<PrereqDTO> respone;
+            if(int.TryParse(prereqsCourseIdOrCode, out int prereqsCourseId))
             {
-                CourseId = courseId,
-                PrereqsCourseId = prereqsCourseId
-            };
-            var result = await _prereqsCoursesRepo.AddPrereqsCourse(prereqsInputModel);
+                respone = await _prereqsCoursesRepo.AddPrereqsCourse(courseId, prereqsCourseId);
+            }
+            else
+            {
+                respone = await _prereqsCoursesRepo.AddPrereqsCourse(courseId, prereqsCourseIdOrCode);
+            }
 
-            return StatusCode(result.responseCode, result);
+        
+
+            return StatusCode(respone.responseCode, respone);
         }
 
         [HttpDelete("{courseId}/preqs/{prereqsCourseId}")]
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> DeletePrereqs(int courseId, int prereqsCourseId)
         {
-            PrereqsInputModel prereqsInputModel = new PrereqsInputModel()
-            {
-                CourseId = courseId,
-                PrereqsCourseId = prereqsCourseId
-            };
-            var result = await _prereqsCoursesRepo.RemovePrereqsCourse(prereqsInputModel);
+          
+            var result = await _prereqsCoursesRepo.RemovePrereqsCourse(courseId,prereqsCourseId);
 
             return StatusCode(result.responseCode, result);
         }

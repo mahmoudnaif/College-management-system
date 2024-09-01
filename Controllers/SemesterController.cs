@@ -118,7 +118,7 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> GetScheduls(int semesterId, [FromQuery] TakeSkipModel takeSkipModel)
         {
-            var response = await _schedulesRepo.GetScheduls(semesterId,takeSkipModel);
+            var response = await _schedulesRepo.GetScheduleBySemester(semesterId,takeSkipModel);
 
             return StatusCode(response.responseCode, response);
 

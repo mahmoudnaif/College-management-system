@@ -29,27 +29,27 @@ namespace College_managemnt_system.Repos
             return new CustomResponse<List<CourseDTO>>(200, "Prereqs courses retreived", prereqsCoursesDTO);
 
         }
-        public async Task<CustomResponse<PrereqDTO>> AddPrereqsCourse(PrereqsInputModel prereqsInputModel)
+        public async Task<CustomResponse<PrereqDTO>> AddPrereqsCourse(int courseId, int prereqsCourseId)
         {
-            Course courseExists = await _context.Courses.FirstOrDefaultAsync(C=> C.CourseId == prereqsInputModel.CourseId);
+            Course courseExists = await _context.Courses.FirstOrDefaultAsync(C=> C.CourseId == courseId);
 
             if (courseExists == null)
                 return new CustomResponse<PrereqDTO>(404, "Course does not exist");
 
-            courseExists = await _context.Courses.FirstOrDefaultAsync(C => C.CourseId == prereqsInputModel.PrereqsCourseId);
+            courseExists = await _context.Courses.FirstOrDefaultAsync(C => C.CourseId == prereqsCourseId);
 
             if (courseExists == null)
                 return new CustomResponse<PrereqDTO>(404, "Preqes course does not exist");
 
-            Prereq prereqExists = await _context.Prereqs.FirstOrDefaultAsync(P => P.CourseId == prereqsInputModel.CourseId && P.PrereqCourseId ==  prereqsInputModel.PrereqsCourseId);
+            Prereq prereqExists = await _context.Prereqs.FirstOrDefaultAsync(P => P.CourseId == courseId && P.PrereqCourseId ==  prereqsCourseId);
 
             if(prereqExists != null)
                 return new CustomResponse<PrereqDTO>(409, "Preqes already exists");
 
             Prereq prereq = new Prereq()
             {
-                CourseId = prereqsInputModel.CourseId,
-                PrereqCourseId = prereqsInputModel.PrereqsCourseId
+                CourseId = courseId,
+                PrereqCourseId = prereqsCourseId
             };
 
             try
@@ -65,9 +65,9 @@ namespace College_managemnt_system.Repos
             }
 
         }
-        public async Task<CustomResponse<bool>> RemovePrereqsCourse(PrereqsInputModel prereqsInputModel)
+        public async Task<CustomResponse<bool>> RemovePrereqsCourse(int courseId, int prereqsCourseId)
         {
-            Prereq prereq = await _context.Prereqs.FirstOrDefaultAsync(P => P.CourseId == prereqsInputModel.CourseId && P.PrereqCourseId ==  prereqsInputModel.PrereqsCourseId);
+            Prereq prereq = await _context.Prereqs.FirstOrDefaultAsync(P => P.CourseId == courseId && P.PrereqCourseId ==  prereqsCourseId);
             if (prereq == null)
                 return new CustomResponse<bool>(404, "Prereqs not found");
 
@@ -82,6 +82,42 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<bool>(500, "Internal server error");
             }
 
+        }
+
+        public async Task<CustomResponse<PrereqDTO>> AddPrereqsCourse(int courseId, string prereqsCourseCode)
+        {
+            Course courseExists = await _context.Courses.FirstOrDefaultAsync(C => C.CourseId == courseId);
+
+            if (courseExists == null)
+                return new CustomResponse<PrereqDTO>(404, "Course does not exist");
+
+            Course PrereqcourseExists = await _context.Courses.FirstOrDefaultAsync(C => C.CourseCode == prereqsCourseCode);
+
+            if (PrereqcourseExists == null)
+                return new CustomResponse<PrereqDTO>(404, "Preqes course does not exist");
+
+            Prereq prereqExists = await _context.Prereqs.FirstOrDefaultAsync(P => P.CourseId == courseId && P.PrereqCourseId == PrereqcourseExists.CourseId);
+
+            if (prereqExists != null)
+                return new CustomResponse<PrereqDTO>(409, "Preqes already exists");
+
+            Prereq prereq = new Prereq()
+            {
+                CourseId = courseId,
+                PrereqCourseId = PrereqcourseExists.CourseId
+            };
+
+            try
+            {
+                _context.Add(prereq);
+                await _context.SaveChangesAsync();
+                PrereqDTO prereqDTO = _mapper.Map<PrereqDTO>(prereq);
+                return new CustomResponse<PrereqDTO>(201, "Preqes course added successfully", prereqDTO);
+            }
+            catch
+            {
+                return new CustomResponse<PrereqDTO>(500, "Internal server error");
+            }
         }
     }
 }

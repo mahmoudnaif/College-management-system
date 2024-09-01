@@ -6,7 +6,7 @@ namespace College_managemnt_system.Interfaces
 {
     public interface ISchedulesRepo
     {
-        public Task<CustomResponse<List<SchedueleDTO>>> GetScheduls(int semesterId,TakeSkipModel takeSkipModel);
+        public Task<CustomResponse<List<SchedueleDTO>>> GetScheduleBySemester(int semesterId,TakeSkipModel takeSkipModel);
         public Task<CustomResponse<SchedueleDTO>> Add(SchedulesInputModel schdulesInputModel);
         public Task<CustomResponse<bool>> Remove(int scheduleId);
         public Task<CustomResponse<SchedueleDTO>> EditTimeAndPlace(EditScheduleTimeandPlace editScheduleTimeandPlace);
