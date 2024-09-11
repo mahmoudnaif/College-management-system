@@ -62,8 +62,7 @@ namespace College_managemnt_system.Repos
                 Phone = phone,
                 AccountId = account.AccountId,
             };
-            if (model.EnrollmentDate != null)
-                student.EnrollmentDate = (DateTime)model.EnrollmentDate;
+            
 
             try
             {

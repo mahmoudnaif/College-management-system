@@ -9,6 +9,5 @@
         public string Phone { get; set; } = null!;
         public string NationalNumber { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public DateTime? EnrollmentDate { get; set; }
     }
 }

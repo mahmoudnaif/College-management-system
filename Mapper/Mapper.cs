@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using College_managemnt_system.ClientModels;
 using College_managemnt_system.DTOS;
 using College_managemnt_system.models;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,8 @@ namespace College_managemnt_system.Mapper
     {
         public MappingProfile()
         {
+            CreateMap<StudentsInputModelCSV, Student>();
+            CreateMap<StudentsInputModelCSV, Account>();
             CreateMap<SchedulesJoinsgroup, ScheduleJoinsGroupDTO> ();
             CreateMap<Student, StudentDTO> ();
             CreateMap<Professor, ProfessorDTO> ();

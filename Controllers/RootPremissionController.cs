@@ -7,7 +7,7 @@ namespace College_managemnt_system.Controllers
 {
     [Route("api/premissions")]
     [ApiController]
-    public class RootPremissionController : Controller
+    public class RootPremissionController : Controller //Impmented but not used yet to block / allow certian operations from admins and students.
     {
         private readonly IRootPremissionsRepo _rootPremissionsRepo;
 
