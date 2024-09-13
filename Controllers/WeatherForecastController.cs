@@ -22,7 +22,7 @@ namespace College_managemnt_system.Controllers
         [HttpPost(Name = "GetWeatherForecast")]
         public async Task<IActionResult> Get(IFormFile file)
         {
-            var response = await _CSVParser.AddStudents(file);
+            var response = await _CSVParser.AddCourses(file);
             return StatusCode(response.responseCode,response);
         }
     }

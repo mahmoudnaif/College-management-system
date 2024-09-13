@@ -168,7 +168,7 @@ namespace College_managemnt_system.Repos.Email
             try
             {
                 _context.SaveChanges();
-                _blackListTokensRepo.BlacklistTokensAsync(accountId, DateTime.UtcNow);
+                await _blackListTokensRepo.BlacklistTokensAsync(accountId, DateTime.UtcNow);
                 return new CustomResponse<bool>(200, "Password Changed successfuuly");
             }
             catch

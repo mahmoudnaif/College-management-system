@@ -22,4 +22,30 @@
         public int numberOfErrors {  get; set; } = 0; //can be auto incremneted using a backing field and automatic setters and getters
                                                       //but TBH I don't have the ernergy to rn :)
     }
+
+    public class CourseErrorSheet
+    {
+
+        public CourseErrorSheet(int rowNumber,int prereqsLength)
+        {
+            this.rowNumber= rowNumber;
+            PrereqsCoursesCodes = prereqsLength > 0 ? Enumerable.Repeat(true, prereqsLength).ToList() : [];
+        }
+
+        public int rowNumber { get; set; }
+        public bool CourseName { get; set; } = true;
+        public bool CourseCode { get; set; } = true;
+        public bool Credits { get; set; } = true;
+        public bool DepartmentName { get; set; } = true;
+        public bool DepartmentId { get; set; } = true;
+        public List<bool> PrereqsCoursesCodes { get; set; }
+        public int numberOfErrors { get; set; } = 0;
+
+    }
+
+
+
 }
+
+
+

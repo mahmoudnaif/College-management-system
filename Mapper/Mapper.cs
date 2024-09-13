@@ -11,6 +11,7 @@ namespace College_managemnt_system.Mapper
     {
         public MappingProfile()
         {
+            CreateMap<CoursesInputModelCSV, Course>();
             CreateMap<StudentsInputModelCSV, Student>();
             CreateMap<StudentsInputModelCSV, Account>();
             CreateMap<SchedulesJoinsgroup, ScheduleJoinsGroupDTO> ();

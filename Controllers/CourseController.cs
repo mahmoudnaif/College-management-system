@@ -14,11 +14,13 @@ namespace College_managemnt_system.Controllers
     {
         private readonly ICoursesRepo _coursesRepo;
         private readonly IPrereqsCoursesRepo _prereqsCoursesRepo;
+        private readonly ICSVParser _CSVParser;
 
-        public CourseController(ICoursesRepo coursesRepo, IPrereqsCoursesRepo prereqsCoursesRepo)
+        public CourseController(ICoursesRepo coursesRepo, IPrereqsCoursesRepo prereqsCoursesRepo,ICSVParser cSVParser)
         {
             _coursesRepo = coursesRepo;
             _prereqsCoursesRepo = prereqsCoursesRepo;
+            this._CSVParser = cSVParser;
         }
 
 
@@ -115,6 +117,16 @@ namespace College_managemnt_system.Controllers
             var result = await _prereqsCoursesRepo.RemovePrereqsCourse(courseId,prereqsCourseId);
 
             return StatusCode(result.responseCode, result);
+        }
+
+
+        [HttpPost("CSV")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> AddCoursesCSV(IFormFile file)
+        {
+            var response = await _CSVParser.AddCourses(file);
+
+            return StatusCode(response.responseCode, response);
         }
 
 

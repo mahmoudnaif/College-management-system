@@ -13,11 +13,13 @@ namespace College_managemnt_system.Controllers
     {
         private readonly IStudentRepo _studentRepo;
         private readonly IStudetnsDepartmentsRepo _studetnsDepartmentsRepo;
+        private readonly ICSVParser _CSVParser;
 
-        public StudentController(IStudentRepo studentRepo,IStudetnsDepartmentsRepo studetnsDepartmentsRepo)
+        public StudentController(IStudentRepo studentRepo,IStudetnsDepartmentsRepo studetnsDepartmentsRepo, ICSVParser CSVParser)
         {
             _studentRepo = studentRepo;
             _studetnsDepartmentsRepo = studetnsDepartmentsRepo;
+            _CSVParser = CSVParser;
         }
 
         [HttpGet("year/{year}")]
@@ -119,6 +121,14 @@ namespace College_managemnt_system.Controllers
         {
             var response = await _studetnsDepartmentsRepo.changeStudentDepartment(studentId, departmentId);
 
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPost("CSV")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> AddStudetnsCSV(IFormFile file)
+        {
+            var response = await _CSVParser.AddStudents(file);
             return StatusCode(response.responseCode, response);
         }
     }

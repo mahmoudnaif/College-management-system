@@ -10,6 +10,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Bcpg;
 using System.Globalization;
 
 namespace College_managemnt_system.Repos
@@ -31,12 +32,6 @@ namespace College_managemnt_system.Repos
         public async Task<CustomResponse<List<StudentErrorSheet>>> AddStudents(IFormFile file) //Code can be simplified by distributing the steps on mutliple functions
         {
 
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                HeaderValidated = null,
-                MissingFieldFound = null
-            };
-
             if (file == null || file.Length == 0)
                 return new CustomResponse<List<StudentErrorSheet>>(400,"File must be specefied");
             
@@ -50,6 +45,12 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<List<StudentErrorSheet>>(400, "The file specefied must be a csv file");
 
             using var reader = new StreamReader(file.OpenReadStream());
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HeaderValidated = null,
+                MissingFieldFound = null
+            };
 
             using var csv = new CsvReader(reader, config);
 
@@ -108,7 +109,7 @@ namespace College_managemnt_system.Repos
                 }
                 
                  rowNumber++; 
-                Console.WriteLine($"{student.Email} {student.FirstName} {student.FathertName} {student.GrandfatherName} {student.LastName} {student.Phone} {student.NationalNumber} {student.Password}");
+                Console.WriteLine($"{student.Email} {student.FirstName} {student.FathertName} {student.GrandfatherName} {student.LastName} {student.Phone} {student.NationalNumber} {student.PasswordAsString}");
             }
 
             if (errorSheetList.Any())
@@ -137,6 +138,7 @@ namespace College_managemnt_system.Repos
                 await _context.Students.AddRangeAsync(students);
                 await _context.SaveChangesAsync();
 
+                //TODO. send emails to the students of their password.
 
                 await transaction.CommitAsync();
                 return new CustomResponse<List<StudentErrorSheet>>(201, "Students added successfully");
@@ -155,9 +157,203 @@ namespace College_managemnt_system.Repos
         {
             throw new NotImplementedException();
         }
-        public Task<CustomResponse<bool>> AddCourses(IFormFile file)
+        public async Task<CustomResponse<List<CourseErrorSheet>>> AddCourses(IFormFile file)
         {
-            throw new NotImplementedException();
+          
+
+            if (file == null || file.Length == 0)
+                return new CustomResponse<List<CourseErrorSheet>>(400, "File must be specefied");
+
+
+            string? fileExtension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+
+            if (fileExtension == null)
+                return new CustomResponse<List<CourseErrorSheet>>(400, "File does not have an extension");
+
+            if (fileExtension != ".csv")
+                return new CustomResponse<List<CourseErrorSheet>>(400, "The file specefied must be a csv file");
+
+            using var reader = new StreamReader(file.OpenReadStream());
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HeaderValidated = null,
+                MissingFieldFound = null
+            };
+            using var csv = new CsvReader(reader, config);
+
+            csv.Context.RegisterClassMap<CourseCSVMapper>();
+
+            var coursesInputModel = new List<CoursesInputModelCSV>();
+
+            var coursesErrorSheetList = new List<CourseErrorSheet>();
+
+            int rowNumber = 2;
+            var departmentsCache = new Dictionary<string, int>(); //Cache like variable to prevent multiple requests for the same department.
+            
+            await foreach (var course in csv.GetRecordsAsync<CoursesInputModelCSV>())
+            {
+                var courseErrorSheet = new CourseErrorSheet(rowNumber, course.PrereqsCoursesCodes.Count);
+
+                if(course.CourseName == "")
+                {
+                    courseErrorSheet.CourseName = false;
+                    courseErrorSheet.numberOfErrors++;
+                } 
+                if(course.CourseCode == "")
+                {
+                    courseErrorSheet.CourseCode = false;
+                    courseErrorSheet.numberOfErrors++;
+                }
+                if(course.Credits < 0)
+                {
+                    courseErrorSheet.Credits = false;
+                    courseErrorSheet.numberOfErrors++;
+                }
+                if(course.DepartmentId < 0)
+                {
+                    courseErrorSheet.DepartmentId = false;
+                    courseErrorSheet.numberOfErrors++;
+                }
+
+                if (course.DepartmentName == "")
+                {
+                    courseErrorSheet.DepartmentName = false;
+                    courseErrorSheet.numberOfErrors++;
+                }
+                else // nested if else statements is ugly and needs to be cleaned.
+                {
+                    if (course.DepartmentId == 0) //default value means that the user didn't enter the id himself
+                    {
+
+                        if (departmentsCache.TryGetValue(course.DepartmentName, out var departmentId))
+                        {
+                            course.DepartmentId = departmentId;
+                            Console.WriteLine("I'm a good cache and i'm working HEHE.");
+                        }
+                        else
+                        {
+                            Department department = await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentName == course.DepartmentName);
+
+                            if (department != null)
+                            {
+                                course.DepartmentId = department.DepartmentId;
+                                departmentsCache.Add(course.DepartmentName, department.DepartmentId);
+                            }
+                            else
+                            {
+                                courseErrorSheet.DepartmentId = false;
+                                courseErrorSheet.numberOfErrors++;
+                            }
+                        }
+
+
+                    }
+                }
+
+                for(int i = 0; i < course.PrereqsCoursesCodes.Count; i++)
+                {
+                    if (course.PrereqsCoursesCodes[i] == "")
+                    {
+                        courseErrorSheet.PrereqsCoursesCodes[i] = false;
+                        courseErrorSheet.numberOfErrors++;
+                    }
+                }
+
+                if (courseErrorSheet.numberOfErrors != 0) {
+                    coursesErrorSheetList.Add(courseErrorSheet);
+                }
+                else
+                {
+                    coursesInputModel.Add(course);
+                }
+
+
+                Console.WriteLine($"{course.CourseName} {course.CourseCode} {course.DepartmentName} {course.Credits} {string.Join(";", course.PrereqsCoursesCodes)} {course.DepartmentId}");
+
+            }
+            departmentsCache = null; //Letting the garbage collector reclaim the memory for efficiency :>.
+
+            if (coursesErrorSheetList.Any())
+                return new CustomResponse<List<CourseErrorSheet>>(400, "Invalid data please check the errorsheet for more info", coursesErrorSheetList);
+
+            if (!coursesInputModel.Any())
+                return new CustomResponse<List<CourseErrorSheet>>(400, "No courses found in the csv file");
+
+           using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                List<Course> courses = _mapper.Map<List<Course>>(coursesInputModel);
+
+                await _context.Courses.AddRangeAsync(courses);
+                await _context.SaveChangesAsync();
+
+
+                var CoursesCache = new Dictionary<string, int>(); //Another caching mechanism.
+                foreach (Course course in courses) {
+                    CoursesCache.Add(course.CourseCode, course.CourseId);
+                }
+
+                List<Prereq> prereqsCourses = [];
+                rowNumber = 2;
+                for(int i = 0; i< courses.Count; i++)
+                {
+                    CourseErrorSheet courseErrorSheet = new CourseErrorSheet(rowNumber, coursesInputModel[i].PrereqsCoursesCodes.Count);
+                    int PrereqsNum = 0;
+                    foreach (var prereqsCourseCode in coursesInputModel[i].PrereqsCoursesCodes)
+                    {
+                        Prereq prereq = new Prereq() { CourseId = courses[i].CourseId };
+
+                        if (CoursesCache.TryGetValue(prereqsCourseCode,out var courseId))
+                        {
+                            prereq.PrereqCourseId = courseId;
+                            prereqsCourses.Add(prereq);
+                        }
+                        else
+                        {
+                            Course prereqCourse = await _context.Courses.FirstOrDefaultAsync(C => C.CourseCode == prereqsCourseCode);
+                            if(prereqCourse != null)
+                            {
+                                prereq.PrereqCourseId = prereqCourse.CourseId;
+                                prereqsCourses.Add(prereq);
+                            }
+                            else
+                            {
+                                courseErrorSheet.PrereqsCoursesCodes[PrereqsNum] = false;
+                                courseErrorSheet.numberOfErrors++;
+                              
+                            }
+                        }
+                        PrereqsNum++;
+                    }
+
+                    if (courseErrorSheet.numberOfErrors !=0)
+                        coursesErrorSheetList.Add(courseErrorSheet);
+
+
+                }
+
+                if (coursesErrorSheetList.Any())
+                    return new CustomResponse<List<CourseErrorSheet>>(400, "Some Preqsuits courses do not exist please check the error sheet", coursesErrorSheetList);
+
+                if (prereqsCourses.Any())
+                {
+                    await _context.Prereqs.AddRangeAsync(prereqsCourses);
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return new CustomResponse<List<CourseErrorSheet>>(201, "Courses and prequisits added successfully");
+
+            }
+            catch
+            {
+                await  transaction.RollbackAsync();
+                return new CustomResponse<List<CourseErrorSheet>>(500, "Internal server error");
+            }
+           
         }
     }
 }
