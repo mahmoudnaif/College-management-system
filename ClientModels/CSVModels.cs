@@ -44,6 +44,26 @@
     }
 
 
+    public class ProfErrorSheet 
+    {
+        public ProfErrorSheet(int rowNumber)
+        {
+            this.rowNumber = rowNumber;
+        }
+
+        public int rowNumber { get; set; }
+        public bool FirstName { get; set; } = true;
+        public bool LastName { get; set; } = true;
+        public bool  NationalNumber { get; set; } = true;
+        public bool Phone { get; set; } = true;
+        public bool HiringDate { get; set; } = true;
+        public bool DepartmentName { get; set; } = true;
+        public bool DepartmentId { get; set; } = true;
+        public bool email { get; set; } = true;
+        public int numberOfErrors { get; set; } = 0;
+    }
+
+
 
 }
 

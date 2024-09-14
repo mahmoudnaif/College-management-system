@@ -1,7 +1,5 @@
 ﻿using College_managemnt_system.ClientModels;
-using CsvHelper;
 using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
 
 namespace College_managemnt_system.Mapper
 {
@@ -19,11 +17,4 @@ namespace College_managemnt_system.Mapper
     }
 }
 
-public class TrimmedStringConverter : DefaultTypeConverter
-{
-    public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
-    {
-        return text?.Trim();
-    }
 
-}

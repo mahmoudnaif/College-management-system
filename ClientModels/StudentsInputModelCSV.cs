@@ -7,13 +7,13 @@ namespace College_managemnt_system.ClientModels
     public class StudentsInputModelCSV
     {
        
-        public string FirstName { get; set; } = null!;
-        public string FathertName { get; set; } = null!;
-        public string GrandfatherName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string Phone { get; set; } = null!;
-        public string NationalNumber { get; set; } = null!;
-        public string Email { get; set; } = null!;
+        public string FirstName { get; set; } = string.Empty;
+        public string FathertName { get; set; } = string.Empty;    
+        public string GrandfatherName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string NationalNumber { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public string Role { get; } = "student";
         public string PasswordAsString { get; } = GenerateRandomPassword();
         public byte[] Password { get; set; } = null!;
@@ -21,7 +21,7 @@ namespace College_managemnt_system.ClientModels
 
         // public DateTime? EnrollmentDate { get; set; }
 
-        private static string GenerateRandomPassword(int length = 12)
+        public static string GenerateRandomPassword(int length = 12)
         {
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()";
             StringBuilder password = new StringBuilder();
@@ -40,4 +40,8 @@ namespace College_managemnt_system.ClientModels
 
         }
     }
+
+ 
 }
+
+

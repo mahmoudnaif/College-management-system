@@ -153,9 +153,168 @@ namespace College_managemnt_system.Repos
         {
             throw new NotImplementedException();
         }
-        public Task<CustomResponse<bool>> AddProfessors(IFormFile file)
+        public async Task<CustomResponse<List<ProfErrorSheet>>> AddProfessors(IFormFile file)
         {
-            throw new NotImplementedException();
+            if (file == null || file.Length == 0)
+                return new CustomResponse<List<ProfErrorSheet>>(400, "File must be specefied");
+
+
+            string? fileExtension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+
+            if (fileExtension == null)
+                return new CustomResponse<List<ProfErrorSheet>>(400, "File does not have an extension");
+
+            if (fileExtension != ".csv")
+                return new CustomResponse<List<ProfErrorSheet>>(400, "The file specefied must be a csv file");
+
+            using var reader = new StreamReader(file.OpenReadStream());
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HeaderValidated = null,
+                MissingFieldFound = null
+            };
+            using var csv = new CsvReader(reader, config);
+
+            csv.Context.RegisterClassMap<ProfCSVMapper>();
+
+            var profInputModel = new List<ProfessorInputModelCSV>();
+
+            var profErrorSheetList = new List<ProfErrorSheet>();
+
+            int rowNumber = 2;
+            var departmentsCache = new Dictionary<string, int>(); //Cache like variable to prevent multiple requests for the same department.
+
+            await foreach (var prof in csv.GetRecordsAsync<ProfessorInputModelCSV>())
+            {
+                Console.WriteLine($"{prof.email} {prof.FirstName} {prof.LastName} {prof.NationalNumber} {prof.Phone} {prof.HiringDate} {prof.DepartmentName} {prof.DepartmentId}");
+
+                var profErrorSheet = new ProfErrorSheet(rowNumber);
+                if(prof.FirstName == "")
+                {
+                    profErrorSheet.FirstName = false;
+                    profErrorSheet.numberOfErrors++;
+                }
+                if(prof.LastName == "")
+                {
+                    profErrorSheet.LastName= false;
+                    profErrorSheet.numberOfErrors++;
+                }
+                if(!_utilitiesRepo.IsValidPhoneNumber(prof.Phone))
+                {
+                    profErrorSheet.Phone = false;
+                    profErrorSheet.numberOfErrors++;
+                }
+                if(!_utilitiesRepo.IsValidEmail(prof.email))
+                {
+                    profErrorSheet.email = false;
+                    profErrorSheet.numberOfErrors++;
+                }
+                if(!_utilitiesRepo.IsValidNationalId(prof.NationalNumber))
+                {
+                    profErrorSheet.NationalNumber = false;
+                    profErrorSheet.numberOfErrors++;
+                }
+
+                if (prof.DepartmentId < 0) // nested if else statements is ugly and needs to be cleaned.
+                {
+                    profErrorSheet.DepartmentId = false;
+                    profErrorSheet.numberOfErrors++;
+                }
+                else if (prof.DepartmentId == 0)
+                {
+
+                    if (prof.DepartmentName == "")
+                    {
+                        profErrorSheet.DepartmentName = false;
+                        profErrorSheet.numberOfErrors++;
+                    }
+                    else 
+                    {
+
+
+                        if (departmentsCache.TryGetValue(prof.DepartmentName, out var departmentId))
+                        {
+                            prof.DepartmentId = departmentId;
+                        }
+                        else
+                        {
+                            Department department = await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentName == prof.DepartmentName);
+
+                            if (department != null)
+                            {
+                                prof.DepartmentId = department.DepartmentId;
+                                departmentsCache.Add(prof.DepartmentName, department.DepartmentId);
+                            }
+                            else
+                            {
+                                profErrorSheet.DepartmentId = false;
+                                profErrorSheet.numberOfErrors++;
+                            }
+                        }
+
+                    }
+
+
+
+
+                }
+
+                if(profErrorSheet.numberOfErrors > 0)
+                {
+                    profErrorSheetList.Add(profErrorSheet);
+                }
+                else
+                {
+                    prof.Password = _passwordService.HashPassword(new Account(), prof.PasswordAsString);
+                    profInputModel.Add(prof);
+                }
+
+                rowNumber++;
+            }
+            departmentsCache = null;
+
+            if (profErrorSheetList.Any())
+                return new CustomResponse<List<ProfErrorSheet>>(400, "Invalid data please check the errorsheet for more info", profErrorSheetList);
+
+            if (!profInputModel.Any())
+                return new CustomResponse<List<ProfErrorSheet>>(400, "No courses found in the csv file");
+
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                List<Account> accounts = _mapper.Map<List<Account>>(profInputModel);
+
+                await _context.Accounts.AddRangeAsync(accounts);
+                await _context.SaveChangesAsync();
+
+                List<Professor> professors = _mapper.Map<List<Professor>>(profInputModel);
+
+                for (int i = 0; i < professors.Count; i++)
+                {
+                    professors[i].AccountId = accounts[i].AccountId;
+                }
+
+
+                await _context.Professors.AddRangeAsync(professors);
+                await _context.SaveChangesAsync();
+
+                //TODO. send emails to the professors of their password.
+
+                await transaction.CommitAsync();
+
+                return new CustomResponse<List<ProfErrorSheet>>(201, "Professors added succesfully");
+
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                return new CustomResponse<List<ProfErrorSheet>>(500, "Internal server error");
+            }
+            
+
         }
         public async Task<CustomResponse<List<CourseErrorSheet>>> AddCourses(IFormFile file)
         {
@@ -215,41 +374,44 @@ namespace College_managemnt_system.Repos
                     courseErrorSheet.DepartmentId = false;
                     courseErrorSheet.numberOfErrors++;
                 }
+                else if(course.DepartmentId == 0)
+                {
 
-                if (course.DepartmentName == "")
-                {
-                    courseErrorSheet.DepartmentName = false;
-                    courseErrorSheet.numberOfErrors++;
-                }
-                else // nested if else statements is ugly and needs to be cleaned.
-                {
-                    if (course.DepartmentId == 0) //default value means that the user didn't enter the id himself
+                    if (course.DepartmentName == "")
                     {
+                        courseErrorSheet.DepartmentName = false;
+                        courseErrorSheet.numberOfErrors++;
+                    }
+                    else // nested if else statements is ugly and needs to be cleaned.
+                    {
+                       
 
-                        if (departmentsCache.TryGetValue(course.DepartmentName, out var departmentId))
-                        {
-                            course.DepartmentId = departmentId;
-                            Console.WriteLine("I'm a good cache and i'm working HEHE.");
-                        }
-                        else
-                        {
-                            Department department = await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentName == course.DepartmentName);
-
-                            if (department != null)
+                            if (departmentsCache.TryGetValue(course.DepartmentName, out var departmentId))
                             {
-                                course.DepartmentId = department.DepartmentId;
-                                departmentsCache.Add(course.DepartmentName, department.DepartmentId);
+                                course.DepartmentId = departmentId;
+                                Console.WriteLine("I'm a good cache and i'm working HEHE.");
                             }
                             else
                             {
-                                courseErrorSheet.DepartmentId = false;
-                                courseErrorSheet.numberOfErrors++;
-                            }
-                        }
+                                Department department = await _context.Departments.FirstOrDefaultAsync(D => D.DepartmentName == course.DepartmentName);
 
+                                if (department != null)
+                                {
+                                    course.DepartmentId = department.DepartmentId;
+                                    departmentsCache.Add(course.DepartmentName, department.DepartmentId);
+                                }
+                                else
+                                {
+                                    courseErrorSheet.DepartmentId = false;
+                                    courseErrorSheet.numberOfErrors++;
+                                }
+                            }
 
                     }
+
+
                 }
+
 
                 for(int i = 0; i < course.PrereqsCoursesCodes.Count; i++)
                 {
@@ -267,7 +429,7 @@ namespace College_managemnt_system.Repos
                 {
                     coursesInputModel.Add(course);
                 }
-
+                rowNumber++;
 
                 Console.WriteLine($"{course.CourseName} {course.CourseCode} {course.DepartmentName} {course.Credits} {string.Join(";", course.PrereqsCoursesCodes)} {course.DepartmentId}");
 

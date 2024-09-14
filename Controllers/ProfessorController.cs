@@ -10,9 +10,11 @@ namespace College_managemnt_system.Controllers
     public class ProfessorController : Controller
     {
         private readonly IProfessorsRepo _professorsRepo;
+        private readonly ICSVParser _CSVParser;
 
-        public ProfessorController(IProfessorsRepo professorsRepo) {
+        public ProfessorController(IProfessorsRepo professorsRepo,ICSVParser CSVParser) {
             _professorsRepo = professorsRepo;
+            _CSVParser = CSVParser;
         }
 
         [HttpGet("All")]
@@ -77,6 +79,15 @@ namespace College_managemnt_system.Controllers
         public async Task<IActionResult> Department(int profId,[FromBody]int departmentId)
         {
             var response = await _professorsRepo.EditDepartment(profId,departmentId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPost("CSV")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> AddProfessorsCSV(IFormFile file)
+        {
+            var response = await _CSVParser.AddProfessors(file);
 
             return StatusCode(response.responseCode, response);
         }

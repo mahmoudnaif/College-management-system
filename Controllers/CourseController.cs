@@ -16,11 +16,11 @@ namespace College_managemnt_system.Controllers
         private readonly IPrereqsCoursesRepo _prereqsCoursesRepo;
         private readonly ICSVParser _CSVParser;
 
-        public CourseController(ICoursesRepo coursesRepo, IPrereqsCoursesRepo prereqsCoursesRepo,ICSVParser cSVParser)
+        public CourseController(ICoursesRepo coursesRepo, IPrereqsCoursesRepo prereqsCoursesRepo,ICSVParser CSVParser)
         {
             _coursesRepo = coursesRepo;
             _prereqsCoursesRepo = prereqsCoursesRepo;
-            this._CSVParser = cSVParser;
+            _CSVParser = CSVParser;
         }
 
 
