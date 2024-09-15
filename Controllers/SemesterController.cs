@@ -1,5 +1,6 @@
 ﻿using College_managemnt_system.ClientModels;
 using College_managemnt_system.Interfaces;
+using College_managemnt_system.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,13 +14,15 @@ namespace College_managemnt_system.Controllers
         private readonly ICoursesSemestersRepo _coursesSemestersRepo;
         private readonly ISchedulesRepo _schedulesRepo;
         private readonly IGroupsRepo _groupsRepo;
+        private readonly IAssistanceCoursesRepo _assistanceCoursesRepo;
 
-        public SemesterController(ISemstersRepo semstersRepo, ICoursesSemestersRepo coursesSemestersRepo, ISchedulesRepo schedulesRepo,IGroupsRepo groupsRepo)
+        public SemesterController(ISemstersRepo semstersRepo, ICoursesSemestersRepo coursesSemestersRepo, ISchedulesRepo schedulesRepo,IGroupsRepo groupsRepo,IAssistanceCoursesRepo assistanceCoursesRepo)
         {
             _semstersRepo = semstersRepo;
             _coursesSemestersRepo = coursesSemestersRepo;
             _schedulesRepo = schedulesRepo;
             _groupsRepo = groupsRepo;
+            _assistanceCoursesRepo = assistanceCoursesRepo;
         }
 
 
@@ -165,6 +168,62 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
+
+        [HttpDelete("{semesterId}/course/{courseId}")]
+        [Authorize(Roles = "admin,root")]
+        public async Task<IActionResult> Delete(int courseId, int semesterId) //test me
+        {
+            var response = await _coursesSemestersRepo.Delete(courseId, semesterId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPut("{semesterId}/course/{courseId}/prof")]
+        [Authorize(Roles = "admin,root")]
+        public async Task<IActionResult> ChangeProfessor(int courseId, int semesterId, [FromBody] int profId) //test me
+        {
+            var response = await _coursesSemestersRepo.ChangeProfessor(courseId, semesterId, profId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPut("{semesterId}/course/{courseId}/acitve")]
+        [Authorize(Roles = "admin,root")]
+        public async Task<IActionResult> EditActivationStatus(int courseId, int semesterId, bool isActive) //test me
+        {
+            var response = await _coursesSemestersRepo.EditActivationStatus(courseId, semesterId, isActive);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+
+
+        [HttpPost("{semesterId}/course/{courseId}/Ta")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> AddTaToCourse(int courseId, int semesterId, [FromBody] int taId) //test me
+        {
+            var response = await _assistanceCoursesRepo.AddTaToCourse(courseId,  semesterId, taId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpDelete("{semesterId}/course/{courseId}/Ta/{taId}")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> RemoveTaFromCourse(int courseId, int semesterId, int taId) //test me
+        {
+            var response = await _assistanceCoursesRepo.RemoveTaFromCourse(courseId, semesterId, taId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpGet("{semesterId}/course/{courseId}/Ta")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetCourseTas(int courseId, int semesterId) //test me
+        {
+            var response = await _assistanceCoursesRepo.GetCourseTas(courseId, semesterId);
+
+            return StatusCode(response.responseCode, response);
+        }
 
     }
 }

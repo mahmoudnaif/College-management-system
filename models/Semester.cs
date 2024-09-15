@@ -20,6 +20,4 @@ public partial class Semester
     public virtual ICollection<Coursesemester> Coursesemesters { get; set; } = new List<Coursesemester>();
 
     public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
-
-    public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 }

@@ -4,6 +4,8 @@
     {
         public int AssistantId { get; set; }
 
-        public int CourseSemesterId { get; set; }
+        public int CourseId { get; set; }
+
+        public int SemesterId { get; set; }
     }
 }

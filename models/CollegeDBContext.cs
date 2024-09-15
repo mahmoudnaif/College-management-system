@@ -49,7 +49,7 @@ public partial class CollegeDBContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\learning\\collegeSystem\\College managemnt system\\CollegeDB\\CollegeDB.mdf;Integrated Security=True;Connect Timeout=30");
+        => optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\learning\\collegeSystem\\college managment system testing area\\College-managemnt-system\\CollegeDB\\CollegeDB.mdf;Integrated Security=True;Connect Timeout=30");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -75,22 +75,23 @@ public partial class CollegeDBContext : DbContext
 
         modelBuilder.Entity<AssistantsJoinscourseSemester>(entity =>
         {
-            entity.HasKey(e => new { e.AssistantId, e.CourseSemesterId }).HasName("AssistantsJOINSCourseSemesters$PrimaryKey");
+            entity.HasKey(e => new { e.AssistantId, e.CourseId, e.SemesterId }).HasName("AssistantsJOINSCourseSemesters$PrimaryKey");
 
             entity.ToTable("AssistantsJOINSCourseSemesters");
 
             entity.Property(e => e.AssistantId).HasColumnName("AssistantID");
-            entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
+            entity.Property(e => e.CourseId).HasColumnName("CourseID");
+            entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
 
             entity.HasOne(d => d.Assistant).WithMany(p => p.AssistantsJoinscourseSemesters)
                 .HasForeignKey(d => d.AssistantId)
                 .HasConstraintName("AssistantsJOINSCourseSemesters$TeachingAssistancesAssistantsJOINSCourseSemesters");
 
-            entity.HasOne(d => d.CourseSemester).WithMany(p => p.AssistantsJoinscourseSemesters)
-                .HasForeignKey(d => d.CourseSemesterId)
+            entity.HasOne(d => d.Coursesemester).WithMany(p => p.AssistantsJoinscourseSemesters)
+                .HasForeignKey(d => new { d.CourseId, d.SemesterId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("AssistantsJOINSCourseSemesters$CoursesemestersAssistantsJOINSCourseSemesters");
+                .HasConstraintName("FK_Assistant_coursesemester");
         });
 
         modelBuilder.Entity<Classroom>(entity =>
@@ -122,17 +123,14 @@ public partial class CollegeDBContext : DbContext
 
         modelBuilder.Entity<Coursesemester>(entity =>
         {
-            entity.HasKey(e => e.CourseSemesterId).HasName("Coursesemesters$PrimaryKey");
+            entity.HasKey(e => new { e.CourseId, e.SemesterId }).HasName("Coursesemesters$PrimaryKey");
 
             entity.HasIndex(e => e.SemesterId, "Coursesemesters$SemesterID");
 
-            entity.HasIndex(e => new { e.CourseId, e.SemesterId }, "Coursesemesters$UniqueCoursesemesters").IsUnique();
-
-            entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
+            entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.Isactive).HasColumnName("ISActive");
             entity.Property(e => e.ProfessorId).HasColumnName("ProfessorID");
-            entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
 
             entity.HasOne(d => d.Course).WithMany(p => p.Coursesemesters)
                 .HasForeignKey(d => d.CourseId)
@@ -239,26 +237,21 @@ public partial class CollegeDBContext : DbContext
             entity.HasIndex(e => new { e.RoomNumber, e.DayOfWeek, e.PeriodNumber, e.SemesterId }, "Schedules$UNIQUE").IsUnique();
 
             entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
-            entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
+            entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.Type)
                 .HasMaxLength(255)
                 .HasColumnName("type");
-
-            entity.HasOne(d => d.CourseSemester).WithMany(p => p.Schedules)
-                .HasForeignKey(d => d.CourseSemesterId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Schedules$CoursesemestersSchedules");
 
             entity.HasOne(d => d.RoomNumberNavigation).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.RoomNumber)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Schedules$ClassroomsSchedules");
 
-            entity.HasOne(d => d.Semester).WithMany(p => p.Schedules)
-                .HasForeignKey(d => d.SemesterId)
+            entity.HasOne(d => d.Coursesemester).WithMany(p => p.Schedules)
+                .HasForeignKey(d => new { d.CourseId, d.SemesterId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Schedueles$SemestersSchedules");
+                .HasConstraintName("FK_Schedule_coursesemester");
         });
 
         modelBuilder.Entity<SchedulesJoinsgroup>(entity =>
@@ -332,27 +325,28 @@ public partial class CollegeDBContext : DbContext
 
         modelBuilder.Entity<StudentCourse>(entity =>
         {
-            entity.HasKey(e => new { e.StudentId, e.CourseSemesterId }).HasName("StudentCourses$PrimaryKey");
+            entity.HasKey(e => new { e.StudentId, e.SemesterId, e.CourseId }).HasName("StudentCourses$PrimaryKey");
 
             entity.HasIndex(e => e.StudentId, "StudentCourses");
 
             entity.HasIndex(e => e.Status, "StudentCourses$Status");
 
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
-            entity.Property(e => e.CourseSemesterId).HasColumnName("CourseSemesterID");
+            entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
+            entity.Property(e => e.CourseId).HasColumnName("CourseID");
             entity.Property(e => e.Grade).HasMaxLength(255);
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("inprogress");
 
-            entity.HasOne(d => d.CourseSemester).WithMany(p => p.StudentCourses)
-                .HasForeignKey(d => d.CourseSemesterId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("StudentCourses$CourseSemesterID");
-
             entity.HasOne(d => d.Student).WithMany(p => p.StudentCourses)
                 .HasForeignKey(d => d.StudentId)
                 .HasConstraintName("StudentCourses$StudentsStudentCourses");
+
+            entity.HasOne(d => d.Coursesemester).WithMany(p => p.StudentCourses)
+                .HasForeignKey(d => new { d.CourseId, d.SemesterId })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Student_coursesemester");
         });
 
         modelBuilder.Entity<StudentsJoinsgroup>(entity =>
@@ -386,6 +380,8 @@ public partial class CollegeDBContext : DbContext
         modelBuilder.Entity<TeachingAssistance>(entity =>
         {
             entity.HasKey(e => e.AssistantId).HasName("TeachingAssistances$PrimaryKey");
+
+            entity.HasIndex(e => e.NationalNumber, "UQ__Teaching__FEA173C245005A77").IsUnique();
 
             entity.HasIndex(e => e.AccountId, "UQ__tmp_ms_x__F267253F3E55EA9D").IsUnique();
 

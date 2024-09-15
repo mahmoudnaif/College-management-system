@@ -20,7 +20,7 @@ namespace College_managemnt_system.Repos
             _context = context;
             _mapper = mapper;
         }
-        public async Task<CustomResponse<CourseSemesterDTO>> Add(CourseSemesterInputModel model)
+        public async Task<CustomResponse<CourseSemesterDTO>> Add(CourseSemesterInputModel model) //test me
         {
             Professor professor= await _context.Professors.FirstOrDefaultAsync(P => P.ProfessorId == model.ProfessorId);
             if(professor == null)
@@ -34,7 +34,10 @@ namespace College_managemnt_system.Repos
             if (semester == null)
                 return new CustomResponse<CourseSemesterDTO>(200, "Semester does not exist");
 
-            Coursesemester coursesemesterExists = _context.Coursesemesters.SingleOrDefault(CS => CS.SemesterId == model.SemesterId && CS.CourseId == model.CourseId);
+            if (!semester.IsActive && model.Isactive)
+                return new CustomResponse<CourseSemesterDTO>(400, "You can't activate a course when the semester is not active");
+
+            Coursesemester coursesemesterExists = await _context.Coursesemesters.FirstOrDefaultAsync(CS => CS.SemesterId == model.SemesterId && CS.CourseId == model.CourseId);
             if (coursesemesterExists != null)
                 return new CustomResponse<CourseSemesterDTO>(409, "Course already exists for this semester");
 
@@ -59,9 +62,9 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<CourseSemesterDTO>(500, "Internal server error");
             }
         }
-        public async Task<CustomResponse<bool>> Delete(int courseSemesterId)
+        public async Task<CustomResponse<bool>> Delete(int courseId,int semesterId)//test me
         {
-            Coursesemester coursesemester = await _context.Coursesemesters.FirstOrDefaultAsync(CS => CS.CourseSemesterId == courseSemesterId);
+            Coursesemester coursesemester = await _context.Coursesemesters.FirstOrDefaultAsync(CS => CS.CourseId == courseId && CS.SemesterId == semesterId);
             if (coursesemester == null)
                 return new CustomResponse<bool>(409, "Course Does not exist");
 
@@ -76,13 +79,13 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<bool>(500, "Internal server error");
             }
         }
-        public async Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(int courseSemesterId, int profId)
+        public async Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(int courseId, int semesterId, int profId)
         {
             Professor professor = await _context.Professors.FirstOrDefaultAsync(P => P.ProfessorId == profId);
             if (professor == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Professor does not exist");
 
-            Coursesemester coursesemester =await _context.Coursesemesters.FirstOrDefaultAsync(C => C.CourseSemesterId==courseSemesterId);
+            Coursesemester coursesemester =await _context.Coursesemesters.FirstOrDefaultAsync(CS => CS.CourseId == courseId && CS.SemesterId== semesterId);
             if (coursesemester == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Course does not exist in this semester");
 
@@ -104,10 +107,10 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(int courseSemesterId, bool isActive)
+        public async Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(int courseId, int semesterId, bool isActive)
         {
 
-            Coursesemester coursesemester = await _context.Coursesemesters.FirstOrDefaultAsync(C => C.CourseSemesterId == courseSemesterId);
+            Coursesemester coursesemester = await _context.Coursesemesters.FirstOrDefaultAsync(CS => CS.CourseId == courseId && CS.SemesterId == semesterId);
             if (coursesemester == null)
                 return new CustomResponse<CourseSemesterDTO>(404, "Course does not exist in this semester");
 
@@ -121,7 +124,7 @@ namespace College_managemnt_system.Repos
             }
             else
             {
-                if (!await CheckDeActiveStudents(coursesemester.CourseSemesterId))
+                if (!await CheckDeActiveStudents(coursesemester.CourseId, coursesemester.SemesterId))
                     return new CustomResponse<CourseSemesterDTO>(400, "Some students are still active in this course you can't deactivate please assign them their grades");
             }
             
@@ -160,7 +163,7 @@ namespace College_managemnt_system.Repos
             {
                if (!isActive)
                 {
-                        if (!await CheckDeActiveStudents(coursesemester.CourseSemesterId))
+                        if (!await CheckDeActiveStudents(coursesemester.CourseId, coursesemester.SemesterId))
                             return new CustomResponse<bool>(400, "Some students are still active in this course you can't deactivate please assign them their grades");
                     
                 }
@@ -196,7 +199,6 @@ namespace College_managemnt_system.Repos
               {
                   CourseId = CS.CourseId,
                   CourseName = C.CourseName,
-                  CourseSemesterId = CS.CourseSemesterId,
                   SemesterId = CS.SemesterId,
                   Isactive = CS.Isactive,
                   ProfessorId = CS.ProfessorId,
@@ -223,7 +225,6 @@ namespace College_managemnt_system.Repos
               {
                   CourseId = CS.CourseId,
                   CourseName = C.CourseName,
-                  CourseSemesterId = CS.CourseSemesterId,
                   SemesterId = CS.SemesterId,
                   Isactive = CS.Isactive,
                   ProfessorId = CS.ProfessorId,
@@ -241,9 +242,9 @@ namespace College_managemnt_system.Repos
 
 
 
-        private async Task<bool> CheckDeActiveStudents(int courseSemesterId)
+        private async Task<bool> CheckDeActiveStudents(int courseId,int semesterId)
         {
-            StudentCourse studentCourses = await _context.StudentCourses.FirstOrDefaultAsync(SC => SC.CourseSemesterId == courseSemesterId && (SC.Status == "inprogress" ||SC.Status == "incomplete"));
+            StudentCourse studentCourses = await _context.StudentCourses.FirstOrDefaultAsync(SC => SC.CourseId == courseId && SC.SemesterId == semesterId && (SC.Status == "inprogress" ||SC.Status == "incomplete"));
 
             if (studentCourses == null)
                 return true;

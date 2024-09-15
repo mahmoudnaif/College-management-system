@@ -4,11 +4,10 @@
     {
         public int ScheduleId { get; set; }
 
-        public int CourseSemesterId { get; set; }
-
         public int RoomNumber { get; set; }
 
         public int SemesterId { get; set; }
+        public int CourseId { get; set; }
 
         public string Type { get; set; } = null!;
 

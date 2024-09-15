@@ -17,9 +17,9 @@ namespace College_managemnt_system.Repos
             _context = context;
             _mapper = mapper;
         }
-        public async Task<CustomResponse<AssistantsCoursesDTO>> AddTaToCourse(int courseSemesterId, int taId)
+        public async Task<CustomResponse<AssistantsCoursesDTO>> AddTaToCourse(int courseId, int semesterId, int taId)
         {
-            Coursesemester coursesemester = await _context.Coursesemesters.FirstOrDefaultAsync(CS => CS.CourseSemesterId == courseSemesterId);
+            Coursesemester coursesemester = await _context.Coursesemesters.FirstOrDefaultAsync(CS => CS.CourseId == courseId && CS.SemesterId == semesterId);
             if (coursesemester == null)
                 return new CustomResponse<AssistantsCoursesDTO>(404,"Course not found");
 
@@ -31,7 +31,8 @@ namespace College_managemnt_system.Repos
             AssistantsJoinscourseSemester taCourse = new AssistantsJoinscourseSemester()
             {
                 AssistantId  = taId,
-                CourseSemesterId = courseSemesterId
+                CourseId = courseId,
+                SemesterId = semesterId
             };
 
             try
@@ -46,9 +47,9 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<AssistantsCoursesDTO>(500, "Internal server error");
             }
           }
-        public async Task<CustomResponse<bool>> RemoveTaFromCourse(int courseSemesterId, int taId)
+        public async Task<CustomResponse<bool>> RemoveTaFromCourse(int courseId, int semesterId, int taId)
         {
-            AssistantsJoinscourseSemester taCourse = await _context.AssistantsJoinscourseSemesters.FirstOrDefaultAsync(TC => TC.CourseSemesterId == courseSemesterId && TC.AssistantId == taId);
+            AssistantsJoinscourseSemester taCourse = await _context.AssistantsJoinscourseSemesters.FirstOrDefaultAsync(TC => TC.CourseId == courseId && TC.SemesterId == semesterId && TC.AssistantId == taId);
 
             if (taCourse == null)
                 return new CustomResponse<bool>(404, "Ta does not exist in this course");
@@ -65,9 +66,9 @@ namespace College_managemnt_system.Repos
             }
         }
 
-        public async Task<CustomResponse<List<TeachingAssistanceDTO>>> GetCourseTas(int courseSemesterId) //TODO. should be filtered by semesterId too (will do after redesigning the coursesemester table)
+        public async Task<CustomResponse<List<TeachingAssistanceDTO>>> GetCourseTas(int courseId, int semesterId) 
         {
-            List<TeachingAssistance> teachingAssistance = await _context.AssistantsJoinscourseSemesters.Where(TC => TC.CourseSemesterId == courseSemesterId).Join(_context.TeachingAssistances,TC => TC.AssistantId,T => T.AssistantId,(TC,T) => T).ToListAsync();
+            List<TeachingAssistance> teachingAssistance = await _context.AssistantsJoinscourseSemesters.Where(TC => TC.CourseId == courseId && TC.SemesterId == semesterId).Join(_context.TeachingAssistances,TC => TC.AssistantId,T => T.AssistantId,(TC,T) => T).ToListAsync();
 
             if (!teachingAssistance.Any())
                 return new CustomResponse<List<TeachingAssistanceDTO>>(404,"No tas found for this course");
@@ -77,16 +78,27 @@ namespace College_managemnt_system.Repos
             return new CustomResponse<List<TeachingAssistanceDTO>>(200,"Tas retrieved successfully",teachingAssistancesDTO);
         }
 
-        public async Task<CustomResponse<List<CourseSemesterDTO>>> getTaCourses(int taId) //TODO. should be filtered by semesterId too (will do after redesigning the coursesemester table)
+        public async Task<CustomResponse<List<CourseSemesterDTO>>> getTaCourses(int semesterId,int taId) 
         {
-            List<Coursesemester> courses = await _context.AssistantsJoinscourseSemesters.Where(TC => TC.AssistantId == taId).Join(_context.Coursesemesters, TC => TC.CourseSemesterId, CS => CS.CourseSemesterId, (TC, CS) => CS).ToListAsync();
+            List<CourseSemesterDTO> courses = await (from TC in _context.AssistantsJoinscourseSemesters
+                                                     where TC.SemesterId == semesterId && TC.AssistantId == taId
+                                                     join CS in _context.Coursesemesters on new { TC.CourseId, TC.SemesterId } equals new { CS.CourseId, CS.SemesterId }
+                                                     join C in _context.Courses on CS.CourseId equals C.CourseId
+                                                     select new CourseSemesterDTO
+                                                     {
+                                                         CourseId = CS.CourseId,
+                                                         SemesterId = CS.SemesterId,
+                                                         CourseName = C.CourseName,
+                                                         ProfessorId = CS.ProfessorId,
+                                                        Isactive = CS.Isactive
+
+                                                     }).ToListAsync();
+
 
             if (!courses.Any())
                 return new CustomResponse<List<CourseSemesterDTO>>(404, "No courses found for this course");
 
-            List<CourseSemesterDTO> coursesDTO = _mapper.Map<List<CourseSemesterDTO>>(courses);
-
-            return new CustomResponse<List<CourseSemesterDTO>>(200, "Tas retrieved successfully", coursesDTO);
+            return new CustomResponse<List<CourseSemesterDTO>>(200, "Tas retrieved successfully", courses);
         }
     }
 }

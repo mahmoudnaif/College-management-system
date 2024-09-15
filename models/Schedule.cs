@@ -7,11 +7,11 @@ public partial class Schedule
 {
     public int ScheduleId { get; set; }
 
-    public int CourseSemesterId { get; set; }
-
-    public int RoomNumber { get; set; }
+    public int CourseId { get; set; }
 
     public int SemesterId { get; set; }
+
+    public int RoomNumber { get; set; }
 
     public string Type { get; set; } = null!;
 
@@ -19,11 +19,9 @@ public partial class Schedule
 
     public int PeriodNumber { get; set; }
 
-    public virtual Coursesemester CourseSemester { get; set; } = null!;
+    public virtual Coursesemester Coursesemester { get; set; } = null!;
 
     public virtual Classroom RoomNumberNavigation { get; set; } = null!;
 
     public virtual ICollection<SchedulesJoinsgroup> SchedulesJoinsgroups { get; set; } = new List<SchedulesJoinsgroup>();
-
-    public virtual Semester Semester { get; set; } = null!;
 }

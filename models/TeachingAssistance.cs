@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace College_managemnt_system.models;
 
-public partial class TeachingAssistance //* TeachingAssistant
+public partial class TeachingAssistance
 {
     public int AssistantId { get; set; }
 

@@ -3,15 +3,13 @@ using System.Collections.Generic;
 
 namespace College_managemnt_system.models;
 
-public partial class Coursesemester //needs to be redesigned (semesterId and courseId should be a composed primary key). TBH i don't know how i went with this design in the first place.
+public partial class Coursesemester
 {
-    public int CourseSemesterId { get; set; }
-
-    public int ProfessorId { get; set; }
-
     public int CourseId { get; set; }
 
     public int SemesterId { get; set; }
+
+    public int ProfessorId { get; set; }
 
     public bool Isactive { get; set; }
 

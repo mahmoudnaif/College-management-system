@@ -53,18 +53,18 @@ namespace College_managemnt_system.Repos
             List<SchedueleDTO> scheduelesDTO = await (from SG in _context.SchedulesJoinsgroups
                                               where SG.GroupId == groupId
                                               join S in _context.Schedules on SG.ScheduleId equals S.ScheduleId
-                                              join CS in _context.Coursesemesters on S.CourseSemesterId equals CS.CourseSemesterId
+                                              join CS in _context.Coursesemesters on new { S.CourseId, S.SemesterId} equals new { CS.CourseId,CS.SemesterId}
                                               join C in _context.Courses on CS.CourseId equals C.CourseId
                                               
                                                   select new SchedueleDTO
                                                   {
                                                       ScheduleId = S.ScheduleId,
 
-                                                      CourseSemesterId = S.CourseSemesterId,
-
                                                       RoomNumber = S.RoomNumber,
 
                                                       SemesterId = S.SemesterId,
+
+                                                      CourseId = C.CourseId,
 
                                                       Type = S.Type,
 

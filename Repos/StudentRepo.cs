@@ -240,7 +240,7 @@ namespace College_managemnt_system.Repos
 
             var result = await (from SC in _context.StudentCourses
                                 where SC.StudentId == studentId && SC.Status == "completed"
-                                join CS in _context.Coursesemesters on SC.CourseSemesterId equals CS.CourseSemesterId
+                                join CS in _context.Coursesemesters on new { SC.CourseId, SC.SemesterId} equals new { CS.CourseId , CS.SemesterId }
                                 join C in _context.Courses on CS.CourseId equals C.CourseId
                                 select new
                                 {
@@ -305,7 +305,9 @@ namespace College_managemnt_system.Repos
                         FROM 
                             StudentCourses sc
                         INNER JOIN 
-                            Coursesemesters cs ON sc.CourseSemesterID = cs.CourseSemesterID
+                            Coursesemesters cs 
+                            ON sc.CourseID = cs.CourseID 
+                            AND sc.SemesterID = cs.SemesterID 
                         INNER JOIN 
                             Courses c ON cs.CourseID = c.CourseID
                         WHERE 

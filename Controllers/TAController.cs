@@ -102,11 +102,11 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpGet("{taId}/courses")]
+        [HttpGet("{taId}/semester/{semesterId}")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> GetTaByNationalId(int taId)
+        public async Task<IActionResult> GetTaByNationalId(int semesterId, int taId)
         {
-            var response = await _assistanceCoursesRepo.getTaCourses(taId);
+            var response = await _assistanceCoursesRepo.getTaCourses(semesterId, taId);
 
             return StatusCode(response.responseCode, response);
         }

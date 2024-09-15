@@ -12,10 +12,10 @@ namespace College_managemnt_system.Interfaces
         public Task<CustomResponse<bool>> EditActiveStatusForAllCourses(bool isActive); // activates or deactivates all the semestercourses assosiated to the current active semester
         public Task<CustomResponse<CourseSemesterDTO>> Add(CourseSemesterInputModel model);
 
-        public Task<CustomResponse<bool>> Delete(int courseSemesterId);
+        public Task<CustomResponse<bool>> Delete(int courseId, int semesterId);
 
-        public Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(int courseSemesterId,int profId);
+        public Task<CustomResponse<CourseSemesterDTO>> ChangeProfessor(int courseId, int semesterId, int profId);
 
-        public Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(int courseSemesterId, bool isActive);
+        public Task<CustomResponse<CourseSemesterDTO>> EditActivationStatus(int courseId, int semesterId, bool isActive);
     }
 }
