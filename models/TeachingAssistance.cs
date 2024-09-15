@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace College_managemnt_system.models;
 
-public partial class TeachingAssistance
+public partial class TeachingAssistance //* TeachingAssistant
 {
     public int AssistantId { get; set; }
 
@@ -12,6 +12,8 @@ public partial class TeachingAssistance
     public string LastName { get; set; } = null!;
 
     public string Phone { get; set; } = null!;
+
+    public string NationalNumber { get; set; } = null!;
 
     public DateTime HiringDate { get; set; }
 

@@ -6,6 +6,9 @@ namespace College_managemnt_system.Interfaces
 {
     public interface IProfessorsRepo
     {
+        public Task<CustomResponse<List<ProfessorDTO>>> SearchProfessors(string searchQuery,TakeSkipModel takeSkipModel);
+        public Task<CustomResponse<ProfessorDTO>> GetProfByNationalId(string nationalId);
+
         public Task<CustomResponse<List<ProfessorDTO>>> GetProfessorsByDepartment(int departmentId,TakeSkipModel takeSkipModel);
 
         public Task<CustomResponse<List<ProfessorDTO>>> GetAllProfessors(TakeSkipModel takeSkipModel);
@@ -21,5 +24,7 @@ namespace College_managemnt_system.Interfaces
         public Task<CustomResponse<ProfessorDTO>> EditDepartment(int profId,int departmentId);
 
         public Task<CustomResponse<ProfessorDTO>> EditPhoneNumber(int profId, string newPhoneNumber);
+
+        
     }
 }

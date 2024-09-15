@@ -6,9 +6,11 @@ namespace College_managemnt_system.Interfaces
 {
     public interface IStudentRepo
     {
+      
         public Task<CustomResponse<List<StudentDTO>>> GetStudentSByYear(int year,TakeSkipModel model);
         public Task<CustomResponse<StudentDTO>> GetStudentByEmail(string email);
-        public Task<CustomResponse<List<StudentDTO>>> SearchStudentsByName(string searchQuery,TakeSkipModel model);
+        public Task<CustomResponse<StudentDTO>> GetStudentByNationalId(string nationalId);
+        public Task<CustomResponse<List<StudentDTO>>> SearchStudents(string searchQuery,TakeSkipModel model);
         public Task<CustomResponse<StudentDTO>> Add(StudentInputModel model);
         public Task<CustomResponse<StudentDTO>> EditPhone(int studentId, string phoneNumber);
         public Task<CustomResponse<StudentDTO>> EditName(int studentId, FullNameInputModel model);

@@ -6,6 +6,7 @@ using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
 using College_managemnt_system.Repos.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Eventing.Reader;
 
 namespace College_managemnt_system.Repos
 {
@@ -186,16 +187,26 @@ namespace College_managemnt_system.Repos
             return new CustomResponse<List<StudentDTO>>(200, "Students retreived", studentsDTO);
         }
 
-        public async Task<CustomResponse<List<StudentDTO>>> SearchStudentsByName(string searchQuery, TakeSkipModel model)
+        public async Task<CustomResponse<List<StudentDTO>>> SearchStudents(string searchQuery, TakeSkipModel model)
         {
             if (searchQuery.Trim() == "")
                 return new CustomResponse<List<StudentDTO>>(400, "Search query must be specefied");
 
             if (model.skip < 0 || model.take < 1)
                 return new CustomResponse<List<StudentDTO>>(400, "Take must be more than 0 and skip must be bigger than or equal to 0");
+            List<Student> students = [];
+            if (searchQuery[0] == '+') {
+                students = await _context.Students.Where(S => S.Phone.StartsWith(searchQuery))
+                .OrderBy(S => S.Phone).Skip(model.skip).Take(model.take).ToListAsync();
+            }
+            else
+            {
+                students = await _context.Students.Where(S => (S.FirstName + " " + S.FathertName + " " + S.GrandfatherName + " " + S.LastName).StartsWith(searchQuery))
+               .OrderBy(S => (S.FirstName + " " + S.FathertName + " " + S.GrandfatherName + " " + S.LastName).Length - searchQuery.Length).ThenBy(S => S.FirstName + " " + S.FathertName + " " + S.GrandfatherName + " " + S.LastName).Skip(model.skip).Take(model.take).ToListAsync();
+            }
 
-
-            List<Student> students = await _context.Students.Where(S => (S.FirstName +" "+ S.FathertName + " " + S.GrandfatherName + " " + S.LastName).StartsWith(searchQuery)).OrderBy(S =>S.StudentId).Skip(model.skip).Take(model.take).ToListAsync();
+                
+               
 
             if (!students.Any())
                 return new CustomResponse<List<StudentDTO>>(404, "No students were found");
@@ -323,6 +334,19 @@ namespace College_managemnt_system.Repos
                 "D-" => 0.7f,
                 _ => 0,
             };
+        }
+
+        public async Task<CustomResponse<StudentDTO>> GetStudentByNationalId(string nationalId)
+        {
+            if (!_utilitiesRepo.IsValidNationalId(nationalId))
+                return new CustomResponse<StudentDTO>(400, "National id is not valid");
+
+            Student student = await _context.Students.FirstOrDefaultAsync(S => S.NationalNumber == nationalId);
+
+            if (student == null)
+                return new CustomResponse<StudentDTO>(400, "Not found");
+
+            return new CustomResponse<StudentDTO>(200, "Prof retreived successfully", _mapper.Map<StudentDTO>(student));
         }
     }
 }

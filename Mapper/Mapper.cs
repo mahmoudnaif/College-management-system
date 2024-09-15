@@ -16,7 +16,9 @@ namespace College_managemnt_system.Mapper
             CreateMap<CoursesInputModelCSV, Course>();
             CreateMap<StudentsInputModelCSV, Student>();
             CreateMap<StudentsInputModelCSV, Account>();
+            CreateMap<AssistantsJoinscourseSemester, AssistantsCoursesDTO> ();
             CreateMap<SchedulesJoinsgroup, ScheduleJoinsGroupDTO> ();
+            CreateMap<TeachingAssistance, TeachingAssistanceDTO> ();
             CreateMap<Student, StudentDTO> ();
             CreateMap<Professor, ProfessorDTO> ();
             CreateMap<Coursesemester, CourseSemesterDTO > ();

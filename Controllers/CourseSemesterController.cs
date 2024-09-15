@@ -10,10 +10,12 @@ namespace College_managemnt_system.Controllers
     public class CourseSemesterController : Controller
     {
         private readonly ICoursesSemestersRepo _coursesSemestersRepo;
+        private readonly IAssistanceCoursesRepo _assistanceCoursesRepo;
 
-        public CourseSemesterController(ICoursesSemestersRepo coursesSemestersRepo)
+        public CourseSemesterController(ICoursesSemestersRepo coursesSemestersRepo,IAssistanceCoursesRepo assistanceCoursesRepo)
         {
             _coursesSemestersRepo = coursesSemestersRepo;
+            _assistanceCoursesRepo = assistanceCoursesRepo;
         }
 
 
@@ -37,7 +39,7 @@ namespace College_managemnt_system.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin,root")]
-        public async Task<IActionResult> Add([FromBody] CourseSemesterInputModel model) 
+        public async Task<IActionResult> Add([FromBody] CourseSemesterInputModel model)
         {
             var response = await _coursesSemestersRepo.Add(model);
 
@@ -57,7 +59,7 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "admin,root")]
         public async Task<IActionResult> ChangeProfessor(int courseSemesterId, [FromBody] int profId)
         {
-            var response = await _coursesSemestersRepo.ChangeProfessor(courseSemesterId,profId);
+            var response = await _coursesSemestersRepo.ChangeProfessor(courseSemesterId, profId);
 
             return StatusCode(response.responseCode, response);
         }
@@ -67,6 +69,33 @@ namespace College_managemnt_system.Controllers
         public async Task<IActionResult> EditActivationStatus(int courseSemesterId, bool isActive)
         {
             var response = await _coursesSemestersRepo.EditActivationStatus(courseSemesterId, isActive);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPost("{courseSemesterId}/Ta")]
+        [Authorize(Roles ="root,admin")]
+        public async Task<IActionResult> AddTaToCourse(int courseSemesterId,[FromBody] int taId)
+        {
+            var response = await _assistanceCoursesRepo.AddTaToCourse(courseSemesterId, taId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpDelete("{courseSemesterId}/Ta/{taId}")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> RemoveTaFromCourse(int courseSemesterId, int taId)
+        {
+            var response = await _assistanceCoursesRepo.RemoveTaFromCourse(courseSemesterId, taId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpGet("{courseSemesterId}/Ta")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetCourseTas(int courseSemesterId)
+        {
+            var response = await _assistanceCoursesRepo.GetCourseTas(courseSemesterId);
 
             return StatusCode(response.responseCode, response);
         }

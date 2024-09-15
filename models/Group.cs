@@ -16,6 +16,4 @@ public partial class Group
     public virtual ICollection<SchedulesJoinsgroup> SchedulesJoinsgroups { get; set; } = new List<SchedulesJoinsgroup>();
 
     public virtual Semester Semester { get; set; } = null!;
-
-    public virtual ICollection<StudentsJoinsgroup> StudentsJoinsgroups { get; set; } = new List<StudentsJoinsgroup>();
 }

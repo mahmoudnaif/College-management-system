@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace College_managemnt_system.models;
 
-public partial class Coursesemester
+public partial class Coursesemester //needs to be redesigned (semesterId and courseId should be a composed primary key). TBH i don't know how i went with this design in the first place.
 {
     public int CourseSemesterId { get; set; }
 

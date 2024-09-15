@@ -42,9 +42,9 @@ namespace College_managemnt_system.Controllers
 
         [HttpGet("search/{searchQuery}")]
         [Authorize(Roles = "root,admin")]
-        public async Task<IActionResult> GetStudentsByYear(string searchQuery, [FromQuery] TakeSkipModel takeSkipModel)
+        public async Task<IActionResult> SearchStudents(string searchQuery, [FromQuery] TakeSkipModel takeSkipModel)
         {
-            var result = await _studentRepo.SearchStudentsByName(searchQuery, takeSkipModel);
+            var result = await _studentRepo.SearchStudents(searchQuery, takeSkipModel);
 
             return StatusCode(result.responseCode, result);
         }
@@ -130,6 +130,15 @@ namespace College_managemnt_system.Controllers
         {
             var response = await _CSVParser.AddStudents(file);
             return StatusCode(response.responseCode, response);
+        }
+
+        [HttpGet("nationalId/{nationalId}")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetStudentByNationalId(string nationalId)
+        {
+            var result = await _studentRepo.GetStudentByNationalId(nationalId);
+
+            return StatusCode(result.responseCode, result);
         }
     }
 }

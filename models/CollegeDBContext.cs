@@ -97,8 +97,9 @@ public partial class CollegeDBContext : DbContext
         {
             entity.HasKey(e => e.RoomNumber).HasName("Classrooms$PrimaryKey");
 
-            entity.HasIndex(e => e.RoomNumber, "UQ__tmp_ms_x__AE10E07AE14A5EE1").IsUnique();
+            entity.HasIndex(e => e.RoomNumber, "UQ__tmp_ms_x__AE10E07A7154D592").IsUnique();
 
+            entity.Property(e => e.RoomNumber).ValueGeneratedNever();
             entity.Property(e => e.Building).HasColumnName("building");
         });
 
@@ -356,32 +357,37 @@ public partial class CollegeDBContext : DbContext
 
         modelBuilder.Entity<StudentsJoinsgroup>(entity =>
         {
-            entity.HasKey(e => new { e.StudentId, e.GroupId }).HasName("StudentsJOINSGroups$PrimaryKey");
+            entity.HasKey(e => new { e.StudentId, e.ScheduleId }).HasName("PK_Student_Schedules");
 
             entity.ToTable("StudentsJOINSGroups");
 
             entity.HasIndex(e => e.GroupId, "StudentsJOINSGroups$GroupID");
 
+            entity.HasIndex(e => e.ScheduleId, "StudentsJOINSGroups$ScheduleId");
+
             entity.HasIndex(e => e.StudentId, "StudentsJOINSGroups$StudentID");
 
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
+            entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
             entity.Property(e => e.GroupId).HasColumnName("GroupID");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
 
-            entity.HasOne(d => d.Group).WithMany(p => p.StudentsJoinsgroups)
-                .HasForeignKey(d => d.GroupId)
-                .HasConstraintName("StudentsJOINSGroups$GroupsStudentsJOINSGroups");
-
             entity.HasOne(d => d.Student).WithMany(p => p.StudentsJoinsgroups)
                 .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("StudentsJOINSGroups$StudentsStudentsJOINSGroups");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Student_Schedules_Student");
+
+            entity.HasOne(d => d.SchedulesJoinsgroup).WithMany(p => p.StudentsJoinsgroups)
+                .HasForeignKey(d => new { d.ScheduleId, d.GroupId })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Student_Schedules_SchedulesJOINSGroups");
         });
 
         modelBuilder.Entity<TeachingAssistance>(entity =>
         {
             entity.HasKey(e => e.AssistantId).HasName("TeachingAssistances$PrimaryKey");
 
-            entity.HasIndex(e => e.AccountId, "UQ__Teaching__F267253FFF770244").IsUnique();
+            entity.HasIndex(e => e.AccountId, "UQ__tmp_ms_x__F267253F3E55EA9D").IsUnique();
 
             entity.Property(e => e.AssistantId).HasColumnName("AssistantID");
             entity.Property(e => e.AccountId).HasColumnName("accountID");
@@ -390,6 +396,7 @@ public partial class CollegeDBContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.LastName).HasMaxLength(255);
+            entity.Property(e => e.NationalNumber).HasMaxLength(255);
             entity.Property(e => e.Phone)
                 .HasMaxLength(255)
                 .HasColumnName("phone");

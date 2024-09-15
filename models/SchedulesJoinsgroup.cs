@@ -14,4 +14,6 @@ public partial class SchedulesJoinsgroup
     public virtual Group Group { get; set; } = null!;
 
     public virtual Schedule Schedule { get; set; } = null!;
+
+    public virtual ICollection<StudentsJoinsgroup> StudentsJoinsgroups { get; set; } = new List<StudentsJoinsgroup>();
 }

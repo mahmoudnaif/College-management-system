@@ -91,5 +91,23 @@ namespace College_managemnt_system.Controllers
 
             return StatusCode(response.responseCode, response);
         }
+
+        [HttpGet("nationalId/{nationalId}")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetProfByNationalId(string nationalId)
+        {
+            var response = await _professorsRepo.GetProfByNationalId(nationalId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpGet("search/{searchQuery}")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> SearchProfessors(string searchQuery, [FromQuery] TakeSkipModel takeSkipModel)
+        {
+            var response = await _professorsRepo.SearchProfessors(searchQuery,takeSkipModel);
+
+            return StatusCode(response.responseCode, response);
+        }
     }
 }
