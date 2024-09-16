@@ -26,7 +26,7 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        [HttpGet("GetSemesters")]
+        [HttpGet("All")]
         [Authorize(Roles = "admin,root")]
         public async Task<IActionResult> GetSemesters([FromQuery] TakeSkipModel takeSkipModel)
         {
@@ -58,7 +58,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPost("AddSemester")]
+        [HttpPost("")]
         [Authorize(Roles = "admin,root")]
         public async Task<IActionResult> AddSemester([FromBody] SemesterInputModel semesterInputModel)
         {
@@ -69,7 +69,7 @@ namespace College_managemnt_system.Controllers
 
 
 
-        [HttpPut("EditStartDate")]
+        [HttpPut("StartDate")]
         [Authorize(Roles = "admin,root")]
         public async Task<IActionResult> EditStartDate([FromBody] EditDateModel editDateModel)
         {
@@ -78,7 +78,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPut("EditEndtDate")]
+        [HttpPut("EndtDate")]
         [Authorize(Roles = "admin,root")]
         public async Task<IActionResult> EditEndtDate([FromBody] EditDateModel editDateModel)
         {
@@ -88,7 +88,7 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        [HttpPut("EditActiveStatus")]
+        [HttpPut("ActiveStatus")]
         [Authorize(Roles = "admin,root")]
         public async Task<IActionResult> EditActiveStatus([FromBody] EditIsActiveModel editIsActiveModel)
         {
@@ -98,11 +98,11 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        [HttpDelete("DeleteSemester")]
+        [HttpDelete("{semesterId}")]
         [Authorize(Roles = "root")]
-        public async Task<IActionResult> DeleteSemester([FromQuery] int semesterID)
+        public async Task<IActionResult> DeleteSemester(int semesterId)
         {
-            var response = await _semstersRepo.DeleteSemester(semesterID);
+            var response = await _semstersRepo.DeleteSemester(semesterId);
 
             return StatusCode(response.responseCode, response);
         }

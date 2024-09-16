@@ -7,7 +7,8 @@ namespace College_managemnt_system.Interfaces
     {
         public Task<CustomResponse<List<StudentErrorSheet>>> AddStudents(IFormFile file);
         public Task<CustomResponse<List<ProfErrorSheet>>> AddProfessors(IFormFile file);
-        public Task<CustomResponse<bool>> AddTeachingAssistances(IFormFile file);
+        public Task<CustomResponse<List<TeachingAssistantErrorSheet>>> AddTeachingAssistances(IFormFile file);
         public Task<CustomResponse<List<CourseErrorSheet>>> AddCourses(IFormFile file);
+        public Task<CustomResponse<List<ClassRoomErrorSheet>>> AddClassRooms(IFormFile file);
     }
 }

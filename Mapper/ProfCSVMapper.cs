@@ -7,14 +7,14 @@ namespace College_managemnt_system.Mapper
     {
         public ProfCSVMapper()
         {
-            Map(P => P.FirstName).TypeConverter<TrimmedStringConverter>();
-            Map(P => P.LastName).TypeConverter<TrimmedStringConverter>();
-            Map(P => P.NationalNumber).TypeConverter<TrimmedStringConverter>();
-            Map(P => P.Phone).TypeConverter<TrimmedStringConverter>();
-            Map(P => P.email).TypeConverter<TrimmedStringConverter>();
-            Map(P => P.DepartmentName).TypeConverter<TrimmedStringConverter>();
-            Map(P => P.DepartmentId);
-            Map(P => P.HiringDate);
+                Map(P => P.FirstName).TypeConverter<TrimmedStringConverter>();
+                Map(P => P.LastName).TypeConverter<TrimmedStringConverter>();
+                Map(P => P.NationalNumber).TypeConverter<TrimmedStringConverter>();
+                Map(P => P.Phone).TypeConverter<TrimmedStringConverter>();
+                Map(P => P.email).TypeConverter<TrimmedStringConverter>();
+                Map(P => P.DepartmentName).TypeConverter<TrimmedStringConverter>();
+                Map(P => P.DepartmentId);
+                Map(P => P.HiringDate).TypeConverter<StringDateConverter>();
         }
     }
 }

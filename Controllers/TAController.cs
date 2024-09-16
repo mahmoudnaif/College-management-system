@@ -13,11 +13,13 @@ namespace College_managemnt_system.Controllers
     {
         private readonly ITeachingAssistanceRepo _teachingAssistanceRepo;
         private readonly IAssistanceCoursesRepo _assistanceCoursesRepo;
+        private readonly ICSVParser _CSVParser;
 
-        public TAController(ITeachingAssistanceRepo teachingAssistanceRepo, IAssistanceCoursesRepo assistanceCoursesRepo)
+        public TAController(ITeachingAssistanceRepo teachingAssistanceRepo, IAssistanceCoursesRepo assistanceCoursesRepo,ICSVParser CSVParser)
         {
             _teachingAssistanceRepo = teachingAssistanceRepo;
             _assistanceCoursesRepo = assistanceCoursesRepo;
+            _CSVParser = CSVParser;
         }
 
         [HttpPost]
@@ -109,6 +111,17 @@ namespace College_managemnt_system.Controllers
             var response = await _assistanceCoursesRepo.getTaCourses(semesterId, taId);
 
             return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPost("CSV")]
+        [Authorize(Roles = "admin,root")]
+
+        public async Task<IActionResult> AddTasCSV(IFormFile file)
+        {
+            var response = await _CSVParser.AddTeachingAssistances(file);
+
+            return StatusCode(response.responseCode, response);
+
         }
     }
 }

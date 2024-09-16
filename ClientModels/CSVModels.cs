@@ -63,6 +63,36 @@
         public int numberOfErrors { get; set; } = 0;
     }
 
+    public class ClassRoomErrorSheet
+    {
+        public ClassRoomErrorSheet(int rowNumber)
+        {
+            this.rowNumber = rowNumber;
+        }
+
+        public int rowNumber { get; set; }
+        public bool RoomNumber { get; set; } = true;
+        public bool Building { get; set; } = true;
+        public bool Capacity { get; set; } = true;
+        public int numberOfErrors { get; set; } = 0;
+    }
+
+    public class TeachingAssistantErrorSheet
+    {
+        public TeachingAssistantErrorSheet(int rowNumber)
+        {
+            this.rowNumber = rowNumber;
+        }
+        public int rowNumber { get; set; }
+        public bool FirstName { get; set; } = true;
+        public bool LastName { get; set; } = true;
+        public bool Phone { get; set; } = true;
+        public bool  NationalNumber { get; set; } = true;
+        public bool HiringDate { get; set; } = true;
+        public bool email { get; set; } = true;
+        public int numberOfErrors { get; set; } = 0;
+
+    }
 
 
 }

@@ -6,13 +6,16 @@ namespace College_managemnt_system.models;
 
 public partial class CollegeDBContext : DbContext
 {
+    private readonly IConfiguration _configuration;
+
     public CollegeDBContext()
     {
     }
 
-    public CollegeDBContext(DbContextOptions<CollegeDBContext> options)
+    public CollegeDBContext(DbContextOptions<CollegeDBContext> options,IConfiguration configuration)
         : base(options)
     {
+        _configuration = configuration;
     }
 
     public virtual DbSet<Account> Accounts { get; set; }
@@ -49,7 +52,7 @@ public partial class CollegeDBContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\learning\\collegeSystem\\college managment system testing area\\College-managemnt-system\\CollegeDB\\CollegeDB.mdf;Integrated Security=True;Connect Timeout=30");
+        => optionsBuilder.UseSqlServer(_configuration["ConnectionStrings:default"]);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

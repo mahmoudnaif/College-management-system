@@ -12,10 +12,12 @@ namespace College_managemnt_system.Controllers
     public class ClassRoomController : Controller
     {
         private readonly IClassroomsRepo _classroomsRepo;
+        private readonly ICSVParser _CSVParser;
 
-        public ClassRoomController(IClassroomsRepo classroomsRepo)
+        public ClassRoomController(IClassroomsRepo classroomsRepo,ICSVParser CSVParser)
         {
             _classroomsRepo = classroomsRepo;
+            _CSVParser = CSVParser;
         }
 
 
@@ -60,6 +62,15 @@ namespace College_managemnt_system.Controllers
         public async Task<IActionResult> RemoveClassRoom(int classRoomId)
         {
             var response = await _classroomsRepo.RemoveClassRoom(classRoomId);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPost("CSV")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> AddClassRooms(IFormFile file)
+        {
+            var response = await _CSVParser.AddClassRooms(file);
 
             return StatusCode(response.responseCode, response);
         }
