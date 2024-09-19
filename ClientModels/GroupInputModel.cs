@@ -8,4 +8,11 @@
 
         public int SemesterId { get; set; }
     }
+
+
+    public class CustomGroupCourseInputModel
+    {
+        public int GroupId { get; set; }
+        public int CourseId { get; set; }
+    }
 }

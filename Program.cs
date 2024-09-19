@@ -104,6 +104,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddScoped<IRegisterSemesterCoursesRepo, RegisterSemesterCoursesRepo>();
 builder.Services.AddScoped<IAssistanceCoursesRepo, AssistanceCoursesRepo>();
 builder.Services.AddScoped<ITeachingAssistanceRepo, TeachingAssistanceRepo>();
 builder.Services.AddScoped<ICSVParser, CSVParser>();
