@@ -357,24 +357,24 @@ namespace College_managemnt_system.Repos
 
 
             }
-        public async Task<CustomResponse<object>> RegisterCustomCourses_Schedules(int studentId,List<CustomGroupCourseInputModel> groupCourseInputModels, bool bypassrules = false)
+        public async Task<CustomResponse<bool>> RegisterCustomCourses_Schedules(int studentId,List<CustomGroupCourseInputModel> groupCourseInputModels, bool bypassrules = false)
         {
             if (!groupCourseInputModels.Any())
-                return new CustomResponse<object>(400, "Courses and groups needs to be specifed");
+                return new CustomResponse<bool>(400, "Courses and groups needs to be specifed");
 
 
             if (groupCourseInputModels.GroupBy(g => g.CourseId).Any(group => group.Count() > 1))
-                return new CustomResponse<object>(400, "You must specify one group per course not more");
+                return new CustomResponse<bool>(400, "You must specify one group per course not more");
 
             Student student = await _context.Students.FirstOrDefaultAsync(S => S.StudentId == studentId);
 
             if (student == null)
-                return new CustomResponse<object>(404, "Student does not exist");
+                return new CustomResponse<bool>(404, "Student does not exist");
 
             var avialableCoursesResponse = await GetAvailableCourses(studentId);
 
             if (avialableCoursesResponse.responseCode != 200)
-                return new CustomResponse<object>(avialableCoursesResponse.responseCode, $"An error occoured while fethcing student's elgible courses: {avialableCoursesResponse.responseMessage}");
+                return new CustomResponse<bool>(avialableCoursesResponse.responseCode, $"An error occoured while fethcing student's elgible courses: {avialableCoursesResponse.responseMessage}");
 
             var availableCourses = avialableCoursesResponse.data;
 
@@ -382,16 +382,16 @@ namespace College_managemnt_system.Repos
             var courses = availableCourses.Where(avC => groupCourseInputModels.Any(GC=> GC.CourseId ==  avC.CourseId));
 
             if (courses.Count() != groupCourseInputModels.Count())
-                return new CustomResponse<object>(400, "Some courses are not elgible for this student");
+                return new CustomResponse<bool>(400, "Some courses are not elgible for this student");
 
             if (!bypassrules)
             {
                 int sumOfCreditHours = courses.Sum(C => C.Credits);
                 if (sumOfCreditHours < 9)
-                    return new CustomResponse<object>(403, "You need to register at lease 9 hours");
+                    return new CustomResponse<bool>(403, "You need to register at lease 9 hours");
 
                 if (sumOfCreditHours > 18)
-                    return new CustomResponse<object>(403, "You can't register more than 18 hours");
+                    return new CustomResponse<bool>(403, "You can't register more than 18 hours");
 
             }
 
@@ -401,7 +401,7 @@ namespace College_managemnt_system.Repos
             int? activeSemesterId = (await _context.Semesters.FirstOrDefaultAsync(S => S.IsActive))?.SemesterId;
 
             if (activeSemesterId == null)
-                return new CustomResponse<object>(404, "No active semester");
+                return new CustomResponse<bool>(404, "No active semester");
 
             var groupIds = groupCourseInputModels.Select(GC => GC.GroupId).Distinct().ToList();
             var courseIds = groupCourseInputModels.Select(GC => GC.CourseId).ToList();
@@ -410,7 +410,7 @@ namespace College_managemnt_system.Repos
             var courseInOneGroupResponse = await coursesExistInOneGroup(courseIds, (int)activeSemesterId);
 
             if (courseInOneGroupResponse.responseCode == 200)
-                return new CustomResponse<object>(403, courseInOneGroupResponse.responseMessage);
+                return new CustomResponse<bool>(403, courseInOneGroupResponse.responseMessage);
                 
 
 
@@ -440,10 +440,10 @@ namespace College_managemnt_system.Repos
             var scheduleCourseIds = groupsSchedules.Select(GS => GS.schedule.CourseId).Distinct().ToList();
 
             if (scheduleCourseIds.Count() != courseIds.Count())
-                return new CustomResponse<object>(400,"some courses do not exist in their corresponding groups");
+                return new CustomResponse<bool>(400,"some courses do not exist in their corresponding groups");
 
             if (!SchedulesDoNotOverLap(groupsSchedules.Select(GS => GS.schedule).ToList()))
-                return new CustomResponse<object>(409, "Schedules conflict please find another schedule");
+                return new CustomResponse<bool>(409, "Schedules conflict please find another schedule");
 
             var transaction = _context.Database.BeginTransaction();
 
@@ -470,12 +470,12 @@ namespace College_managemnt_system.Repos
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
-                return new CustomResponse<object>(201, "Courses and schedule registered successfully");
+                return new CustomResponse<bool>(201, "Courses and schedule registered successfully");
             }
             catch
             {
                 transaction.Rollback();
-                return new CustomResponse<object>(500, "Internal server errror");
+                return new CustomResponse<bool>(500, "Internal server errror");
             }
 
         }

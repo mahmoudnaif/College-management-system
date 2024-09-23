@@ -1,6 +1,9 @@
 ﻿using College_managemnt_system.ClientModels;
+using College_managemnt_system.CustomResponse;
+using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
+using College_managemnt_system.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
@@ -14,12 +17,14 @@ namespace College_managemnt_system.Controllers
         private readonly IStudentRepo _studentRepo;
         private readonly IStudetnsDepartmentsRepo _studetnsDepartmentsRepo;
         private readonly ICSVParser _CSVParser;
+        private readonly PremissionUtilsRepo _premissionUtilsRepo;
 
-        public StudentController(IStudentRepo studentRepo,IStudetnsDepartmentsRepo studetnsDepartmentsRepo, ICSVParser CSVParser)
+        public StudentController(IStudentRepo studentRepo,IStudetnsDepartmentsRepo studetnsDepartmentsRepo, ICSVParser CSVParser,PremissionUtilsRepo premissionUtilsRepo)
         {
             _studentRepo = studentRepo;
             _studetnsDepartmentsRepo = studetnsDepartmentsRepo;
             _CSVParser = CSVParser;
+            _premissionUtilsRepo = premissionUtilsRepo;
         }
 
         [HttpGet("year/{year}")]
@@ -53,7 +58,10 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> Add([FromBody] StudentInputModel model)
         {
-            var result = await _studentRepo.Add(model);
+            if (!await _premissionUtilsRepo.CheckRegestringStudetns())
+                return StatusCode(403, new CustomResponse<StudentDTO>(403,"Premission denied"));
+
+           var result = await _studentRepo.Add(model);
 
             return StatusCode(result.responseCode, result);
         }
@@ -128,6 +136,9 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> AddStudetnsCSV(IFormFile file)
         {
+            if (!await _premissionUtilsRepo.CheckRegestringStudetns())
+            return StatusCode(403, new CustomResponse<List<StudentErrorSheet>>(403, "Premission denied"));
+
             var response = await _CSVParser.AddStudents(file);
             return StatusCode(response.responseCode, response);
         }

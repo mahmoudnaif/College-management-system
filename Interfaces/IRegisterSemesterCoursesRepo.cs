@@ -10,6 +10,6 @@ namespace College_managemnt_system.Interfaces
         public Task<CustomResponse<List<CourseDTO>>> GetAvailableCourses(int studentId);
         public Task<CustomResponse<object>> GetAvailableSchedule(List<int> courseIds);
         public Task<CustomResponse<bool>> RegisterCourses_SchedulesByGroup(int studentId,List<int> courseIds,int groupId,bool bypassrules = false);
-        public Task<CustomResponse<object>> RegisterCustomCourses_Schedules(int studentId,List<CustomGroupCourseInputModel> courseIds, bool bypassrules = false);
+        public Task<CustomResponse<bool>> RegisterCustomCourses_Schedules(int studentId,List<CustomGroupCourseInputModel> courseIds, bool bypassrules = false);
     }
 }

@@ -104,11 +104,12 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddScoped<PremissionUtilsRepo>();
 builder.Services.AddScoped<IRegisterSemesterCoursesRepo, RegisterSemesterCoursesRepo>();
 builder.Services.AddScoped<IAssistanceCoursesRepo, AssistanceCoursesRepo>();
 builder.Services.AddScoped<ITeachingAssistanceRepo, TeachingAssistanceRepo>();
 builder.Services.AddScoped<ICSVParser, CSVParser>();
-builder.Services.AddScoped<IRootPremissionsRepo, RootPremissionsRepo>();
+builder.Services.AddScoped<IPremissionManagerRepo, PremissionManagerRepo>();
 builder.Services.AddScoped<IStudetnsDepartmentsRepo, StudetnsDepartmentsRepo>();
 builder.Services.AddScoped<ISchedulesGroupsRepo, SchedulesGroupsRepo>();
 builder.Services.AddScoped<IStudentRepo, StudentRepo>();

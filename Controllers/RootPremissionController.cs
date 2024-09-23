@@ -1,25 +1,31 @@
 ﻿using College_managemnt_system.ClientModels;
 using College_managemnt_system.Interfaces;
+using College_managemnt_system.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace College_managemnt_system.Controllers
 {
-    [Route("api/premissions")]
+    [Route("api/root/premissions")]
     [ApiController]
     public class RootPremissionController : Controller //Impmented but not used yet to block / allow certian operations from admins and students.
     {
-        private readonly IRootPremissionsRepo _rootPremissionsRepo;
+        private readonly PremissionUtilsRepo _premissionUtilsRepo;
 
-        public RootPremissionController(IRootPremissionsRepo rootPremissionsRepo)
+        public RootPremissionController(PremissionUtilsRepo premissionUtilsRepo)
         {
-            _rootPremissionsRepo = rootPremissionsRepo;
+
+            _premissionUtilsRepo = premissionUtilsRepo;
         }
+
+        //Start of Register students.
+
+
         [HttpPost("registerStudetns")]
         [Authorize(Roles ="root")]
         public async Task<IActionResult> EnableRegestringStudetns([FromBody] TimeCachedInputModel timeCachedInputModel )
         {
-            var response = await _rootPremissionsRepo.Enable("registerStudetns", timeCachedInputModel);
+            var response = await _premissionUtilsRepo.EnableRegestringStudetns(timeCachedInputModel);
 
             return StatusCode(response.responseCode, response);
         }
@@ -28,7 +34,7 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "root")]
         public async Task<IActionResult> EnableRegestringStudetns([FromBody] DateTime expirationDate)
         {
-            var response = await _rootPremissionsRepo.Enable("registerStudetns", expirationDate);
+            var response = await _premissionUtilsRepo.EnableRegestringStudetns(expirationDate);
 
             return StatusCode(response.responseCode, response);
         } 
@@ -37,7 +43,7 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "root")]
         public async Task<IActionResult> DisableRegestringStudetns()
         {
-            var response = await _rootPremissionsRepo.Disable("registerStudetns");
+            var response = await _premissionUtilsRepo.DisableRegestringStudetns();
 
             return StatusCode(response.responseCode, response);
         } 
@@ -46,45 +52,55 @@ namespace College_managemnt_system.Controllers
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> CheckRegestringStudetns() 
         {
-            var response = await _rootPremissionsRepo.CheckForEndPoint("registerStudetns");
+            var response = await _premissionUtilsRepo.CheckRegestringStudetnsEndPoint();
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPost("registerCourses")]
+
+        //End of register students
+
+
+        //start of register courses
+
+
+        [HttpPost("admin/registerCourses")]
         [Authorize(Roles = "root")]
         public async Task<IActionResult> EnableRegestringCourses([FromBody] TimeCachedInputModel timeCachedInputModel)
         {
-            var response = await _rootPremissionsRepo.Enable("registerCourses", timeCachedInputModel);
+            var response = await _premissionUtilsRepo.EnableRegestringCourses(timeCachedInputModel);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPost("registerCourses/expirationDate")]
+        [HttpPost("admin/registerCourses/expirationDate")]
         [Authorize(Roles = "root")]
         public async Task<IActionResult> EnableRegestringCourses([FromBody] DateTime expirationDate)
         {
-            var response = await _rootPremissionsRepo.Enable("registerCourses", expirationDate);
+            var response = await _premissionUtilsRepo.EnableRegestringCourses(expirationDate);
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpDelete("registerCourses")]
+        [HttpDelete("admin/registerCourses")]
         [Authorize(Roles = "root")]
         public async Task<IActionResult> DisableRegestringCourses()
         {
-            var response = await _rootPremissionsRepo.Disable("registerCourses");
+            var response = await _premissionUtilsRepo.DisableRegestringCourses();
 
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpGet("registerCourses")]
-        [Authorize(Roles = "root,admin,student,ta")]
+        [HttpGet("admin/registerCourses")]
+        [Authorize(Roles = "root,admin,ta")]
         public async Task<IActionResult> CheckRegestringCourses()
         {
-            var response = await _rootPremissionsRepo.CheckForEndPoint("registerCourses");
+            var response = await _premissionUtilsRepo.CheckRegestringCoursesEndPoint();
 
             return StatusCode(response.responseCode, response);
         }
+
+
+        //end of register courses
     }
 }
