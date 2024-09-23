@@ -22,10 +22,10 @@ namespace College_managemnt_system.Controllers
             
         }
 
-        [HttpPost("GetWeatherForecast/{studentId}/{groupId}")]
-        public async Task<IActionResult> Get(int studentId,[FromBody] List<int> courseIds,int groupId)
+        [HttpPost("GetWeatherForecast/{studentId}/{groupId}/{bypassRules}")]
+        public async Task<IActionResult> Get(int studentId,[FromBody] List<int> courseIds,int groupId,bool bypassRules)
         {
-            var response = await _registerSemesterCoursesRepo.GetAvailableCourses(studentId);
+            var response = await _registerSemesterCoursesRepo.RegisterCourses_SchedulesByGroup(studentId,courseIds,groupId,bypassRules);
 
             return StatusCode(response.responseCode,response);
         }

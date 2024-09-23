@@ -5,8 +5,8 @@ using College_managemnt_system.DTOS;
 using College_managemnt_system.Interfaces;
 using College_managemnt_system.models;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 
 namespace College_managemnt_system.Repos
 {
@@ -252,10 +252,18 @@ namespace College_managemnt_system.Repos
 
         }
       
-        public async Task<CustomResponse<bool>> RegisterCourses_SchedulesByGroup(int studentId,List<int> courseIds, int groupId)
+        public async Task<CustomResponse<bool>> RegisterCourses_SchedulesByGroup(int studentId,List<int> courseIds, int groupId,bool bypassrules = false)
         {
             if (!courseIds.Any())
                 return new CustomResponse<bool>(400, "Courses needs to be specifed");
+
+
+            courseIds = courseIds.Distinct().ToList();
+
+            Student student = await _context.Students.FirstOrDefaultAsync(S => S.StudentId == studentId);
+
+            if (student == null)
+                return new CustomResponse<bool>(404, "Student does not exist");
 
             var avialableCoursesResponse = await GetAvailableCourses(studentId);
 
@@ -264,8 +272,27 @@ namespace College_managemnt_system.Repos
 
             var availableCourses = avialableCoursesResponse.data;
 
-            if (!courseIds.All(id => availableCourses.Any(C => C.CourseId == id)))
+           /* if (!courseIds.All(id => availableCourses.Any(C => C.CourseId == id)))
+                return new CustomResponse<bool>(400, "Some courses are not elgible for this student");*/
+
+
+            var courses = availableCourses.Where(avC => courseIds.Contains(avC.CourseId));
+
+            if(courses.Count() != courseIds.Count())
                 return new CustomResponse<bool>(400, "Some courses are not elgible for this student");
+
+            if (!bypassrules)
+            {
+                int sumOfCreditHours = courses.Sum(C => C.Credits);
+                if (sumOfCreditHours < 9)
+                    return new CustomResponse<bool>(403, "You need to register at lease 9 hours");
+                
+                if (sumOfCreditHours > 18)
+                    return new CustomResponse<bool>(403, "You can't register more than 18 hours");
+
+            }
+
+
 
             int? activeSemesterId = (await _context.Semesters.FirstOrDefaultAsync(S => S.IsActive))?.SemesterId;
 
@@ -317,7 +344,7 @@ namespace College_managemnt_system.Repos
                 await transaction.CommitAsync();
 
 
-                return new CustomResponse<bool>(200, "Success");
+                return new CustomResponse<bool>(201, "Courses and schedule registered successfully");
             }
             catch
             {
@@ -330,11 +357,246 @@ namespace College_managemnt_system.Repos
 
 
             }
-        public Task<CustomResponse<bool>> RegisterCustomCourses_Schedules(int studentId,List<int> courseIds, List<int> scheduleIds)
+        public async Task<CustomResponse<object>> RegisterCustomCourses_Schedules(int studentId,List<CustomGroupCourseInputModel> groupCourseInputModels, bool bypassrules = false)
         {
-            throw new NotImplementedException();
+            if (!groupCourseInputModels.Any())
+                return new CustomResponse<object>(400, "Courses and groups needs to be specifed");
+
+
+            if (groupCourseInputModels.GroupBy(g => g.CourseId).Any(group => group.Count() > 1))
+                return new CustomResponse<object>(400, "You must specify one group per course not more");
+
+            Student student = await _context.Students.FirstOrDefaultAsync(S => S.StudentId == studentId);
+
+            if (student == null)
+                return new CustomResponse<object>(404, "Student does not exist");
+
+            var avialableCoursesResponse = await GetAvailableCourses(studentId);
+
+            if (avialableCoursesResponse.responseCode != 200)
+                return new CustomResponse<object>(avialableCoursesResponse.responseCode, $"An error occoured while fethcing student's elgible courses: {avialableCoursesResponse.responseMessage}");
+
+            var availableCourses = avialableCoursesResponse.data;
+
+
+            var courses = availableCourses.Where(avC => groupCourseInputModels.Any(GC=> GC.CourseId ==  avC.CourseId));
+
+            if (courses.Count() != groupCourseInputModels.Count())
+                return new CustomResponse<object>(400, "Some courses are not elgible for this student");
+
+            if (!bypassrules)
+            {
+                int sumOfCreditHours = courses.Sum(C => C.Credits);
+                if (sumOfCreditHours < 9)
+                    return new CustomResponse<object>(403, "You need to register at lease 9 hours");
+
+                if (sumOfCreditHours > 18)
+                    return new CustomResponse<object>(403, "You can't register more than 18 hours");
+
+            }
+
+         
+      
+
+            int? activeSemesterId = (await _context.Semesters.FirstOrDefaultAsync(S => S.IsActive))?.SemesterId;
+
+            if (activeSemesterId == null)
+                return new CustomResponse<object>(404, "No active semester");
+
+            var groupIds = groupCourseInputModels.Select(GC => GC.GroupId).Distinct().ToList();
+            var courseIds = groupCourseInputModels.Select(GC => GC.CourseId).ToList();
+
+
+            var courseInOneGroupResponse = await coursesExistInOneGroup(courseIds, (int)activeSemesterId);
+
+            if (courseInOneGroupResponse.responseCode == 200)
+                return new CustomResponse<object>(403, courseInOneGroupResponse.responseMessage);
+                
+
+
+            var Schedules = await (from SJG in _context.SchedulesJoinsgroups
+                                                where groupIds.Contains(SJG.GroupId)
+                                                join S in _context.Schedules on SJG.ScheduleId equals S.ScheduleId
+                                                where courseIds.Contains(S.CourseId)
+                                                select new
+                                                {
+                                                    groupId = SJG.GroupId,
+                                                    schedule = S
+                                                }
+                                                ).ToListAsync();
+
+
+            var groupsSchedules = from GCIM in groupCourseInputModels
+                                  join S in Schedules on new { GCIM.GroupId, GCIM.CourseId } equals new { GroupId = S.groupId, S.schedule.CourseId }
+                                  /*  group new {  S.schedule } by S.groupId into SG
+                                    select new
+                                    {
+                                        groupId = SG.Key,
+                                        schedules = SG.Select(S => S.schedule).ToList(),
+                                    };*/
+                                  select S;
+                                        
+
+            var scheduleCourseIds = groupsSchedules.Select(GS => GS.schedule.CourseId).Distinct().ToList();
+
+            if (scheduleCourseIds.Count() != courseIds.Count())
+                return new CustomResponse<object>(400,"some courses do not exist in their corresponding groups");
+
+            if (!SchedulesDoNotOverLap(groupsSchedules.Select(GS => GS.schedule).ToList()))
+                return new CustomResponse<object>(409, "Schedules conflict please find another schedule");
+
+            var transaction = _context.Database.BeginTransaction();
+
+            try
+            {
+                List<StudentCourse> studentCourse = new List<StudentCourse>();
+
+                foreach(var cId in courseIds)
+                {
+                    studentCourse.Add(new StudentCourse { StudentId = studentId, CourseId = cId , SemesterId = (int)activeSemesterId});
+                }
+
+                await _context.StudentCourses.AddRangeAsync(studentCourse);
+
+
+                List<StudentsJoinsgroup> studentsJoinsgroups= new List<StudentsJoinsgroup>();
+                foreach (var GS in groupsSchedules)
+                {
+                    studentsJoinsgroups.Add(new StudentsJoinsgroup() { StudentId = studentId, GroupId = GS.groupId, ScheduleId = GS.schedule.ScheduleId});
+                }
+
+                await _context.StudentsJoinsgroups.AddRangeAsync(studentsJoinsgroups);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return new CustomResponse<object>(201, "Courses and schedule registered successfully");
+            }
+            catch
+            {
+                transaction.Rollback();
+                return new CustomResponse<object>(500, "Internal server errror");
+            }
+
         }
 
-    
+
+        public async Task<CustomResponse<bool>> coursesExistInOneGroup(List<int> courseIds, int activeSemesterId)
+        {
+
+            var groups = await (from S in _context.Schedules
+                                where S.SemesterId == activeSemesterId && courseIds.Contains(S.CourseId)
+                                join SG in _context.SchedulesJoinsgroups on S.ScheduleId equals SG.ScheduleId
+                                join C in _context.Courses on S.CourseId equals C.CourseId
+                                join G in _context.Groups on SG.GroupId equals G.GroupId
+                                group new { schedules = S, course = C } by G into groupSchedule
+                                select new GroupCourseDTO
+                                {
+                                    GroupId = groupSchedule.Key.GroupId,
+                                    CourseIds = groupSchedule.Select(gc => gc.course.CourseId).Distinct().ToList()
+
+
+                                }
+                                ).ToListAsync();
+
+            if (!groups.Any()) //no schedules at all
+                return new CustomResponse<bool>(200, "No schedules at all");
+
+
+            int count = 0;
+
+            foreach (var group in groups)
+            {
+                if (courseIds.All(cId => group.CourseIds.Contains(cId)))
+                    count++;
+            }
+
+            if (count != 0)
+                return new CustomResponse<bool>(200,"Courses exist in one group");
+
+
+            return new CustomResponse<bool>(400,"Courses does not exsit in one group");
+
+
+        }
+
+        /*public async Task<bool> elgibleCourses(int studentId,int activeSemesterId,List<int> courseIds)
+        {
+         
+
+            List<int> finishedStudentCoursesIds = await (from SC in _context.StudentCourses
+                                                         where SC.StudentId == studentId && SC.Status == "Completed"
+                                                         select SC.CourseId
+                                                           ).ToListAsync();
+
+            var coursesAndPrereqs = await (from CS in _context.Coursesemesters
+                                           where CS.SemesterId == activeSemesterId
+                                           join C in _context.Courses on CS.CourseId equals C.CourseId
+                                           join PR in _context.Prereqs on C.CourseId equals PR.CourseId into prereqsGroup
+                                           from PR in prereqsGroup.DefaultIfEmpty() // Left join
+                                           group new { prereqs = PR } by C into groupedCourses
+                                           select new
+                                           {
+                                               groupedCourses.Key.CourseId,
+                                               prereqCourseIds = groupedCourses
+                                                   .Where(g => g.prereqs != null) // Exclude nulls 
+                                                   .Select(G => G.prereqs.PrereqCourseId)
+                                           }).ToListAsync();
+
+
+
+
+
+            if (!coursesAndPrereqs.Any())
+                return false;
+
+
+
+            List<int> elgibleCourseIds = [];
+            foreach (var courseAndPrereqs in coursesAndPrereqs)
+            {
+
+
+                if (!finishedStudentCoursesIds.Contains(courseAndPrereqs.CourseId))
+                {
+
+                    if (!courseAndPrereqs.prereqCourseIds.Any())
+                    {
+                        elgibleCourseIds.Add(courseAndPrereqs.CourseId);
+                    }
+                    else if (finishedStudentCoursesIds.Any() && courseAndPrereqs.prereqCourseIds.All(id => finishedStudentCoursesIds.Contains(id)))
+                    {
+                        elgibleCourseIds.Add(courseAndPrereqs.CourseId);
+                    }
+                }
+            }
+
+            if (!elgibleCourseIds.Any())
+                return false;
+
+
+            var courses = elgibleCourseIds.Where(cId => courseIds.Contains(cId));
+
+            if (courses.Count() != courseIds.Count())
+                return false;
+
+            return true;
+
+        }*/
+
+        public bool SchedulesDoNotOverLap(List<Schedule> schedules)
+        {
+            HashSet<(int, int)> scheduleTracker = new HashSet<(int, int)>();
+
+            foreach (var schedule in schedules)
+            {
+                if (!scheduleTracker.Add( (schedule.DayOfWeek, schedule.PeriodNumber) ))
+                    return false;
+            }
+
+            return true;
+        }
+
+
     }
 }

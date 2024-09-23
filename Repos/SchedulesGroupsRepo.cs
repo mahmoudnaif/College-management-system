@@ -29,6 +29,19 @@ namespace College_managemnt_system.Repos
             if (schedule == null)
                 return new CustomResponse<ScheduleJoinsGroupDTO>(404, "Schedule does not exist");
 
+            if (group.SemesterId != schedule.SemesterId)
+                return new CustomResponse<ScheduleJoinsGroupDTO>(409, "Group and schedule do not exist in the same semester");
+
+            var groupSchedules = from SG in _context.SchedulesJoinsgroups
+                                 where SG.GroupId == groupId
+                                 join S in _context.Schedules on SG.ScheduleId equals S.ScheduleId
+                                 select S; //IQuirable so (.Any) oberation is done on the DB directly without loading data into memory
+
+
+            if (await groupSchedules.AnyAsync(S => S.DayOfWeek == schedule.DayOfWeek && S.PeriodNumber == schedule.PeriodNumber))
+                return new CustomResponse<ScheduleJoinsGroupDTO>(409, "There is already a schedule in the same day and period");
+
+
             SchedulesJoinsgroup schedulesJoinsgroup = new SchedulesJoinsgroup()
             {
                 ScheduleId = ScheduleId,

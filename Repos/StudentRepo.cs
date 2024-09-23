@@ -63,7 +63,7 @@ namespace College_managemnt_system.Repos
                 Phone = phone,
                 AccountId = account.AccountId,
             };
-            
+
 
             try
             {
@@ -177,7 +177,7 @@ namespace College_managemnt_system.Repos
             if (model.skip < 0 || model.take < 1)
                 return new CustomResponse<List<StudentDTO>>(400, "Take must be more than 0 and skip must be bigger than or equal to 0");
 
-            List<Student> students = await _context.Students.Where(S => S.EnrollmentDate.Year == year).OrderBy(S=>S.StudentId).Skip(model.skip).Take(model.take).ToListAsync();
+            List<Student> students = await _context.Students.Where(S => S.EnrollmentDate.Year == year).OrderBy(S => S.StudentId).Skip(model.skip).Take(model.take).ToListAsync();
 
             if (!students.Any())
                 return new CustomResponse<List<StudentDTO>>(404, "No students were found");
@@ -205,8 +205,8 @@ namespace College_managemnt_system.Repos
                .OrderBy(S => (S.FirstName + " " + S.FathertName + " " + S.GrandfatherName + " " + S.LastName).Length - searchQuery.Length).ThenBy(S => S.FirstName + " " + S.FathertName + " " + S.GrandfatherName + " " + S.LastName).Skip(model.skip).Take(model.take).ToListAsync();
             }
 
-                
-               
+
+
 
             if (!students.Any())
                 return new CustomResponse<List<StudentDTO>>(404, "No students were found");
@@ -229,7 +229,7 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<bool>(500, "Internal server error");
             }
 
-            
+
         }
 
         public async Task<CustomResponse<StudentDTO>> calculateStudentCGPA_totalHours(int studentId)
@@ -239,13 +239,14 @@ namespace College_managemnt_system.Repos
                 return new CustomResponse<StudentDTO>(404, "Student does not exsit");
 
             var result = await (from SC in _context.StudentCourses
-                                where SC.StudentId == studentId && SC.Status == "completed"
+                                where SC.StudentId == studentId && (SC.Status == "completed" || SC.Status == "Failed" || (SC.Status== "Withdrawn" && SC.Grade =="F"))
                                 join CS in _context.Coursesemesters on new { SC.CourseId, SC.SemesterId} equals new { CS.CourseId , CS.SemesterId }
                                 join C in _context.Courses on CS.CourseId equals C.CourseId
                                 select new
                                 {
                                     grade = SC.Grade,
-                                    totalHours = C.Credits
+                                    totalHours = C.Credits,
+                                    status = SC.Status
                                     
                                 }
 
@@ -259,8 +260,8 @@ namespace College_managemnt_system.Repos
             }
             else
             {
-                student.TotalHours = result.Sum(R => R.totalHours);
-                student.Cgpa = result.Sum(R => R.totalHours * GetGradePoints(R.grade)) / student.TotalHours;
+                student.TotalHours = result.Where(R => R.status == "completed").Sum(R => R.totalHours);
+                student.Cgpa = result.Sum(R => R.totalHours * GetGradePoints(R.grade)) / result.Sum(R => R.totalHours);
             }
             try
             {
@@ -287,7 +288,10 @@ namespace College_managemnt_system.Repos
                     LEFT JOIN 
                         (SELECT 
                             sc.StudentID,
-                            SUM(c.Credits) AS TotalCreditHours,
+                             SUM(CASE 
+                            WHEN sc.Status = 'completed' THEN c.Credits
+                            ELSE 0
+                            END) AS TotalCreditHours,
                             SUM(CASE 
                                     WHEN sc.Grade = 'A' THEN 4 * c.Credits
                                     WHEN sc.Grade = 'A-' THEN 3.7 * c.Credits
@@ -311,7 +315,8 @@ namespace College_managemnt_system.Repos
                         INNER JOIN 
                             Courses c ON cs.CourseID = c.CourseID
                         WHERE 
-                            sc.Status = 'completed'
+                            sc.Status IN ('completed', 'Failed') 
+                            OR (sc.Status = 'withdrawn' AND sc.Grade = 'F') 
                         GROUP BY 
                             sc.StudentID
                         ) AS cgpa_results 
