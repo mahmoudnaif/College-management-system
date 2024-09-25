@@ -8,7 +8,7 @@ namespace College_managemnt_system.Controllers
 {
     [Route("api/root/premissions")]
     [ApiController]
-    public class RootPremissionController : Controller //Impmented but not used yet to block / allow certian operations from admins and students.
+    public class RootPremissionController : Controller 
     {
         private readonly PremissionUtilsRepo _premissionUtilsRepo;
 
@@ -21,7 +21,7 @@ namespace College_managemnt_system.Controllers
         //Start of Register students.
 
 
-        [HttpPost("registerStudetns")]
+        [HttpPost("admin/students/register")]
         [Authorize(Roles ="root")]
         public async Task<IActionResult> EnableRegestringStudetns([FromBody] TimeCachedInputModel timeCachedInputModel )
         {
@@ -30,7 +30,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPost("registerStudetns/expirationDate")]
+        [HttpPost("admin/students/register/expirationDate")]
         [Authorize(Roles = "root")]
         public async Task<IActionResult> EnableRegestringStudetns([FromBody] DateTime expirationDate)
         {
@@ -39,7 +39,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         } 
 
-        [HttpDelete("registerStudetns")]
+        [HttpDelete("admin/students/register")]
         [Authorize(Roles = "root")]
         public async Task<IActionResult> DisableRegestringStudetns()
         {
@@ -48,7 +48,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         } 
         
-        [HttpGet("registerStudetns")]
+        [HttpGet("admin/students/register")]
         [Authorize(Roles = "root,admin")]
         public async Task<IActionResult> CheckRegestringStudetns() 
         {
@@ -64,7 +64,7 @@ namespace College_managemnt_system.Controllers
         //start of register courses
 
 
-        [HttpPost("admin/registerCourses")]
+        [HttpPost("admin/courses/register")]
         [Authorize(Roles = "root")]
         public async Task<IActionResult> EnableRegestringCourses([FromBody] TimeCachedInputModel timeCachedInputModel)
         {
@@ -73,7 +73,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpPost("admin/registerCourses/expirationDate")]
+        [HttpPost("admin/courses/register/expirationDate")]
         [Authorize(Roles = "root")]
         public async Task<IActionResult> EnableRegestringCourses([FromBody] DateTime expirationDate)
         {
@@ -82,7 +82,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpDelete("admin/registerCourses")]
+        [HttpDelete("admin/courses/register")]
         [Authorize(Roles = "root")]
         public async Task<IActionResult> DisableRegestringCourses()
         {
@@ -91,7 +91,7 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
-        [HttpGet("admin/registerCourses")]
+        [HttpGet("admin/courses/register")]
         [Authorize(Roles = "root,admin,ta")]
         public async Task<IActionResult> CheckRegestringCourses()
         {
@@ -101,6 +101,132 @@ namespace College_managemnt_system.Controllers
         }
 
 
-        //end of register courses
+        //End of register courses
+
+        //Start of Dropping Courses
+
+        [HttpPost("admin/course/drop")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> EnableDroppingCourses([FromBody] TimeCachedInputModel timeCachedInputModel)
+        {
+            var response = await _premissionUtilsRepo.EnableDroppingCourses(timeCachedInputModel);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPost("admin/course/drop/expirationDate")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> EnableDroppingCourses([FromBody] DateTime expirationDate)
+        {
+            var response = await _premissionUtilsRepo.EnableDroppingCourses(expirationDate);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpDelete("admin/course/drop")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> DisableDroppingCourses()
+        {
+            var response = await _premissionUtilsRepo.DisableDroppingCourses();
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpGet("admin/course/drop")]
+        [Authorize(Roles = "root,admin,ta")]
+        public async Task<IActionResult> CheckDroppingCourses()
+        {
+            var response = await _premissionUtilsRepo.CheckDroppingCoursesEndPoint();
+
+            return StatusCode(response.responseCode, response);
+        }
+
+
+        //End of Dropping Courses 
+        
+        
+        //Start of withdrawing Courses
+
+        [HttpPost("admin/course/withdraw")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> EnablewithdrawingCourses([FromBody] TimeCachedInputModel timeCachedInputModel)
+        {
+            var response = await _premissionUtilsRepo.EnableWithdrawingCourses(timeCachedInputModel);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPost("admin/course/withdraw/expirationDate")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> EnablewithdrawingCourses([FromBody] DateTime expirationDate)
+        {
+            var response = await _premissionUtilsRepo.EnableWithdrawingCourses(expirationDate);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpDelete("admin/course/withdraw")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> DisablewithdrawingCourses()
+        {
+            var response = await _premissionUtilsRepo.DisableWithdrawingCourses();
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpGet("admin/course/withdraw")]
+        [Authorize(Roles = "root,admin,ta")]
+        public async Task<IActionResult> CheckWithdrawingCourses()
+        {
+            var response = await _premissionUtilsRepo.CheckWithdrawingCoursesEndPoint();
+
+            return StatusCode(response.responseCode, response);
+        }
+
+
+        //End of withdrawing Courses
+
+
+        //Start of grade Courses
+
+        [HttpPost("admin/course/Grade")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> EnableGradingCourses([FromBody] TimeCachedInputModel timeCachedInputModel)
+        {
+            var response = await _premissionUtilsRepo.EnableGradingCourses(timeCachedInputModel);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpPost("admin/course/Grade/expirationDate")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> EnablegradeingCourses([FromBody] DateTime expirationDate)
+        {
+            var response = await _premissionUtilsRepo.EnableGradingCourses(expirationDate);
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpDelete("admin/course/Grade")]
+        [Authorize(Roles = "root")]
+        public async Task<IActionResult> DisableGradingCourses()
+        {
+            var response = await _premissionUtilsRepo.DisableGradingCourses();
+
+            return StatusCode(response.responseCode, response);
+        }
+
+        [HttpGet("admin/course/Grade")]
+        [Authorize(Roles = "root,admin,ta")]
+        public async Task<IActionResult> CheckGradingCourses()
+        {
+            var response = await _premissionUtilsRepo.CheckGradingCoursesEndPoint();
+
+            return StatusCode(response.responseCode, response);
+        }
+
+
+        //End of grade Courses
+
     }
 }

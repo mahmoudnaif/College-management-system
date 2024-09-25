@@ -12,29 +12,18 @@ namespace College_managemnt_system.Controllers
     public class WeatherForecastController : ControllerBase
     {
         private readonly CollegeDBContext _context;
-        private readonly IRegisterSemesterCoursesRepo _registerSemesterCoursesRepo;
-        
+        private readonly IStudentCoursesRepo _studentCoursesRepo;
 
-        public WeatherForecastController(CollegeDBContext context, IRegisterSemesterCoursesRepo registerSemesterCoursesRepo)
+        public WeatherForecastController(CollegeDBContext context, IStudentCoursesRepo studentCoursesRepo)
         {
             _context = context;
-            _registerSemesterCoursesRepo = registerSemesterCoursesRepo;
-            
+            _studentCoursesRepo = studentCoursesRepo;
         }
 
-        [HttpPost("GetWeatherForecast/{studentId}/{groupId}/{bypassRules}")]
-        public async Task<IActionResult> Get(int studentId,[FromBody] List<int> courseIds,int groupId,bool bypassRules)
+        [HttpGet("GetWeatherForecast/{studentId}")]
+        public async Task<IActionResult> Get(int studentId,[FromQuery]TakeSkipModel takeSkipModel)
         {
-            var response = await _registerSemesterCoursesRepo.RegisterCourses_SchedulesByGroup(studentId,courseIds,groupId,bypassRules);
-
-            return StatusCode(response.responseCode,response);
-        }
-
-
-        [HttpPost("GetWeatherForecast")]
-        public async Task<IActionResult> Get(List<int> courseIds)
-        {
-            var response = await _registerSemesterCoursesRepo.GetAvailableSchedule(courseIds);
+            var response = await _studentCoursesRepo.GetActiveStudentCourses(studentId);
 
             return StatusCode(response.responseCode, response);
         }

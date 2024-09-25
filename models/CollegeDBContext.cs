@@ -337,7 +337,7 @@ public partial class CollegeDBContext : DbContext
             entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
             entity.Property(e => e.CourseId).HasColumnName("CourseID");
-            entity.Property(e => e.Grade).HasMaxLength(255).HasDefaultValue("Z");
+            entity.Property(e => e.Grade).HasMaxLength(2);
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("inprogress");

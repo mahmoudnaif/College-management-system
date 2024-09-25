@@ -11,7 +11,7 @@ public partial class StudentCourse
 
     public int CourseId { get; set; }
 
-    public string Grade { get; set; } = null!;
+    public string? Grade { get; set; } = null!;
 
     public string Status { get; set; } = null!;
 

@@ -49,6 +49,13 @@ namespace College_managemnt_system.Controllers
             return StatusCode(result.responseCode, result);
         }
 
+        [HttpDelete("{courseId}")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> DeleteCourse(int courseId)
+        {
+            var result = await _coursesRepo.DeleteCourse(courseId);
+            return StatusCode(result.responseCode, result);
+        }
         [HttpPut("{courseId}/name")]
         [Authorize(Roles ="root")]
         public async Task<IActionResult> EditCourseName(int courseId,[FromBody] string newName)
