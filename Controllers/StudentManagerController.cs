@@ -15,12 +15,14 @@ namespace College_managemnt_system.Controllers
         private readonly IRegisterSemesterCoursesRepo _registerSemesterCoursesRepo;
         private readonly PremissionUtilsRepo _premissionUtilsRepo;
         private readonly IStudentCoursesRepo _studentCoursesRepo;
+        private readonly IStudentSchedulesRepo _studentSchedulesRepo;
 
-        public StudentManagerController(IRegisterSemesterCoursesRepo registerSemesterCoursesRepo,PremissionUtilsRepo premissionUtilsRepo, IStudentCoursesRepo studentCoursesRepo)
+        public StudentManagerController(IRegisterSemesterCoursesRepo registerSemesterCoursesRepo,PremissionUtilsRepo premissionUtilsRepo, IStudentCoursesRepo studentCoursesRepo,IStudentSchedulesRepo studentSchedulesRepo)
         {
             _registerSemesterCoursesRepo = registerSemesterCoursesRepo;
             _premissionUtilsRepo = premissionUtilsRepo;
             _studentCoursesRepo = studentCoursesRepo;
+            _studentSchedulesRepo = studentSchedulesRepo;
         }
 
         [HttpGet("{studentId}/courses/Active")]
@@ -158,6 +160,14 @@ namespace College_managemnt_system.Controllers
             return StatusCode(response.responseCode, response);
         }
 
+        [HttpGet("{studentId}/Schedule/Active")]
+        [Authorize(Roles = "root,admin")]
+
+        public async Task<IActionResult> GetStudentActiveSchedule(int studentId)
+        {
+            var response = await _studentSchedulesRepo.GetStudentActiveSchedule(studentId);
+            return StatusCode(response.responseCode, response);
+        }
 
     }
 }

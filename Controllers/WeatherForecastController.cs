@@ -12,18 +12,18 @@ namespace College_managemnt_system.Controllers
     public class WeatherForecastController : ControllerBase
     {
         private readonly CollegeDBContext _context;
-        private readonly IStudentCoursesRepo _studentCoursesRepo;
+        private readonly IStudentSchedulesRepo _studentSchedulesRepo;
 
-        public WeatherForecastController(CollegeDBContext context, IStudentCoursesRepo studentCoursesRepo)
+        public WeatherForecastController(CollegeDBContext context, IStudentSchedulesRepo studentSchedulesRepo)
         {
             _context = context;
-            _studentCoursesRepo = studentCoursesRepo;
+            _studentSchedulesRepo = studentSchedulesRepo;
         }
 
         [HttpGet("GetWeatherForecast/{studentId}")]
         public async Task<IActionResult> Get(int studentId,[FromQuery]TakeSkipModel takeSkipModel)
         {
-            var response = await _studentCoursesRepo.GetActiveStudentCourses(studentId);
+            var response = await _studentSchedulesRepo.GetStudentActiveSchedule(studentId);
 
             return StatusCode(response.responseCode, response);
         }

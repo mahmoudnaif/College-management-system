@@ -15,6 +15,6 @@
 
         public int PeriodNumber { get; set; }
 
-        public string courseName { get; set; }
+        public string courseName { get; set; } = null!;
     }
 }

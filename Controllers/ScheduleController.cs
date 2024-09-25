@@ -10,10 +10,12 @@ namespace College_managemnt_system.Controllers
     public class ScheduleController : Controller
     {
         private readonly ISchedulesRepo _schedulesRepo;
+        private readonly IStudentSchedulesRepo _studentSchedulesRepo;
 
-        public ScheduleController(ISchedulesRepo schedulesRepo)
+        public ScheduleController(ISchedulesRepo schedulesRepo, IStudentSchedulesRepo studentSchedulesRepo)
         {
             _schedulesRepo = schedulesRepo;
+            _studentSchedulesRepo = studentSchedulesRepo;
         }
 
 
@@ -56,6 +58,14 @@ namespace College_managemnt_system.Controllers
 
             return StatusCode(response.responseCode, response);
 
+        }
+
+        [HttpGet("{scheduleId}/students")]
+        [Authorize(Roles = "root,admin")]
+        public async Task<IActionResult> GetScheduls(int scheduleId)
+        {
+            var response = await _studentSchedulesRepo.GetStudentsSheet(scheduleId);
+            return StatusCode(response.responseCode, response);
         }
 
 
